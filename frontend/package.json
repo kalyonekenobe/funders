@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "CHOKIDAR_USEPOLLING=true next dev",
+    "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_PORT next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

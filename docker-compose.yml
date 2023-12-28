@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    env_file: ./.env.dev
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/test:/app/test
+    depends_on:
+      - database
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    env_file: ./.env.dev
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    volumes:
+      - ./frontend/app:/app/app
+    depends_on:
+      - backend
+
+  database:
+    image: postgres:14.2-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${DB_PORT}:5432
