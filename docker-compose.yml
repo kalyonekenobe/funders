@@ -6,6 +6,8 @@ services:
       context: ./backend
       dockerfile: ./Dockerfile.dev
     env_file: ./.env.dev
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
