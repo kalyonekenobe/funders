@@ -1,29 +1,29 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: Run unit and end-to-end tests on frontend and backend
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: ['develop']
   pull_request:
-    branches: [ "develop" ]
+    branches: ['develop']
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20.x
-    - name: Prepare shared folder
-      run: npm run init
-    - name: Run frontend unit tests
-      run: cd frontend && npm run test
-    - name: Run backend unit tests
-      run: cd backend && npm run test
-    - name: Run backend e2e tests
-      run: cd backend && npm run test:e2e
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Initialize project. Download necessary project dependencies
+        run: npm run init
+      - name: Run frontend unit tests
+        run: cd frontend && npm run test
+      - name: Run backend unit tests
+        run: cd backend && npm run test
+      - name: Run backend e2e tests
+        run: cd backend && npm run test:e2e
