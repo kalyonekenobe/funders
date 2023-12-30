@@ -1,10 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { LoggingMiddleware } from './core/logging.middleware';
+import { LoggingMiddleware } from './core/logging/logging.middleware';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
+  imports: [UserModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
