@@ -9,3 +9,230 @@ datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_URL")
 }
+
+// MODELS DEFINITIONS
+
+model UserRegistrationMethod {
+  name String @id @db.VarChar(50)
+
+  users User[]
+}
+
+model UserRole {
+  name        String @id @db.VarChar(50)
+  permissions BigInt @default(0)
+
+  users User[]
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  registrationMethod String
+  role               String
+  firstName          String   @db.VarChar(50)
+  lastName           String   @db.VarChar(50)
+  birthDate          DateTime
+  email              String   @unique @db.VarChar(50)
+  password           String
+  phone              String?  @db.VarChar(15)
+  bio                String?
+  avatar             Bytes?
+  refreshToken       String?
+  registeredAt       DateTime @default(now())
+
+  userRole               UserRole               @relation(fields: [role], references: [name])
+  userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name])
+  followings             Followings[]           @relation("FollowerUser")
+  followers              Followings[]           @relation("FollowedUser")
+  usersBanListsRecords   UsersBanListRecord[]
+  chatsOnUsers           ChatsOnUsers[]
+  messagesOnChats        ChatMessage[]
+  posts                  Post[]
+  postsReactions         PostReaction[]
+  postsComments          PostComment[]
+  postsCommentsReactions PostCommentReaction[]
+}
+
+model UsersBanListRecordStatus {
+  name String @id @db.VarChar(50)
+
+  usersBanListsRecords UsersBanListRecord[]
+}
+
+model UsersBanListRecord {
+  id                 String    @id @default(uuid())
+  userId             String
+  status             String
+  bannedAt           DateTime  @default(now())
+  dueTo              DateTime?
+  note               String
+  permissionsPenalty BigInt
+
+  usersBanListRecordStatus UsersBanListRecordStatus @relation(fields: [status], references: [name])
+  user                     User                     @relation(fields: [userId], references: [id])
+}
+
+model Chat {
+  id   String  @id @default(uuid())
+  name String? @db.VarChar(255)
+
+  chatsOnUsers ChatsOnUsers[]
+  messages     ChatMessage[]
+}
+
+model ChatRole {
+  name String @id @db.VarChar(50)
+
+  chatsOnUsers ChatsOnUsers[]
+}
+
+model ChatsOnUsers {
+  chatId String
+  userId String
+  role   String
+
+  chat     Chat     @relation(fields: [chatId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  chatRole ChatRole @relation(fields: [role], references: [name])
+
+  @@id([chatId, userId])
+}
+
+model ChatMessageAttachment {
+  id        String  @id @default(uuid())
+  messageId String
+  file      Bytes
+  filename  String? @db.VarChar(255)
+
+  message ChatMessage @relation(fields: [messageId], references: [id])
+}
+
+model ChatMessage {
+  id        String    @id @default(uuid())
+  chatId    String
+  authorId  String
+  text      String
+  isPinned  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  removedAt DateTime?
+
+  chat        Chat                    @relation(fields: [chatId], references: [id])
+  author      User                    @relation(fields: [authorId], references: [id])
+  attachments ChatMessageAttachment[]
+}
+
+model Followings {
+  userId     String
+  followerId String
+
+  user     User @relation("FollowedUser", fields: [userId], references: [id])
+  follower User @relation("FollowerUser", fields: [followerId], references: [id])
+
+  @@id(fields: [userId, followerId])
+}
+
+model Post {
+  id              String    @id @default(uuid())
+  authorId        String
+  title           String    @db.VarChar(255)
+  content         String
+  fundsToBeRaised Decimal   @db.Money
+  image           Bytes?
+  isDraft         Boolean
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  removedAt       DateTime?
+
+  author     User                @relation(fields: [authorId], references: [id])
+  categories CategoriesOnPosts[]
+  donations  PostDonation[]
+  reactions  PostReaction[]
+  comments   PostComment[]
+}
+
+model PostCategory {
+  name String @id @db.VarChar(50)
+
+  posts CategoriesOnPosts[]
+}
+
+model CategoriesOnPosts {
+  postId   String
+  category String
+
+  post         Post         @relation(fields: [postId], references: [id])
+  postCategory PostCategory @relation(fields: [category], references: [name])
+
+  @@id([postId, category])
+}
+
+model PostDonation {
+  id         String   @id @default(uuid())
+  postId     String
+  cardNumber String   @db.VarChar(16)
+  donation   Decimal  @db.Money
+  datetime   DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+}
+
+model UserReactionType {
+  name String @id @db.VarChar(50)
+
+  posts         PostReaction[]
+  postsComments PostCommentReaction[]
+}
+
+model PostReaction {
+  userId       String
+  postId       String
+  reactionType String
+  datetime     DateTime @default(now())
+
+  user             User             @relation(fields: [userId], references: [id])
+  post             Post             @relation(fields: [postId], references: [id])
+  userReactionType UserReactionType @relation(fields: [reactionType], references: [name])
+
+  @@id([userId, postId])
+}
+
+model PostComment {
+  id              String    @id @default(uuid())
+  postId          String
+  authorId        String
+  parentCommentId String?
+  content         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  removedAt       DateTime?
+
+  post          Post                    @relation(fields: [postId], references: [id])
+  author        User                    @relation(fields: [authorId], references: [id])
+  parentComment PostComment?            @relation("ParentComment", fields: [parentCommentId], references: [id])
+  replies       PostComment[]           @relation("ParentComment")
+  reactions     PostCommentReaction[]
+  attachments   PostCommentAttachment[]
+}
+
+model PostCommentReaction {
+  commentId    String
+  userId       String
+  reactionType String
+  datetime     DateTime @default(now())
+
+  comment          PostComment      @relation(fields: [commentId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
+  userReactionType UserReactionType @relation(fields: [reactionType], references: [name])
+
+  @@id([commentId, userId])
+}
+
+model PostCommentAttachment {
+  id        String  @id @default(uuid())
+  commentId String
+  file      Bytes
+  filename  String? @db.VarChar(255)
+
+  comment PostComment @relation(fields: [commentId], references: [id])
+}

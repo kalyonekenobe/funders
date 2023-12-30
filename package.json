@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "database:migrate:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $POSTGRES_URL') && cd backend && npx prisma migrate dev && npx prisma generate",
+    "database:migrate:undo:all:dev": "cd backend/prisma && rm -rf migrations/*",
+    "database:pull:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $POSTGRES_URL') && cd backend && npx prisma db pull && npx prisma generate",
+    "database:push:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $POSTGRES_URL') && cd backend && npx prisma db push && npx prisma generate",
     "init:backend": "cd backend && npm install",
     "init:frontend": "cd frontend && npm install",
     "init": "npm install && npm-run-all -p init:*",
     "seed:dev": "docker compose --env-file=.env.dev exec backend npx sequelize-cli db:seed:all",
     "start": "docker compose --env-file=.env.dev up -d",
     "start:build": "docker compose --env-file=.env.dev up --build -d",
-    "stop": "docker compose --env-file=.env.dev down",
-    "migrate:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $POSTGRES_URL') && cd backend && npx prisma migrate dev --name init"
+    "stop": "docker compose --env-file=.env.dev down"
   },
   "author": "",
   "license": "ISC",
