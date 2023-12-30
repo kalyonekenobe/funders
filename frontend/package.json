@@ -7,7 +7,9 @@
     "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_PORT next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "react": "^18",
