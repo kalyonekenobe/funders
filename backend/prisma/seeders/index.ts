@@ -60,8 +60,7 @@ const main = async () => {
   }
 
   const revert = commandLineArguments.includes('--down');
-
-  fs.readdir('backend/prisma/seeders', (_, files) => {
+  fs.readdir(__dirname, (_, files) => {
     const seeders = files?.filter(file => file.match(/[\w\d]+((\-|\.)[\w\d])*\.seeder\.js/i)) ?? [];
     seeders.forEach(async file => {
       const { up, down } = (await import(`./${file}`)).default;
