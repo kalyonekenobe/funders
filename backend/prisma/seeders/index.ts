@@ -90,6 +90,23 @@ const showTablesData = async () => {
   console.log(await prisma.userRegistrationMethod.findMany());
   console.log(await prisma.userRole.findMany());
   console.log(await prisma.user.findMany());
+  console.log(await prisma.usersBanListRecordStatus.findMany());
+  console.log(await prisma.usersBanListRecord.findMany());
+  console.log(await prisma.userReactionType.findMany());
+  console.log(await prisma.chatRole.findMany());
+  console.log(await prisma.chat.findMany());
+  console.log(await prisma.chatMessage.findMany());
+  console.log(await prisma.chatMessageAttachment.findMany());
+  console.log(await prisma.chatsOnUsers.findMany());
+  console.log(await prisma.following.findMany());
+  console.log(await prisma.postCategory.findMany());
+  console.log(await prisma.post.findMany());
+  console.log(await prisma.categoriesOnPosts.findMany());
+  console.log(await prisma.postDonation.findMany());
+  console.log(await prisma.postReaction.findMany());
+  console.log(await prisma.postComment.findMany());
+  console.log(await prisma.postCommentAttachment.findMany());
+  console.log(await prisma.postCommentReaction.findMany());
 };
 
 main();

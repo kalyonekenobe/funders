@@ -6,10 +6,11 @@
   "scripts": {
     "database:migrate:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma migrate dev && npx prisma generate",
     "database:migrate:undo:all:dev": "cd backend/prisma && rm -rf migrations/*",
-    "database:pull:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma db pull && npx prisma generate",
-    "database:push:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma db push && npx prisma generate",
+    "database:pull:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma db pull",
+    "database:push:dev": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma db push",
     "seed:all": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npm run seed:all",
     "seed:undo:all": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npm run seed:undo:all",
+    "seed:redo:all": "export POSTGRES_URL=$(docker compose --env-file=.env.dev exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npm run seed:undo:all && npm run seed:all",
     "seed:create": "node backend/prisma/seeders/index.ts --create ${npm_config_name} && sudo chmod -R 777 backend/prisma/seeders/",
     "init:backend": "cd backend && npm install",
     "init:frontend": "cd frontend && npm install",
