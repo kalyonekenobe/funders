@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { PrismaClient } = require('@prisma/client');
 
 const defaultSeederPattern = `const { PrismaClient } = require('@prisma/client');
 
@@ -59,23 +60,36 @@ const main = async () => {
     return;
   }
 
+  await showTablesData();
+
   const revert = commandLineArguments.includes('--down');
-  fs.readdir(__dirname, (_, files) => {
-    const seeders = files?.filter(file => file.match(/[\w\d]+((\-|\.)[\w\d])*\.seeder\.js/i)) ?? [];
-    seeders.forEach(async file => {
-      const { up, down } = (await import(`./${file}`)).default;
+  const files = await fs.promises.readdir(__dirname);
 
-      if ((revert && !down) || (!revert && !up)) {
-        console.error(
-          `Cannot run seeders because for ${file}, ${
-            revert ? '"down"' : '"up"'
-          } function does not exist.`,
-        );
-      }
+  let seeders = files?.filter(file => file.match(/[\w\d]+((\-|\.)[\w\d])*\.seeder\.js/i)) ?? [];
 
-      revert ? down() : up();
-    });
-  });
+  if (revert) seeders = seeders.reverse();
+
+  for (const file of seeders) {
+    const { up, down } = (await import(`./${file}`)).default;
+
+    if ((revert && !down) || (!revert && !up)) {
+      console.error(
+        `Cannot run seeders because for ${file}, ${
+          revert ? '"down"' : '"up"'
+        } function does not exist.`,
+      );
+    } else {
+      revert ? await down() : await up();
+    }
+  }
+};
+
+const showTablesData = async () => {
+  const prisma = new PrismaClient();
+
+  console.log(await prisma.userRegistrationMethod.findMany());
+  console.log(await prisma.userRole.findMany());
+  console.log(await prisma.user.findMany());
 };
 
 main();

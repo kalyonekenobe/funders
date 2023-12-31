@@ -4,16 +4,14 @@ const prisma = new PrismaClient();
 
 module.exports = {
   async up() {
-    const userRegistrationMethods = [
+    const data = [
       { name: 'Default' },
       { name: 'Google' },
       { name: 'Microsoft' },
       { name: 'Apple' },
     ];
 
-    userRegistrationMethods.forEach(async data => {
-      await prisma.userRegistrationMethod.create({ data });
-    });
+    await prisma.userRegistrationMethod.createMany({ data });
   },
 
   async down() {
