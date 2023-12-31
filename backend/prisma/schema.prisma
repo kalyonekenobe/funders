@@ -43,8 +43,8 @@ model User {
 
   userRole               UserRole               @relation(fields: [role], references: [name])
   userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name])
-  followings             Followings[]           @relation("FollowerUser")
-  followers              Followings[]           @relation("FollowedUser")
+  followings             Following[]            @relation("FollowerUser")
+  followers              Following[]            @relation("FollowedUser")
   usersBanListsRecords   UsersBanListRecord[]
   chatsOnUsers           ChatsOnUsers[]
   messagesOnChats        ChatMessage[]
@@ -123,7 +123,7 @@ model ChatMessage {
   attachments ChatMessageAttachment[]
 }
 
-model Followings {
+model Following {
   userId     String
   followerId String
 
@@ -140,7 +140,7 @@ model Post {
   content         String
   fundsToBeRaised Decimal   @db.Money
   image           Bytes?
-  isDraft         Boolean
+  isDraft         Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
   removedAt       DateTime?
