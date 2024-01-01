@@ -5,6 +5,7 @@ export class UserRegistrationMethodEntity implements UserRegistrationMethod {
   @ApiProperty({
     description: 'Name of the registration method',
     examples: ['Google', 'Facebook', 'Microsoft', 'Apple', 'LinkedIn'],
+    default: 'Google',
   })
   name: string;
 }

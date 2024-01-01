@@ -1,10 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} from '@prisma/client/runtime/library';
+import { tryHandlePrismaError } from 'src/core/prisma/prisma.error-handling';
+import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
 
 @Injectable()
 export class UserRegistrationMethodService {
@@ -16,15 +14,45 @@ export class UserRegistrationMethodService {
 
   async create(data: CreateUserRegistrationMethodDto) {
     try {
-    } catch (error) {
-      if (error instanceof PrismaClientValidationError) {
-        throw new HttpException(
-          {
-            error: error.message,
+      return await this.prismaService.userRegistrationMethod.create({ data });
+    } catch (error: any) {
+      tryHandlePrismaError(error);
+    }
+  }
+
+  async update(name: string, data: UpdateUserRegistrationMethodDto) {
+    try {
+      return await this.prismaService.userRegistrationMethod.update({
+        data,
+        where: { name },
+      });
+    } catch (error: any) {
+      tryHandlePrismaError(error);
+    }
+  }
+
+  async remove(name: string) {
+    try {
+      return await this.prismaService.userRegistrationMethod.delete({ where: { name } });
+    } catch (error: any) {
+      tryHandlePrismaError(error);
+    }
+  }
+
+  async findRegisteredUsersByMethodName(name: string) {
+    try {
+      return (
+        await this.prismaService.userRegistrationMethod.findUnique({
+          where: {
+            name,
           },
-          HttpStatus.CONFLICT,
-        );
-      }
+          select: {
+            users: true,
+          },
+        })
+      ).users;
+    } catch (error: any) {
+      tryHandlePrismaError(error);
     }
   }
 }
