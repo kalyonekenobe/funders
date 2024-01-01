@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
-import { PrismaClientValidationError } from '@prisma/client/runtime/library';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UserRegistrationMethodService {
@@ -11,5 +14,17 @@ export class UserRegistrationMethodService {
     return this.prismaService.userRegistrationMethod.findMany();
   }
 
-  async create(data: CreateUserRegistrationMethodDto) {}
+  async create(data: CreateUserRegistrationMethodDto) {
+    try {
+    } catch (error) {
+      if (error instanceof PrismaClientValidationError) {
+        throw new HttpException(
+          {
+            error: error.message,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+  }
 }
