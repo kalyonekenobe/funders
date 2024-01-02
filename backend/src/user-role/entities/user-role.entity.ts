@@ -24,4 +24,7 @@ export class UserRoleEntity implements UserRole {
   @IsNumber()
   @IsDefined()
   permissions: bigint;
+
+  // users?: UserEntity[];
+  users?: any[];
 }
