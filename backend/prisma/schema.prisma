@@ -29,7 +29,7 @@ model UserRole {
 model User {
   id                 String   @id @default(uuid())
   registrationMethod String   @default("Default")
-  role               String
+  role               String   @default("Default")
   firstName          String   @db.VarChar(50)
   lastName           String   @db.VarChar(50)
   birthDate          DateTime
@@ -41,7 +41,7 @@ model User {
   refreshToken       String?
   registeredAt       DateTime @default(now())
 
-  userRole               UserRole               @relation(fields: [role], references: [name])
+  userRole               UserRole               @relation(fields: [role], references: [name], onDelete: SetDefault, onUpdate: Cascade)
   userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name], onDelete: SetDefault, onUpdate: Cascade)
   followings             Following[]            @relation("FollowerUser")
   followers              Following[]            @relation("FollowedUser")
