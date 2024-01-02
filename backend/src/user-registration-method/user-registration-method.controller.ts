@@ -39,7 +39,10 @@ export class UserRegistrationMethodController {
 
   @ApiOkResponse({
     description: 'The list of user registration methods',
-    type: UserRegistrationMethodEntity,
+    type: [UserRegistrationMethodEntity],
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
   })
   @Get()
   findAll() {
@@ -55,6 +58,9 @@ export class UserRegistrationMethodController {
   })
   @ApiNotFoundResponse({
     description: 'The user registration method with requested name was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
   })
   @Get(':name/users')
   @ApiParam({
@@ -77,6 +83,9 @@ export class UserRegistrationMethodController {
   @ApiNotFoundResponse({
     description: 'The user registration method with requested name was not found.',
   })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
   @Put(':name')
   @ApiParam({
     name: 'name',
@@ -94,11 +103,14 @@ export class UserRegistrationMethodController {
   }
 
   @ApiOkResponse({
-    description: 'User registration method was successfully updated.',
+    description: 'User registration method was successfully removed.',
     type: UserRegistrationMethodEntity,
   })
   @ApiNotFoundResponse({
     description: 'The user registration method with requested name was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
   })
   @Delete(':name')
   @ApiParam({

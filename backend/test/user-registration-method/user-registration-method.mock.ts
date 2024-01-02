@@ -94,7 +94,7 @@ export class MockDataStorage {
     { name: 'Atlassian', data: { name: 'Atlassian_updated' } },
   ];
 
-  static removeUserRegistrationMethodDtoList: { name: string }[] = [
+  static removeUserRegistrationMethodDtoList: UserRegistrationMethodEntity[] = [
     { name: 'LinkedIn' },
     { name: 'Instagram' },
     { name: 'Twitter' },
@@ -145,7 +145,7 @@ export const mockUserRegistrationMethodService = {
     .mockImplementation(
       (
         name: string,
-        dto: CreateUserRegistrationMethodDto,
+        dto: UpdateUserRegistrationMethodDto,
       ): Promise<UserRegistrationMethodEntity> => {
         let exists = MockDataStorage.items().find(item => item.name === name);
 
@@ -217,7 +217,7 @@ export const mockUserRegistrationMethodRepository = {
       .mockImplementation(
         (dto: {
           where: { name: string };
-          data: CreateUserRegistrationMethodDto;
+          data: UpdateUserRegistrationMethodDto;
         }): Promise<UserRegistrationMethodEntity> => {
           let exists = MockDataStorage.items().find(item => item.name === dto.where.name);
 

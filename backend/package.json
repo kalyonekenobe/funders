@@ -71,6 +71,7 @@
     "modulePaths": [
       "<rootDir>"
     ],
+    "workerThreads": true,
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
