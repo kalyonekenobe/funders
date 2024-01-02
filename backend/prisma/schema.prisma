@@ -28,7 +28,7 @@ model UserRole {
 
 model User {
   id                 String   @id @default(uuid())
-  registrationMethod String
+  registrationMethod String   @default("Default")
   role               String
   firstName          String   @db.VarChar(50)
   lastName           String   @db.VarChar(50)
@@ -42,7 +42,7 @@ model User {
   registeredAt       DateTime @default(now())
 
   userRole               UserRole               @relation(fields: [role], references: [name])
-  userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name])
+  userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name], onDelete: SetDefault, onUpdate: Cascade)
   followings             Following[]            @relation("FollowerUser")
   followers              Following[]            @relation("FollowedUser")
   usersBanListsRecords   UsersBanListRecord[]

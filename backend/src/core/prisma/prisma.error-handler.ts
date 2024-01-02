@@ -47,7 +47,9 @@ export const tryHandlePrismaError = (error: any): void => {
   if (caught) {
     throw new HttpException(
       {
+        message,
         error: message,
+        statusCode: status,
       },
       status,
     );

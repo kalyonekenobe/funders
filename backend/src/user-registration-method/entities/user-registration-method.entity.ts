@@ -8,4 +8,7 @@ export class UserRegistrationMethodEntity implements UserRegistrationMethod {
     default: 'Google',
   })
   name: string;
+
+  // users?: UserEntity[];
+  users?: any[];
 }

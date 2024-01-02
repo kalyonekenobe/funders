@@ -12,6 +12,7 @@ import { UserRegistrationMethodService } from './user-registration-method.servic
 import { UserRegistrationMethodEntity } from './entities/user-registration-method.entity';
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
+import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 
 @ApiTags('User registration methods')
 @Controller('user-registration-methods')
@@ -30,7 +31,10 @@ export class UserRegistrationMethodController {
   })
   @Post()
   create(@Body() createUserRegistrationMethodDto: CreateUserRegistrationMethodDto) {
-    return this.userRegistrationMethodService.create(createUserRegistrationMethodDto);
+    return this.userRegistrationMethodService
+      .create(createUserRegistrationMethodDto)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
@@ -39,7 +43,10 @@ export class UserRegistrationMethodController {
   })
   @Get()
   findAll() {
-    return this.userRegistrationMethodService.findAll();
+    return this.userRegistrationMethodService
+      .findAll()
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
@@ -57,7 +64,10 @@ export class UserRegistrationMethodController {
     schema: { example: 'Google' },
   })
   findUsersWithRegistrationMethod(@Param('name') name: string) {
-    return this.userRegistrationMethodService.findRegisteredUsersByMethodName(name);
+    return this.userRegistrationMethodService
+      .findRegisteredUsersByMethodName(name)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
@@ -77,7 +87,10 @@ export class UserRegistrationMethodController {
     @Param('name') name: string,
     @Body() updateUserRegistrationMethodDto: UpdateUserRegistrationMethodDto,
   ) {
-    return this.userRegistrationMethodService.update(name, updateUserRegistrationMethodDto);
+    return this.userRegistrationMethodService
+      .update(name, updateUserRegistrationMethodDto)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
@@ -94,6 +107,9 @@ export class UserRegistrationMethodController {
     schema: { example: 'Google' },
   })
   remove(@Param('name') name: string) {
-    return this.userRegistrationMethodService.remove(name);
+    return this.userRegistrationMethodService
+      .remove(name)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 }
