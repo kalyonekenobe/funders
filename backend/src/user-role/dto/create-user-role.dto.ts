@@ -1,17 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, Matches, Max, MaxLength } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsNumber, Matches, Max, MaxLength } from 'class-validator';
 
 export class CreateUserRoleDto implements UserRole {
   @ApiProperty({
     description: 'Name of the user role',
     examples: ['Default', 'Volunteer', 'Administrator'],
-    default: 'Volunteer',
+    default: 'Administrator',
   })
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
   @IsNotEmpty()
+  @IsDefined()
   name: string;
 
   @ApiProperty({
@@ -19,8 +20,8 @@ export class CreateUserRoleDto implements UserRole {
     examples: [255, 15, 127, 31],
     default: 255,
   })
-  @IsNumber()
-  @Transform(number => BigInt(number.value))
   @Max(2 ** 64 - 1)
+  @IsNumber()
+  @IsDefined()
   permissions: bigint;
 }
