@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { Transform } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsNumber, Matches, Max, MaxLength } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Matches,
+  Max,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateUserRoleDto implements UserRole {
   @ApiProperty({
@@ -11,6 +18,7 @@ export class UpdateUserRoleDto implements UserRole {
   })
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
+  @IsString()
   @IsNotEmpty()
   @IsDefined()
   name: string;

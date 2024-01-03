@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRegistrationMethod } from '@prisma/client';
-import { IsNotEmpty, Matches, MaxLength } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
 
 export class UpdateUserRegistrationMethodDto implements UserRegistrationMethod {
   @ApiProperty({
@@ -10,6 +10,8 @@ export class UpdateUserRegistrationMethodDto implements UserRegistrationMethod {
   })
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
+  @IsString()
   @IsNotEmpty()
+  @IsDefined()
   name: string;
 }
