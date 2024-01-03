@@ -115,7 +115,7 @@ export class UserEntity implements User {
   })
   @MaxLength(15)
   @IsString()
-  phone: string | null | undefined;
+  phone: string | null;
 
   @ApiProperty({
     description: "User's bio",
@@ -127,10 +127,10 @@ export class UserEntity implements User {
     default: 'Student of Kyiv-Mohyla Academy',
   })
   @IsString()
-  bio: string | null | undefined;
+  bio: string | null;
 
   @ApiProperty({ description: "User's avatar" })
-  avatar: Buffer | null | undefined;
+  avatar: Buffer | null;
 
   @ApiProperty({
     description: "User's refresh roken",
@@ -143,7 +143,7 @@ export class UserEntity implements User {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggSWd1bW5vdiIsImlhdCI6MTUxNjIzOTAyMn0.fhRab81aDGeIyrQPsQDk5-EoFmX93_ImE4szjSFZE08',
   })
   @IsString()
-  refreshToken: string | null | undefined;
+  refreshToken: string | null;
 
   @ApiProperty({
     description: "User's registration date and time",

@@ -20,11 +20,11 @@ export const tryHandlePrismaError = (error: any): void => {
         status = HttpStatus.NOT_FOUND;
         break;
       case 'P2002':
-        message = `Duplicate field value: ${error.meta.target}`;
+        message = `Duplicate field value: ${error.meta?.target}`;
         status = HttpStatus.CONFLICT;
         break;
       case 'P2019':
-        message = `Invalid input data: ${error.meta.target}`;
+        message = `Invalid input data: ${error.meta?.target}`;
         status = HttpStatus.CONFLICT;
         break;
     }

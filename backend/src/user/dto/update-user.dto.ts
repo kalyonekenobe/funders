@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import { IsDate, IsString, Matches, MaxDate, MaxLength } from 'class-validator';
 
 export class UpdateUserDto
-  implements Omit<User, 'id' | 'registrationMethod' | 'email' | 'registeredAt'>
+  implements Omit<Partial<User>, 'id' | 'registrationMethod' | 'email' | 'registeredAt'>
 {
   @ApiProperty({
     description: "User's role",
@@ -13,7 +13,7 @@ export class UpdateUserDto
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
   @IsString()
-  role: string | null | undefined;
+  role?: string;
 
   @ApiProperty({
     description: "User's first name",
@@ -23,7 +23,7 @@ export class UpdateUserDto
   @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
   @MaxLength(50)
   @IsString()
-  firstName: string | null | undefined;
+  firstName?: string;
 
   @ApiProperty({
     description: "User's last name",
@@ -33,7 +33,7 @@ export class UpdateUserDto
   @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
   @MaxLength(50)
   @IsString()
-  lastName: string | null | undefined;
+  lastName?: string;
 
   @ApiProperty({
     description: "User's birth date",
@@ -42,7 +42,7 @@ export class UpdateUserDto
   })
   @IsDate()
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 14)))
-  birthDate: Date | null | undefined;
+  birthDate?: Date;
 
   @ApiProperty({
     description: "User's password",
@@ -53,7 +53,7 @@ export class UpdateUserDto
     default: '8c2e53731925c9addc09145a7f1ea196f753cb115e8c9dfbb8fdcbe855a3beec',
   })
   @IsString()
-  password: string | null | undefined;
+  password?: string;
 
   @ApiProperty({
     description: "User's phone number",
@@ -62,7 +62,7 @@ export class UpdateUserDto
   })
   @MaxLength(15)
   @IsString()
-  phone: string | null | undefined;
+  phone?: string | null;
 
   @ApiProperty({
     description: "User's bio",
@@ -74,10 +74,10 @@ export class UpdateUserDto
     default: 'Student of Kyiv-Mohyla Academy',
   })
   @IsString()
-  bio: string | null | undefined;
+  bio?: string | null;
 
   @ApiProperty({ description: "User's avatar" })
-  avatar: Buffer | null | undefined;
+  avatar?: Buffer | null;
 
   @ApiProperty({
     description: "User's refresh roken",
@@ -90,5 +90,5 @@ export class UpdateUserDto
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggSWd1bW5vdiIsImlhdCI6MTUxNjIzOTAyMn0.fhRab81aDGeIyrQPsQDk5-EoFmX93_ImE4szjSFZE08',
   })
   @IsString()
-  refreshToken: string | null | undefined;
+  refreshToken: string | null;
 }
