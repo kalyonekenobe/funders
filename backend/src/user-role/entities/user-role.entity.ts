@@ -9,7 +9,7 @@ import {
   Max,
   MaxLength,
 } from 'class-validator';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class UserRoleEntity implements UserRole {
   @ApiProperty({
@@ -37,5 +37,5 @@ export class UserRoleEntity implements UserRole {
   @ApiProperty({
     description: 'The nested array of users with this role',
   })
-  users?: UserEntity[];
+  users?: UserPublicEntity[];
 }

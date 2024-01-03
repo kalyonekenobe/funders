@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRegistrationMethod } from '@prisma/client';
 import { IsDefined, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class UserRegistrationMethodEntity implements UserRegistrationMethod {
   @ApiProperty({
@@ -19,5 +19,5 @@ export class UserRegistrationMethodEntity implements UserRegistrationMethod {
   @ApiProperty({
     description: 'The nested array of users registered with this registration method',
   })
-  users?: UserEntity[];
+  users?: UserPublicEntity[];
 }
