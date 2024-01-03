@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsDate,
   IsDefined,
@@ -43,7 +44,7 @@ export class CreateUserDto
     examples: ['Alex', 'Helen', 'John'],
     default: 'Alex',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
   @IsNotEmpty()
@@ -55,7 +56,7 @@ export class CreateUserDto
     examples: ['Igumnov', 'Smith', 'Doe'],
     default: 'Igumnov',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
   @IsNotEmpty()
@@ -67,6 +68,7 @@ export class CreateUserDto
     examples: [new Date('2004-09-03'), new Date('1998-11-30'), new Date('1987-04-12')],
     default: new Date('2004-09-03'),
   })
+  @Transform(date => new Date(date.value))
   @IsDate()
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 14)))
   @IsNotEmpty()

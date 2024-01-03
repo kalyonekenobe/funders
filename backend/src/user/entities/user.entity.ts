@@ -1,15 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsDate,
   IsDefined,
   IsEmail,
   IsNotEmpty,
+  IsPhoneNumber,
   IsString,
   IsUUID,
   Matches,
   MaxDate,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 import { UserRegistrationMethodEntity } from 'src/user-registration-method/entities/user-registration-method.entity';
 import { UserRoleEntity } from 'src/user-role/entities/user-role.entity';
@@ -54,7 +57,7 @@ export class UserEntity implements User {
     examples: ['Alex', 'Helen', 'John'],
     default: 'Alex',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
   @IsNotEmpty()
@@ -66,7 +69,7 @@ export class UserEntity implements User {
     examples: ['Igumnov', 'Smith', 'Doe'],
     default: 'Igumnov',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
   @IsNotEmpty()
@@ -78,6 +81,7 @@ export class UserEntity implements User {
     examples: [new Date('2004-09-03'), new Date('1998-11-30'), new Date('1987-04-12')],
     default: new Date('2004-09-03'),
   })
+  @Transform(date => new Date(date.value))
   @IsDate()
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 14)))
   @IsNotEmpty()
@@ -114,7 +118,8 @@ export class UserEntity implements User {
     default: '+380987654321',
   })
   @MaxLength(15)
-  @IsString()
+  @IsPhoneNumber()
+  @ValidateIf((_, value) => value)
   phone: string | null;
 
   @ApiProperty({
@@ -127,6 +132,7 @@ export class UserEntity implements User {
     default: 'Student of Kyiv-Mohyla Academy',
   })
   @IsString()
+  @ValidateIf((_, value) => value)
   bio: string | null;
 
   @ApiProperty({ description: "User's avatar" })
@@ -143,6 +149,7 @@ export class UserEntity implements User {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggSWd1bW5vdiIsImlhdCI6MTUxNjIzOTAyMn0.fhRab81aDGeIyrQPsQDk5-EoFmX93_ImE4szjSFZE08',
   })
   @IsString()
+  @ValidateIf((_, value) => value)
   refreshToken: string | null;
 
   @ApiProperty({

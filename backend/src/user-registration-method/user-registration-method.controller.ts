@@ -13,6 +13,7 @@ import { UserRegistrationMethodEntity } from './entities/user-registration-metho
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
+import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 @ApiTags('User registration methods')
 @Controller('user-registration-methods')
@@ -54,7 +55,7 @@ export class UserRegistrationMethodController {
 
   @ApiOkResponse({
     description: 'The list of users registered with requested user registration method.',
-    //type: [UserEntity],
+    type: [UserPublicEntity],
   })
   @ApiNotFoundResponse({
     description: 'The user registration method with requested name was not found.',

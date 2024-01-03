@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { IsDate, IsString, Matches, MaxDate, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsDate,
+  IsPhoneNumber,
+  IsString,
+  Matches,
+  MaxDate,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class UpdateUserDto
   implements Omit<Partial<User>, 'id' | 'registrationMethod' | 'email' | 'registeredAt'>
@@ -13,6 +22,7 @@ export class UpdateUserDto
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
   @IsString()
+  @ValidateIf((_, value) => value)
   role?: string;
 
   @ApiProperty({
@@ -20,9 +30,10 @@ export class UpdateUserDto
     examples: ['Alex', 'Helen', 'John'],
     default: 'Alex',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
+  @ValidateIf((_, value) => value)
   firstName?: string;
 
   @ApiProperty({
@@ -30,9 +41,10 @@ export class UpdateUserDto
     examples: ['Igumnov', 'Smith', 'Doe'],
     default: 'Igumnov',
   })
-  @Matches(/^[\p{Letter}\p{Mark}- ]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
+  @ValidateIf((_, value) => value)
   lastName?: string;
 
   @ApiProperty({
@@ -40,8 +52,10 @@ export class UpdateUserDto
     examples: [new Date('2004-09-03'), new Date('1998-11-30'), new Date('1987-04-12')],
     default: new Date('2004-09-03'),
   })
+  @Transform(date => new Date(date.value))
   @IsDate()
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 14)))
+  @ValidateIf((_, value) => value)
   birthDate?: Date;
 
   @ApiProperty({
@@ -53,6 +67,7 @@ export class UpdateUserDto
     default: '8c2e53731925c9addc09145a7f1ea196f753cb115e8c9dfbb8fdcbe855a3beec',
   })
   @IsString()
+  @ValidateIf((_, value) => value)
   password?: string;
 
   @ApiProperty({
@@ -60,8 +75,8 @@ export class UpdateUserDto
     examples: ['+380987654321', '+145960105415', '+849501050319'],
     default: '+380987654321',
   })
-  @MaxLength(15)
-  @IsString()
+  @IsPhoneNumber()
+  @ValidateIf((_, value) => value)
   phone?: string | null;
 
   @ApiProperty({
@@ -74,6 +89,7 @@ export class UpdateUserDto
     default: 'Student of Kyiv-Mohyla Academy',
   })
   @IsString()
+  @ValidateIf((_, value) => value)
   bio?: string | null;
 
   @ApiProperty({ description: "User's avatar" })
@@ -90,5 +106,6 @@ export class UpdateUserDto
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggSWd1bW5vdiIsImlhdCI6MTUxNjIzOTAyMn0.fhRab81aDGeIyrQPsQDk5-EoFmX93_ImE4szjSFZE08',
   })
   @IsString()
-  refreshToken: string | null;
+  @ValidateIf((_, value) => value)
+  refreshToken?: string | null;
 }

@@ -13,6 +13,7 @@ import { UserRoleEntity } from './entities/user-role.entity';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 @ApiTags('User roles')
 @Controller('user-roles')
@@ -54,7 +55,7 @@ export class UserRoleController {
 
   @ApiOkResponse({
     description: 'The list of users who have the requested user role.',
-    //type: [UserEntity],
+    type: [UserPublicEntity],
   })
   @ApiNotFoundResponse({
     description: 'The user role with the requested name was not found.',
