@@ -8,4 +8,7 @@ RUN npm install
 COPY . .
 
 EXPOSE 3001
-CMD npm run start:dev
+CMD npm uninstall bcrypt @types/bcrypt \
+&& npm install -D @types/bcrypt \
+&& npm install bcrypt \
+&& npm run start:dev

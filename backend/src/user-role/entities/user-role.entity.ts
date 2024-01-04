@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { Transform } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsNumber, Matches, Max, MaxLength } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Matches,
+  Max,
+  MaxLength,
+} from 'class-validator';
+import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class UserRoleEntity implements UserRole {
   @ApiProperty({
@@ -11,6 +19,7 @@ export class UserRoleEntity implements UserRole {
   })
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
+  @IsString()
   @IsNotEmpty()
   @IsDefined()
   name: string;
@@ -25,6 +34,8 @@ export class UserRoleEntity implements UserRole {
   @IsDefined()
   permissions: bigint;
 
-  // users?: UserEntity[];
-  users?: any[];
+  @ApiProperty({
+    description: 'The nested array of users with this role',
+  })
+  users?: UserPublicEntity[];
 }

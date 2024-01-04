@@ -16,7 +16,7 @@
     "init:frontend": "cd frontend && npm install",
     "init": "npm install && npm-run-all -p init:*",
     "start": "docker compose --env-file=.env.dev up -d && npm run database:migrate:dev",
-    "start:build": "docker compose --env-file=.env.dev up --build -d",
+    "start:build": "docker compose --env-file=.env.dev up --build -d && npm run database:migrate:dev",
     "stop": "docker compose --env-file=.env.dev down"
   },
   "author": "",
