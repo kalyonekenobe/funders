@@ -69,7 +69,7 @@ export class UsersBanListRecordStatusController {
       'The name of the users ban list record status by which you want to search for users ban list records with this status',
     schema: { example: 'Permanent' },
   })
-  findUsersWithRole(@Param('name') name: string) {
+  findUsersBanListRecordsWithStatus(@Param('name') name: string) {
     return this.usersBanListRecordStatusService
       .findUsersBanListRecordsWithStatus(name)
       .then(response => response)
