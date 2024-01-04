@@ -18,6 +18,6 @@ export class UsersBanListRecordStatusEntity implements UsersBanListRecordStatus 
   @ApiProperty({
     description: 'The nested array of users ban list records',
   })
-  // usersBanListRecords: UsersBanListRecordEntity[];
-  usersBanListRecords: any[];
+  // usersBanListRecords?: UsersBanListRecordEntity[];
+  usersBanListRecords?: any[];
 }
