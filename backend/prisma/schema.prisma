@@ -28,8 +28,8 @@ model UserRole {
 
 model User {
   id                 String   @id @default(uuid())
-  registrationMethod String   @default("Default")
-  role               String   @default("Default")
+  registrationMethod String
+  role               String
   firstName          String   @db.VarChar(50)
   lastName           String   @db.VarChar(50)
   birthDate          DateTime
@@ -41,11 +41,11 @@ model User {
   refreshToken       String?
   registeredAt       DateTime @default(now())
 
-  userRole               UserRole               @relation(fields: [role], references: [name], onDelete: SetDefault, onUpdate: Cascade)
-  userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name], onDelete: SetDefault, onUpdate: Cascade)
+  userRole               UserRole               @relation(fields: [role], references: [name], onDelete: NoAction, onUpdate: Cascade)
+  userRegistrationMethod UserRegistrationMethod @relation(fields: [registrationMethod], references: [name], onDelete: NoAction, onUpdate: Cascade)
   followings             Following[]            @relation("FollowerUser")
   followers              Following[]            @relation("FollowedUser")
-  usersBanListsRecords   UsersBanListRecord[]
+  usersBanListRecords    UsersBanListRecord[]
   chatsOnUsers           ChatsOnUsers[]
   messagesOnChats        ChatMessage[]
   posts                  Post[]
@@ -57,7 +57,7 @@ model User {
 model UsersBanListRecordStatus {
   name String @id @db.VarChar(50)
 
-  usersBanListsRecords UsersBanListRecord[]
+  usersBanListRecords UsersBanListRecord[]
 }
 
 model UsersBanListRecord {
@@ -69,8 +69,8 @@ model UsersBanListRecord {
   note               String
   permissionsPenalty BigInt
 
-  usersBanListRecordStatus UsersBanListRecordStatus @relation(fields: [status], references: [name])
-  user                     User                     @relation(fields: [userId], references: [id])
+  usersBanListRecordStatus UsersBanListRecordStatus @relation(fields: [status], references: [name], onDelete: NoAction, onUpdate: Cascade)
+  user                     User                     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Chat {
