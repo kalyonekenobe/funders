@@ -3,6 +3,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UsersBanListRecordStatusEntity } from './entities/users-ban-list-record-status.entity';
 import { CreateUsersBanListRecordStatusDto } from './dto/create-users-ban-list-record-status.dto';
 import { UpdateUsersBanListRecordStatusDto } from './dto/update-users-ban-list-record-status.dto';
+import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 
 @Injectable()
 export class UsersBanListRecordStatusService {
@@ -12,7 +13,7 @@ export class UsersBanListRecordStatusService {
     return this.prismaService.usersBanListRecordStatus.findMany();
   }
 
-  async findUsersBanListRecordsWithStatus(name: string): Promise<any[]> {
+  async findUsersBanListRecordsWithStatus(name: string): Promise<UsersBanListRecordEntity[]> {
     return (
       await this.prismaService.usersBanListRecordStatus.findUniqueOrThrow({
         where: { name },

@@ -13,6 +13,7 @@ import { UsersBanListRecordStatusEntity } from './entities/users-ban-list-record
 import { CreateUsersBanListRecordStatusDto } from './dto/create-users-ban-list-record-status.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordStatusDto } from './dto/update-users-ban-list-record-status.dto';
+import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 
 @ApiTags('Users ban list record statuses')
 @Controller('users-ban-list-record-statuses')
@@ -54,7 +55,7 @@ export class UsersBanListRecordStatusController {
 
   @ApiOkResponse({
     description: 'The list of users ban list records with requested status.',
-    // type: [UserPublicEntity],
+    type: [UsersBanListRecordEntity],
   })
   @ApiNotFoundResponse({
     description: 'The users ban list record status with the requested name was not found.',
