@@ -15,10 +15,16 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Course Work')
     .setDescription('The Course Work API description')
-    .setVersion('3.0')
+    .setVersion('0.1')
     .build();
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+    }),
+  );
   app.enableCors();
   app.use(cookieParser());
   app.setGlobalPrefix('api');

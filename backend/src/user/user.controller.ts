@@ -68,9 +68,9 @@ export class UserController {
     description: 'The uuid of the user to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
-  findByPk(@Param('id') id: string) {
+  findById(@Param('id') id: string) {
     return this.userService
-      .findByPk(id)
+      .findById(id)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }

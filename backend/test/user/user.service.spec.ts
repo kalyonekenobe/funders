@@ -85,7 +85,7 @@ describe('UserService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.items()) {
-      expect(await service.findByPk(item.id)).toEqual(item);
+      expect(await service.findById(item.id)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual(initialItems);
@@ -99,7 +99,7 @@ describe('UserService', () => {
 
     const initialItems = [...MockDataStorage.items()];
 
-    await expect(service.findByPk('')).rejects.toThrow();
+    await expect(service.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

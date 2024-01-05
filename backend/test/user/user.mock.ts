@@ -159,7 +159,7 @@ export class MockDataStorage {
 
 export const mockUserService = {
   findAll: jest.fn().mockImplementation(() => Promise.resolve(MockDataStorage.items())),
-  findByPk: jest.fn().mockImplementation((id: string) => {
+  findById: jest.fn().mockImplementation((id: string) => {
     const dto = MockDataStorage.items().find(item => item.id === id);
 
     if (!dto) {

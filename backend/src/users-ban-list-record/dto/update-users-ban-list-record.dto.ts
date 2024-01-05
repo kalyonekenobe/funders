@@ -13,7 +13,7 @@ import {
 import { UsersBanListRecordEntity } from '../entities/users-ban-list-record.entity';
 
 export class UpdateUsersBanListRecordDto
-  implements Omit<Partial<UsersBanListRecordEntity>, 'id' | 'userId'>
+  implements Omit<Partial<UsersBanListRecordEntity>, 'id' | 'userId' | 'bannedAt'>
 {
   @ApiProperty({
     description: 'Status of the users ban list record',
@@ -36,7 +36,7 @@ export class UpdateUsersBanListRecordDto
     ],
     default: new Date('2024-12-20T14:24:00.000Z'),
   })
-  @Transform(date => new Date(date.value))
+  @Transform(date => (date.value ? new Date(date.value) : date.value))
   @IsDate()
   @ValidateIf((_, value) => value)
   dueTo?: Date | null;

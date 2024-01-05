@@ -17,7 +17,7 @@ export class UserService {
     return this.prismaService.user.findMany({ select: exclude('User', ['password']) });
   }
 
-  async findByPk(id: string): Promise<UserPublicEntity> {
+  async findById(id: string): Promise<UserPublicEntity> {
     return this.prismaService.user.findUniqueOrThrow({
       where: { id },
       select: exclude('User', ['password']),

@@ -12,8 +12,11 @@ import {
   MaxLength,
   ValidateIf,
 } from 'class-validator';
+import { UsersBanListRecordEntity } from '../entities/users-ban-list-record.entity';
 
-export class UsersBanListRecordEntity implements Omit<UsersBanListRecordEntity, 'id' | 'bannedAt'> {
+export class CreateUsersBanListRecordDto
+  implements Omit<UsersBanListRecordEntity, 'id' | 'bannedAt'>
+{
   @ApiProperty({
     description: "Users ban list record user's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],
@@ -45,7 +48,7 @@ export class UsersBanListRecordEntity implements Omit<UsersBanListRecordEntity, 
     ],
     default: new Date('2024-12-20T14:24:00.000Z'),
   })
-  @Transform(date => new Date(date.value))
+  @Transform(date => (date.value ? new Date(date.value) : date.value))
   @IsDate()
   @ValidateIf((_, value) => value)
   dueTo: Date | null;

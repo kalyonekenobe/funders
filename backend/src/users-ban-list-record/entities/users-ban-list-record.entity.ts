@@ -75,7 +75,7 @@ export class UsersBanListRecordEntity implements UsersBanListRecord {
     ],
     default: new Date('2024-12-20T14:24:00.000Z'),
   })
-  @Transform(date => new Date(date.value))
+  @Transform(date => (date.value ? new Date(date.value) : date.value))
   @IsDate()
   @ValidateIf((_, value) => value)
   dueTo: Date | null;

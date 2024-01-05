@@ -74,13 +74,13 @@ describe('UserController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.items()) {
-      expect(await controller.findByPk(item.id)).toEqual(item);
+      expect(await controller.findById(item.id)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.findByPk).toHaveBeenCalled();
+    expect(mockUserService.findById).toHaveBeenCalled();
   });
 
   it('should not find user with provided id because it does not exist', () => {
@@ -88,11 +88,11 @@ describe('UserController', () => {
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findByPk('')).toThrow();
+    expect(() => controller.findById('')).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.findByPk).toHaveBeenCalled();
+    expect(mockUserService.findById).toHaveBeenCalled();
   });
 
   it('should update a list of existing users by provided ids', async () => {
