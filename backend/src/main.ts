@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ConflictException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 
@@ -20,6 +20,17 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
+      exceptionFactory: errors => {
+        if (errors.find(error => Object.entries(error.constraints ?? {}).length > 0)) {
+          return new ConflictException(
+            errors.flatMap(error => Object.values(error.constraints ?? {})),
+          );
+        }
+
+        return new BadRequestException(
+          errors.flatMap(error => Object.values(error.constraints ?? {})),
+        );
+      },
       whitelist: true,
       forbidNonWhitelisted: true,
       forbidUnknownValues: true,
