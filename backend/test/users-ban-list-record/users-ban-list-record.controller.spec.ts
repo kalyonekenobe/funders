@@ -1,75 +1,78 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockDataStorage, mockUserService } from './user.mock';
-import { UserController } from 'src/user/user.controller';
-import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { MockDataStorage, mockUsersBanListRecordService } from './users-ban-list-record.mock';
+import { UsersBanListRecordController } from 'src/users-ban-list-record/users-ban-list-record.controller';
+import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
+import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 
-describe('UserController', () => {
-  let controller: UserController;
+describe('UsersBanListRecordController', () => {
+  let controller: UsersBanListRecordController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
+      controllers: [UsersBanListRecordController],
       providers: [
         {
-          provide: UserService,
-          useValue: mockUserService,
+          provide: UsersBanListRecordService,
+          useValue: mockUsersBanListRecordService,
         },
       ],
     }).compile();
 
-    controller = module.get<UserController>(UserController);
+    controller = module.get<UsersBanListRecordController>(UsersBanListRecordController);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a list of new users', async () => {
+  it('should create a list of new users ban list records', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.createUserDtoList) {
+    for (const item of MockDataStorage.createUsersBanListRecordDtoList) {
       const received = await controller.create(item);
       const expected = { ...received, ...item };
-      expect({ ...received, password: item.password }).toEqual(expected);
+      expect(received).toEqual(expected);
       initialItems.push(received);
     }
 
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.create).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new user because it already exists', () => {
+  it('should not create a new users ban list record because of unknown value in create dto', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    expect(() => {
       controller.create({
         ...MockDataStorage.items()[0],
-        email: 'johndoe@gmail.com',
-        password: '123',
-      } as CreateUserDto),
-    ).toThrow();
+        sdasds: 123,
+      } as CreateUsersBanListRecordDto);
+
+      // Simulating validation error
+      MockDataStorage.items().pop();
+      throw new Error('Validation error');
+    }).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.create).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.create).toHaveBeenCalled();
   });
 
-  it('should find all existing users', async () => {
+  it('should find all existing users ban list records', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     expect(await controller.findAll()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.findAll).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.findAll).toHaveBeenCalled();
   });
 
-  it('should find users list by user id', async () => {
+  it('should find users ban list records list by provided users ban list record id', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -80,10 +83,10 @@ describe('UserController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.findById).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.findById).toHaveBeenCalled();
   });
 
-  it('should not find user with provided id because it does not exist', () => {
+  it('should not find users ban list record with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -92,22 +95,22 @@ describe('UserController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.findById).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.findById).toHaveBeenCalled();
   });
 
-  it('should update a list of existing users by provided ids', async () => {
+  it('should update a list of existing users ban list records by provided ids', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
-    for (const item of MockDataStorage.updateUserDtoList) {
+    for (const item of MockDataStorage.updateUsersBanListRecordDtoList) {
       const received = await controller.update(item.id, item.data);
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
         item.data,
       );
-      expect({ ...received, password: expected.password }).toEqual(expected);
+      expect(received).toEqual(expected);
       updatedItems.push(received);
     }
 
@@ -120,42 +123,44 @@ describe('UserController', () => {
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.update).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.update).toHaveBeenCalled();
   });
 
-  it('should not update a user with provided id because it does not exist', () => {
+  it('should not update a users ban list record with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.update('', { ...MockDataStorage.updateUserDtoList[0].data })).toThrow();
+    expect(() =>
+      controller.update('', { ...MockDataStorage.updateUsersBanListRecordDtoList[0].data }),
+    ).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.update).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.update).toHaveBeenCalled();
   });
 
-  it('should remove a list of existing users by provided ids', async () => {
+  it('should remove a list of existing users ban list records by provided ids', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.removeUserDtoList) {
+    for (const item of MockDataStorage.removeUsersBanListRecordDtoList) {
       expect(await controller.remove(item.id)).toEqual({
         ...item,
-        registeredAt: expect.any(Date),
+        bannedAt: expect.any(Date),
       });
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.filter(item => {
-        return !MockDataStorage.removeUserDtoList.find(x => x.id === item.id);
+        return !MockDataStorage.removeUsersBanListRecordDtoList.find(x => x.id === item.id);
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.remove).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a user with provided id because it does not exist', () => {
+  it('should not remove a users ban list record with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -163,6 +168,6 @@ describe('UserController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserService.remove).toHaveBeenCalled();
+    expect(mockUsersBanListRecordService.remove).toHaveBeenCalled();
   });
 });

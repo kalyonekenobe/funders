@@ -8,6 +8,11 @@ import {
 } from './users-ban-list-record-status.mock';
 import * as request from 'supertest';
 
+// To allow parsing BigInt to JSON
+(BigInt.prototype as any).toJSON = function () {
+  return Number(this.toString());
+};
+
 describe('UsersBanListRecordStatusController (e2e)', () => {
   let app: INestApplication;
 

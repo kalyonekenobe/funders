@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { UserRegistrationMethodModule } from './user-registration-method/user-registration-method.module';
 import { UserRoleModule } from './user-role/user-role.module';
 import { UsersBanListRecordStatusModule } from './users-ban-list-record-status/users-ban-list-record-status.module';
+import { UsersBanListRecordModule } from './users-ban-list-record/users-ban-list-record.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { UsersBanListRecordStatusModule } from './users-ban-list-record-status/u
     UserRoleModule,
     UserRegistrationMethodModule,
     UsersBanListRecordStatusModule,
+    UsersBanListRecordModule,
   ],
 })
 export class AppModule implements NestModule {

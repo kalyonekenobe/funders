@@ -8,56 +8,56 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { UserPublicEntity } from './entities/user-public.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UsersBanListRecordEntity } from './entities/users-ban-list-record.entity';
+import { CreateUsersBanListRecordDto } from './dto/create-users-ban-list-record.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUsersBanListRecordDto } from './dto/update-users-ban-list-record.dto';
+import { UsersBanListRecordService } from './users-ban-list-record.service';
 
-@ApiTags('Users')
-@Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+@ApiTags('Users ban list records')
+@Controller('users-ban-list-records')
+export class UsersBanListRecordController {
+  constructor(private readonly usersBanListRecordService: UsersBanListRecordService) {}
 
   @ApiCreatedResponse({
-    description: 'User was successfully created.',
-    type: UserPublicEntity,
+    description: 'Users ban list record was successfully created.',
+    type: UsersBanListRecordEntity,
   })
   @ApiConflictResponse({
-    description: 'Cannot create user. Invalid data was provided.',
+    description: 'Cannot create users ban list record. Invalid data was provided.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService
-      .create(createUserDto)
+  create(@Body() createUsersBanListRecordDto: CreateUsersBanListRecordDto) {
+    return this.usersBanListRecordService
+      .create(createUsersBanListRecordDto)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
-    description: 'The list of users',
-    type: [UserPublicEntity],
+    description: 'The list of users ban list records',
+    type: [UsersBanListRecordEntity],
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
   @Get()
   findAll() {
-    return this.userService
+    return this.usersBanListRecordService
       .findAll()
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
-    description: 'The user with requested id',
-    type: UserPublicEntity,
+    description: 'The users ban list record with requested id',
+    type: UsersBanListRecordEntity,
   })
   @ApiNotFoundResponse({
-    description: 'The user with the requested id was not found.',
+    description: 'The users ban list record with the requested id was not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
@@ -65,22 +65,22 @@ export class UserController {
   @Get(':id')
   @ApiParam({
     name: 'id',
-    description: 'The uuid of the user to be updated',
+    description: 'The uuid of the users ban list recod to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   findById(@Param('id') id: string) {
-    return this.userService
+    return this.usersBanListRecordService
       .findById(id)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
-    description: 'User was successfully updated.',
-    type: UserPublicEntity,
+    description: 'Users ban list record was successfully updated.',
+    type: UsersBanListRecordEntity,
   })
   @ApiNotFoundResponse({
-    description: 'The user with the requested id was not found.',
+    description: 'The users ban list record with the requested id was not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
@@ -91,19 +91,22 @@ export class UserController {
     description: 'The uuid of the user to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService
-      .update(id, updateUserDto)
+  update(
+    @Param('id') id: string,
+    @Body() updateUsersBanListRecordDto: UpdateUsersBanListRecordDto,
+  ) {
+    return this.usersBanListRecordService
+      .update(id, updateUsersBanListRecordDto)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({
-    description: 'User was successfully removed.',
-    type: UserPublicEntity,
+    description: 'Users ban list record was successfully removed.',
+    type: UsersBanListRecordEntity,
   })
   @ApiNotFoundResponse({
-    description: 'The user with the requested id was not found.',
+    description: 'The users ban list record with the requested id was not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
@@ -111,11 +114,11 @@ export class UserController {
   @Delete(':id')
   @ApiParam({
     name: 'id',
-    description: 'The id of the user to be deleted',
+    description: 'The id of the users ban list record to be deleted',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   remove(@Param('id') id: string) {
-    return this.userService
+    return this.usersBanListRecordService
       .remove(id)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
