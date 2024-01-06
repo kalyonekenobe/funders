@@ -16,7 +16,7 @@ export class PostCategoryEntity implements PostCategory {
   name: string;
 
   @ApiProperty({
-    description: 'The nested array of posts which have this reaction',
+    description: 'The nested array of posts which have this category',
   })
   //posts?: PostEntity[];
   posts?: any[];
