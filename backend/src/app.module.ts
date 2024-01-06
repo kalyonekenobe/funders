@@ -8,6 +8,7 @@ import { UsersBanListRecordModule } from './users-ban-list-record/users-ban-list
 import { UserReactionTypeModule } from './user-reaction-type/user-reaction-type.module';
 import { PostCategoryModule } from './post-category/post-category.module';
 import { ChatRoleModule } from './chat-role/chat-role.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChatRoleModule } from './chat-role/chat-role.module';
     UsersBanListRecordModule,
     UsersBanListRecordStatusModule,
     PostCategoryModule,
+    ChatModule,
     ChatRoleModule,
   ],
 })
