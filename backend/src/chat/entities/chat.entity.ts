@@ -26,7 +26,7 @@ export class ChatEntity implements Chat {
     examples: ['New chat', 'Chat', 'Friends'],
     default: 'Friends',
   })
-  @Matches(/^[\p{Letter}\p{Mark}\- !?\.,:\d@#№$;%^&*()_+=\"\'\`\/\\\{\}\[\]\|\~]+$/gu)
+  @Matches(/^[\p{Letter}\p{Mark}\-!?\.,:@#№$;%^&*()_+="'`/\\{}\[\]|~\d\s]+$/gu)
   @MaxLength(255)
   @IsString()
   @IsNotEmpty()
