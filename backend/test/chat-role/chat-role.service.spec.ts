@@ -1,24 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockDataStorage, mockPostCategoryRepository } from './post-category.mock';
+import { MockDataStorage, mockChatRoleRepository } from './chat-role.mock';
 import { PrismaService } from 'src/core/prisma/prisma.service';
-import { PostCategoryService } from 'src/post-category/post-category.service';
+import { ChatRoleService } from 'src/chat-role/chat-role.service';
 
-describe('PostCategoryService', () => {
-  let service: PostCategoryService;
+describe('ChatRoleService', () => {
+  let service: ChatRoleService;
   let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostCategoryService,
+        ChatRoleService,
         {
           provide: PrismaService,
-          useValue: mockPostCategoryRepository,
+          useValue: mockChatRoleRepository,
         },
       ],
     }).compile();
 
-    service = module.get<PostCategoryService>(PostCategoryService);
+    service = module.get<ChatRoleService>(ChatRoleService);
     prisma = module.get<PrismaService>(PrismaService);
   });
 
@@ -26,24 +26,24 @@ describe('PostCategoryService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a list of new post categories', async () => {
+  it('should create a list of new chat roles', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.createPostCategoryDtoList) {
+    for (const item of MockDataStorage.createChatRoleDtoList) {
       expect(await service.create(item)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual([
       ...initialItems,
-      ...MockDataStorage.createPostCategoryDtoList,
+      ...MockDataStorage.createChatRoleDtoList,
     ]);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.create).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.create).toHaveBeenCalled();
   });
 
-  it('should not create a new post category because it already exists', async () => {
+  it('should not create a new chat role because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -51,40 +51,40 @@ describe('PostCategoryService', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.create).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.create).toHaveBeenCalled();
   });
 
-  it('should find all existing post categories', async () => {
+  it('should find all existing chat roles', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     expect(await service.findAll()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.findMany).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.findMany).toHaveBeenCalled();
   });
 
-  it('should update a list of existing post categories by provided names', async () => {
+  it('should update a list of existing chat roles by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.updatePostCategoryDtoList) {
+    for (const item of MockDataStorage.updateChatRoleDtoList) {
       expect(await service.update(item.name, item.data)).toEqual(item.data);
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.map(item => {
-        const dto = MockDataStorage.updatePostCategoryDtoList.find(x => x.name === item.name);
+        const dto = MockDataStorage.updateChatRoleDtoList.find(x => x.name === item.name);
 
         return dto ? dto.data : item;
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.update).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.update).toHaveBeenCalled();
   });
 
-  it('should not update a post category by provided name because it does not exist', async () => {
+  it('should not update a chat role by provided name because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -92,28 +92,28 @@ describe('PostCategoryService', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.update).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.update).toHaveBeenCalled();
   });
 
-  it('should remove a list of existing post categories by provided names', async () => {
+  it('should remove a list of existing chat roles by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.removePostCategoryDtoList) {
+    for (const item of MockDataStorage.removeChatRoleDtoList) {
       expect(await service.remove(item.name)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.filter(item => {
-        return !MockDataStorage.removePostCategoryDtoList.find(x => x.name === item.name);
+        return !MockDataStorage.removeChatRoleDtoList.find(x => x.name === item.name);
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.delete).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.delete).toHaveBeenCalled();
   });
 
-  it('should not remove a post category by provided name because it does not exist', async () => {
+  it('should not remove a chat role by provided name because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -121,6 +121,6 @@ describe('PostCategoryService', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostCategoryRepository.postCategory.delete).toHaveBeenCalled();
+    expect(mockChatRoleRepository.chatRole.delete).toHaveBeenCalled();
   });
 });
