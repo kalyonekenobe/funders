@@ -13,7 +13,7 @@ export class ChatService {
   }
 
   async findById(id: string): Promise<Chat> {
-    return this.prismaService.chat.findFirstOrThrow({ where: { id } });
+    return this.prismaService.chat.findUniqueOrThrow({ where: { id } });
   }
 
   async create(data: CreateChatDto): Promise<Chat> {
