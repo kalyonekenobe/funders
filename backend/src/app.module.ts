@@ -6,6 +6,7 @@ import { UserRoleModule } from './user-role/user-role.module';
 import { UsersBanListRecordStatusModule } from './users-ban-list-record-status/users-ban-list-record-status.module';
 import { UsersBanListRecordModule } from './users-ban-list-record/users-ban-list-record.module';
 import { UserReactionTypeModule } from './user-reaction-type/user-reaction-type.module';
+import { PostCategoryModule } from './post-category/post-category.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserReactionTypeModule } from './user-reaction-type/user-reaction-type.
     UserRegistrationMethodModule,
     UsersBanListRecordModule,
     UsersBanListRecordStatusModule,
+    PostCategoryModule,
   ],
 })
 export class AppModule implements NestModule {
