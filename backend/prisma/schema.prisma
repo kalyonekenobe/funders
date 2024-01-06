@@ -233,7 +233,7 @@ model CategoriesOnPosts {
   category String
 
   post         Post         @relation(fields: [postId], references: [id])
-  postCategory PostCategory @relation(fields: [category], references: [name])
+  postCategory PostCategory @relation(fields: [category], references: [name], onDelete: NoAction, onUpdate: Cascade)
 
   @@id([postId, category])
 }
