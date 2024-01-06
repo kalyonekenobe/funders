@@ -135,7 +135,7 @@ model ChatsOnUsers {
 
   chat     Chat     @relation(fields: [chatId], references: [id])
   user     User     @relation(fields: [userId], references: [id])
-  chatRole ChatRole @relation(fields: [role], references: [name])
+  chatRole ChatRole @relation(fields: [role], references: [name], onDelete: NoAction, onUpdate: Cascade)
 
   @@id([chatId, userId])
 }
