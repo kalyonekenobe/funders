@@ -84,6 +84,9 @@ export class UserRoleController {
   @ApiNotFoundResponse({
     description: 'The user role with the requested name was not found.',
   })
+  @ApiConflictResponse({
+    description: 'Cannot update user role. Invalid data was provided.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })

@@ -82,6 +82,9 @@ export class UserController {
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
   })
+  @ApiConflictResponse({
+    description: 'Cannot update user. Invalid data was provided.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
