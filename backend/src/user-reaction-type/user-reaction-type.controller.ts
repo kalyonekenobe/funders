@@ -59,6 +59,9 @@ export class UserReactionTypeController {
   @ApiNotFoundResponse({
     description: 'The user reaction type with requested name was not found.',
   })
+  @ApiConflictResponse({
+    description: 'Cannot update user reaction type. Invalid data was provided.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })

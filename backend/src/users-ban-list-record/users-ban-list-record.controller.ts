@@ -82,6 +82,9 @@ export class UsersBanListRecordController {
   @ApiNotFoundResponse({
     description: 'The users ban list record with the requested id was not found.',
   })
+  @ApiConflictResponse({
+    description: 'Cannot update users ban list record. Invalid data was provided.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })

@@ -1,47 +1,47 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserReactionTypeController } from 'src/user-reaction-type/user-reaction-type.controller';
-import { MockDataStorage, mockUserReactionTypeService } from './user-reaction-type.mock';
-import { UserReactionTypeService } from 'src/user-reaction-type/user-reaction-type-service';
+import { MockDataStorage, mockPostCategoryService } from './post-category.mock';
+import { PostCategoryController } from 'src/post-category/post-category.controller';
+import { PostCategoryService } from 'src/post-category/post-category.service';
 
-describe('UserReactionTypeController', () => {
-  let controller: UserReactionTypeController;
+describe('PostCategoryController', () => {
+  let controller: PostCategoryController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserReactionTypeController],
+      controllers: [PostCategoryController],
       providers: [
         {
-          provide: UserReactionTypeService,
-          useValue: mockUserReactionTypeService,
+          provide: PostCategoryService,
+          useValue: mockPostCategoryService,
         },
       ],
     }).compile();
 
-    controller = module.get<UserReactionTypeController>(UserReactionTypeController);
+    controller = module.get<PostCategoryController>(PostCategoryController);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a list of new user reaction types', async () => {
+  it('should create a list of new post categories', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.createUserRactionTypeDtoList) {
+    for (const item of MockDataStorage.createPostCategoryDtoList) {
       expect(await controller.create(item)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual([
       ...initialItems,
-      ...MockDataStorage.createUserRactionTypeDtoList,
+      ...MockDataStorage.createPostCategoryDtoList,
     ]);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.create).toHaveBeenCalled();
+    expect(mockPostCategoryService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new user reaction type because it already exists', () => {
+  it('should not create a new post category because it already exists', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -49,40 +49,40 @@ describe('UserReactionTypeController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.create).toHaveBeenCalled();
+    expect(mockPostCategoryService.create).toHaveBeenCalled();
   });
 
-  it('should find all existing user reaction types', async () => {
+  it('should find all existing post categories', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     expect(await controller.findAll()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.findAll).toHaveBeenCalled();
+    expect(mockPostCategoryService.findAll).toHaveBeenCalled();
   });
 
-  it('should update a list of existing user reaction types by provided names', async () => {
+  it('should update a list of existing post categories by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.updateUserReactionTypeDtoList) {
+    for (const item of MockDataStorage.updatePostCategoryDtoList) {
       expect(await controller.update(item.name, item.data)).toEqual(item.data);
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.map(item => {
-        const dto = MockDataStorage.updateUserReactionTypeDtoList.find(x => x.name === item.name);
+        const dto = MockDataStorage.updatePostCategoryDtoList.find(x => x.name === item.name);
 
         return dto ? dto.data : item;
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.update).toHaveBeenCalled();
+    expect(mockPostCategoryService.update).toHaveBeenCalled();
   });
 
-  it('should not update a user reaction type by provided name because it does not exist', () => {
+  it('should not update a post category by provided name because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -90,28 +90,28 @@ describe('UserReactionTypeController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.update).toHaveBeenCalled();
+    expect(mockPostCategoryService.update).toHaveBeenCalled();
   });
 
-  it('should remove a list of existing user reaction types by provided names', async () => {
+  it('should remove a list of existing post categories by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.removeUserReactionTypeDtoList) {
+    for (const item of MockDataStorage.removePostCategoryDtoList) {
       expect(await controller.remove(item.name)).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.filter(item => {
-        return !MockDataStorage.removeUserReactionTypeDtoList.find(x => x.name === item.name);
+        return !MockDataStorage.removePostCategoryDtoList.find(x => x.name === item.name);
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.remove).toHaveBeenCalled();
+    expect(mockPostCategoryService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a user reaction type by provided name because it does not exist', () => {
+  it('should not remove a post category by provided name because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -119,6 +119,6 @@ describe('UserReactionTypeController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockUserReactionTypeService.remove).toHaveBeenCalled();
+    expect(mockPostCategoryService.remove).toHaveBeenCalled();
   });
 });

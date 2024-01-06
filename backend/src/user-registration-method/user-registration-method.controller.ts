@@ -84,6 +84,9 @@ export class UserRegistrationMethodController {
   @ApiNotFoundResponse({
     description: 'The user registration method with requested name was not found.',
   })
+  @ApiConflictResponse({
+    description: 'Cannot update user registration method. Invalid data was provided.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
