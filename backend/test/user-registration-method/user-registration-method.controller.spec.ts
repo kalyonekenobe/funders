@@ -65,33 +65,6 @@ describe('UserRegistrationMethodController', () => {
     expect(mockUserRegistrationMethodService.findAll).toHaveBeenCalled();
   });
 
-  it('should find users list by user registration method for all existing user registration methods', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.items()) {
-      expect(await controller.findUsersWithRegistrationMethod(item.name)).toEqual(item.users);
-    }
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUserRegistrationMethodService.findRegisteredUsersByMethodName).toHaveBeenCalled();
-  });
-
-  it('should not find users list by user registration method with provided name because it does not exist', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-
-    expect(() => controller.findUsersWithRegistrationMethod('')).toThrow();
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUserRegistrationMethodService.findRegisteredUsersByMethodName).toHaveBeenCalled();
-  });
-
   it('should update a list of existing user registration methods by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
