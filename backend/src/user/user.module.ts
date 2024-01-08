@@ -8,6 +8,7 @@ import { UserRoleModule } from 'src/user-role/user-role.module';
 import { UserReactionTypeModule } from 'src/user-reaction-type/user-reaction-type.module';
 import { UserRegistrationMethodModule } from 'src/user-registration-method/user-registration-method.module';
 import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-list-record.module';
+import { UsersBanListRecordStatusModule } from 'src/users-ban-list-record-status/users-ban-list-record-status.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-li
     UserReactionTypeModule,
     UserRegistrationMethodModule,
     UsersBanListRecordModule,
+    UsersBanListRecordStatusModule,
     FollowingModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',
