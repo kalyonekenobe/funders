@@ -6,12 +6,14 @@ import { PasswordModule } from 'src/core/password/password.module';
 import { FollowingModule } from 'src/following/following.module';
 import { UserRoleModule } from 'src/user-role/user-role.module';
 import { UserReactionTypeModule } from 'src/user-reaction-type/user-reaction-type.module';
+import { UserRegistrationMethodModule } from 'src/user-registration-method/user-registration-method.module';
 
 @Module({
   imports: [
     PrismaModule,
     UserRoleModule,
     UserReactionTypeModule,
+    UserRegistrationMethodModule,
     FollowingModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',

@@ -13,10 +13,9 @@ import { UserRegistrationMethodEntity } from './entities/user-registration-metho
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
-import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
-@ApiTags('User registration methods')
-@Controller('user-registration-methods')
+@ApiTags('Users')
+@Controller('users/registration-methods')
 export class UserRegistrationMethodController {
   constructor(private readonly userRegistrationMethodService: UserRegistrationMethodService) {}
 
@@ -49,30 +48,6 @@ export class UserRegistrationMethodController {
   findAll() {
     return this.userRegistrationMethodService
       .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
-  }
-
-  @ApiOkResponse({
-    description: 'The list of users registered with requested user registration method.',
-    type: [UserPublicEntity],
-  })
-  @ApiNotFoundResponse({
-    description: 'The user registration method with requested name was not found.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error was occured.',
-  })
-  @Get(':name/users')
-  @ApiParam({
-    name: 'name',
-    description:
-      'The name of the user registration method by which you want to search for users registered by this method',
-    schema: { example: 'Google' },
-  })
-  findUsersWithRegistrationMethod(@Param('name') name: string) {
-    return this.userRegistrationMethodService
-      .findRegisteredUsersByMethodName(name)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }

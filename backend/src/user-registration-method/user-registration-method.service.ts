@@ -3,8 +3,6 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
 import { UserRegistrationMethodEntity } from './entities/user-registration-method.entity';
-import { UserPublicEntity } from 'src/user/entities/user-public.entity';
-import { exclude } from 'src/core/prisma/prisma.utils';
 
 @Injectable()
 export class UserRegistrationMethodService {
@@ -30,18 +28,5 @@ export class UserRegistrationMethodService {
 
   async remove(name: string): Promise<UserRegistrationMethodEntity> {
     return this.prismaService.userRegistrationMethod.delete({ where: { name } });
-  }
-
-  async findRegisteredUsersByMethodName(name: string): Promise<UserPublicEntity[]> {
-    return (
-      await this.prismaService.userRegistrationMethod.findUniqueOrThrow({
-        where: {
-          name,
-        },
-        select: {
-          users: { select: exclude('User', ['password']) },
-        },
-      })
-    ).users;
   }
 }
