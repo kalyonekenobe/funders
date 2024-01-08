@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { UserReactionTypeService } from './user-reaction-type-service';
+import { UserReactionTypeService } from './user-reaction-type.service';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -14,8 +14,8 @@ import { UserReactionTypeEntity } from './entities/user-reaction-type.entity';
 import { UpdateUserReactionTypeDto } from './dto/update-user-reaction-type.dto';
 import { CreateUserReactionTypeDto } from './dto/create-user-reaction-type.dto';
 
-@ApiTags('User reaction types')
-@Controller('user-reaction-types')
+@ApiTags('Users')
+@Controller('users/reaction-types')
 export class UserReactionTypeController {
   constructor(private readonly userReactionTypeService: UserReactionTypeService) {}
 

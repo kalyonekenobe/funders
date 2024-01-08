@@ -4,7 +4,6 @@ import { UserModule } from './user/user.module';
 import { UserRegistrationMethodModule } from './user-registration-method/user-registration-method.module';
 import { UsersBanListRecordStatusModule } from './users-ban-list-record-status/users-ban-list-record-status.module';
 import { UsersBanListRecordModule } from './users-ban-list-record/users-ban-list-record.module';
-import { UserReactionTypeModule } from './user-reaction-type/user-reaction-type.module';
 import { PostCategoryModule } from './post-category/post-category.module';
 import { ChatRoleModule } from './chat-role/chat-role.module';
 import { ChatModule } from './chat/chat.module';
@@ -12,7 +11,6 @@ import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     UserModule,
-    UserReactionTypeModule,
     UserRegistrationMethodModule,
     UsersBanListRecordModule,
     UsersBanListRecordStatusModule,
