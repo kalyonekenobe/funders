@@ -136,15 +136,6 @@ export class MockDataStorage {
 
 export const mockUserRoleService = {
   findAll: jest.fn().mockImplementation(() => Promise.resolve(MockDataStorage.items())),
-  findUsersWithRole: jest.fn().mockImplementation((name: string) => {
-    const dto = MockDataStorage.items().find(item => item.name === name);
-
-    if (!dto) {
-      throw new Error('User role with this name does not exist!');
-    }
-
-    return Promise.resolve(dto.users);
-  }),
   create: jest.fn().mockImplementation((dto: CreateUserRoleDto): Promise<UserRoleEntity> => {
     const exists = MockDataStorage.items().find(item => item.name === dto.name);
 
@@ -193,18 +184,6 @@ export const mockUserRoleService = {
 export const mockUserRoleRepository = {
   userRole: {
     findMany: jest.fn().mockImplementation(() => MockDataStorage.items()),
-    findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { name: string } }) => {
-      const dto = MockDataStorage.items().find(item => item.name === data.where.name);
-
-      if (!dto) {
-        throw new PrismaClientKnownRequestError('User role with this name does not exist!', {
-          code: 'P2001',
-          clientVersion: '',
-        });
-      }
-
-      return Promise.resolve(dto);
-    }),
     create: jest
       .fn()
       .mockImplementation((dto: { data: CreateUserRoleDto }): Promise<UserRoleEntity> => {

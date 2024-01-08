@@ -64,32 +64,6 @@ describe('UserRoleService', () => {
     expect(mockUserRoleRepository.userRole.findMany).toHaveBeenCalled();
   });
 
-  it('should find users list by user role for all existing user having these roles', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.items()) {
-      expect(await service.findUsersWithRole(item.name)).toEqual(item.users);
-    }
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUserRoleRepository.userRole.findUniqueOrThrow).toHaveBeenCalled();
-  });
-
-  it('should not find users list by user role with provided name because it does not exist', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-
-    await expect(service.findUsersWithRole('')).rejects.toThrow();
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUserRoleRepository.userRole.findUniqueOrThrow).toHaveBeenCalled();
-  });
-
   it('should update a list of existing user roles by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
