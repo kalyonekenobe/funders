@@ -74,15 +74,6 @@ export class MockDataStorage {
 
 export const mockUsersBanListRecordStatusService = {
   findAll: jest.fn().mockImplementation(() => Promise.resolve(MockDataStorage.items())),
-  findUsersBanListRecordsWithStatus: jest.fn().mockImplementation((name: string) => {
-    const dto = MockDataStorage.items().find(item => item.name === name);
-
-    if (!dto) {
-      throw new Error('Users ban list record status with this name does not exist!');
-    }
-
-    return Promise.resolve(dto.usersBanListRecords);
-  }),
   create: jest
     .fn()
     .mockImplementation(
@@ -140,21 +131,6 @@ export const mockUsersBanListRecordStatusService = {
 export const mockUsersBanListRecordStatusRepository = {
   usersBanListRecordStatus: {
     findMany: jest.fn().mockImplementation(() => MockDataStorage.items()),
-    findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { name: string } }) => {
-      const dto = MockDataStorage.items().find(item => item.name === data.where.name);
-
-      if (!dto) {
-        throw new PrismaClientKnownRequestError(
-          'Users ban list record status with this name does not exist!',
-          {
-            code: 'P2001',
-            clientVersion: '',
-          },
-        );
-      }
-
-      return Promise.resolve(dto);
-    }),
     create: jest
       .fn()
       .mockImplementation(

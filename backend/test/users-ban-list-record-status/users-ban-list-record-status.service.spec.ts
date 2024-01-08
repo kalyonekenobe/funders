@@ -73,38 +73,6 @@ describe('UsersBanListRecordStatusService', () => {
     ).toHaveBeenCalled();
   });
 
-  it('should find users ban list records list by users ban list record status for all existing users ban list record statuses', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.items()) {
-      expect(await service.findUsersBanListRecordsWithStatus(item.name)).toEqual(
-        item.usersBanListRecords,
-      );
-    }
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(
-      mockUsersBanListRecordStatusRepository.usersBanListRecordStatus.findUniqueOrThrow,
-    ).toHaveBeenCalled();
-  });
-
-  it('should not find users ban list records list by users ban list record status with provided name because it does not exist', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-
-    await expect(service.findUsersBanListRecordsWithStatus('')).rejects.toThrow();
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(
-      mockUsersBanListRecordStatusRepository.usersBanListRecordStatus.findUniqueOrThrow,
-    ).toHaveBeenCalled();
-  });
-
   it('should update a list of existing users ban list record statuses by provided names', async () => {
     MockDataStorage.setDefaultItems();
 
