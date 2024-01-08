@@ -13,10 +13,9 @@ import { UsersBanListRecordStatusEntity } from './entities/users-ban-list-record
 import { CreateUsersBanListRecordStatusDto } from './dto/create-users-ban-list-record-status.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordStatusDto } from './dto/update-users-ban-list-record-status.dto';
-import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 
-@ApiTags('Users ban list record statuses')
-@Controller('users-ban-list-record-statuses')
+@ApiTags('Users')
+@Controller('users/bans/statuses')
 export class UsersBanListRecordStatusController {
   constructor(private readonly usersBanListRecordStatusService: UsersBanListRecordStatusService) {}
 
@@ -49,30 +48,6 @@ export class UsersBanListRecordStatusController {
   findAll() {
     return this.usersBanListRecordStatusService
       .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
-  }
-
-  @ApiOkResponse({
-    description: 'The list of users ban list records with requested status.',
-    type: [UsersBanListRecordEntity],
-  })
-  @ApiNotFoundResponse({
-    description: 'The users ban list record status with the requested name was not found.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error was occured.',
-  })
-  @Get(':name/users-ban-list-records')
-  @ApiParam({
-    name: 'name',
-    description:
-      'The name of the users ban list record status by which you want to search for users ban list records with this status',
-    schema: { example: 'Permanent' },
-  })
-  findUsersBanListRecordsWithStatus(@Param('name') name: string) {
-    return this.usersBanListRecordStatusService
-      .findUsersBanListRecordsWithStatus(name)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
