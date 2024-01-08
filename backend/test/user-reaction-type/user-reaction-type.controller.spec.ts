@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserReactionTypeController } from 'src/user-reaction-type/user-reaction-type.controller';
 import { MockDataStorage, mockUserReactionTypeService } from './user-reaction-type.mock';
-import { UserReactionTypeService } from 'src/user-reaction-type/user-reaction-type-service';
+import { UserReactionTypeService } from 'src/user-reaction-type/user-reaction-type.service';
 
 describe('UserReactionTypeController', () => {
   let controller: UserReactionTypeController;
