@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockUserReactionTypeRepository } from './user-reaction-type.mock';
 import { PrismaService } from 'src/core/prisma/prisma.service';
-import { UserReactionTypeService } from 'src/user-reaction-type/user-reaction-type-service';
+import { UserReactionTypeService } from 'src/user-reaction-type/user-reaction-type.service';
 
 describe('UserReactionTypeService', () => {
   let service: UserReactionTypeService;

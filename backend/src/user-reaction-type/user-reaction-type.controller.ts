@@ -15,7 +15,7 @@ import { UpdateUserReactionTypeDto } from './dto/update-user-reaction-type.dto';
 import { CreateUserReactionTypeDto } from './dto/create-user-reaction-type.dto';
 
 @ApiTags('Users')
-@Controller('users/reaction-types')
+@Controller('users/reactions/types')
 export class UserReactionTypeController {
   constructor(private readonly userReactionTypeService: UserReactionTypeService) {}
 
