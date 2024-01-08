@@ -14,8 +14,8 @@ import { ChatRoleEntity } from './entities/chat-role.entity';
 import { CreateChatRoleDto } from './dto/create-chat-role.dto';
 import { UpdateChatRoleDto } from './dto/update-chat-role.dto';
 
-@ApiTags('Chat roles')
-@Controller('chat-roles')
+@ApiTags('Chats')
+@Controller('chats/roles')
 export class ChatRoleController {
   constructor(private readonly chatRoleService: ChatRoleService) {}
 
