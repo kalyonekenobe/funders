@@ -9,10 +9,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UsersBanListRecordEntity } from './entities/users-ban-list-record.entity';
-import { CreateUsersBanListRecordDto } from './dto/create-users-ban-list-record.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordDto } from './dto/update-users-ban-list-record.dto';
 import { UsersBanListRecordService } from './users-ban-list-record.service';
+import { CreateUsersBanListRecordRequestBodyDto } from './dto/create-users-ban-list-record-request-body.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -37,10 +37,10 @@ export class UsersBanListRecordController {
   @Post(':id/bans')
   create(
     @Param('id') userId: string,
-    @Body() createUsersBanListRecordDto: Omit<CreateUsersBanListRecordDto, 'userId'>,
+    @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
   ) {
     return this.usersBanListRecordService
-      .create({ ...createUsersBanListRecordDto, userId })
+      .create({ ...createUsersBanListRecordRequestBodyDto, userId })
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
