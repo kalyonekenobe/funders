@@ -83,6 +83,20 @@ describe('UsersBanListRecordService', () => {
     expect(mockUsersBanListRecordRepository.usersBanListRecord.findMany).toHaveBeenCalled();
   });
 
+  it('should find all existing users ban list records for user with specified id', async () => {
+    MockDataStorage.setDefaultItems();
+
+    const initialItems = [...MockDataStorage.items()];
+    expect(await service.findAllUserBans(MockDataStorage.items()[1].userId)).toEqual(
+      MockDataStorage.items().filter(item => item.userId === MockDataStorage.items()[1].userId),
+    );
+
+    expect(MockDataStorage.items()).toEqual(initialItems);
+
+    MockDataStorage.setDefaultItems();
+    expect(mockUsersBanListRecordRepository.usersBanListRecord.findMany).toHaveBeenCalled();
+  });
+
   it('should find users ban list records list by users ban list record id', async () => {
     MockDataStorage.setDefaultItems();
 

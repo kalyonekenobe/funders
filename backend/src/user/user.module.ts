@@ -7,6 +7,7 @@ import { FollowingModule } from 'src/following/following.module';
 import { UserRoleModule } from 'src/user-role/user-role.module';
 import { UserReactionTypeModule } from 'src/user-reaction-type/user-reaction-type.module';
 import { UserRegistrationMethodModule } from 'src/user-registration-method/user-registration-method.module';
+import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-list-record.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserRegistrationMethodModule } from 'src/user-registration-method/user-
     UserRoleModule,
     UserReactionTypeModule,
     UserRegistrationMethodModule,
+    UsersBanListRecordModule,
     FollowingModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',

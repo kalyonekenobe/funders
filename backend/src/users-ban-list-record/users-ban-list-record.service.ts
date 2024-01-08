@@ -12,6 +12,10 @@ export class UsersBanListRecordService {
     return this.prismaService.usersBanListRecord.findMany();
   }
 
+  async findAllUserBans(userId: string): Promise<UsersBanListRecordEntity[]> {
+    return this.prismaService.usersBanListRecord.findMany({ where: { userId } });
+  }
+
   async findById(id: string): Promise<UsersBanListRecordEntity> {
     return this.prismaService.usersBanListRecord.findUniqueOrThrow({ where: { id } });
   }

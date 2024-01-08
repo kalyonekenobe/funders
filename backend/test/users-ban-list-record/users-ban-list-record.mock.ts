@@ -116,6 +116,11 @@ export const mockUsersBanListRecordService = {
 
     return Promise.resolve(dto);
   }),
+  findAllUserBans: jest
+    .fn()
+    .mockImplementation((userId: string) =>
+      Promise.resolve(MockDataStorage.items().filter(item => item.userId === userId)),
+    ),
   create: jest
     .fn()
     .mockImplementation((dto: CreateUsersBanListRecordDto): Promise<UsersBanListRecordEntity> => {
@@ -163,7 +168,13 @@ export const mockUsersBanListRecordService = {
 
 export const mockUsersBanListRecordRepository = {
   usersBanListRecord: {
-    findMany: jest.fn().mockImplementation(() => MockDataStorage.items()),
+    findMany: jest
+      .fn()
+      .mockImplementation(data =>
+        !data?.where
+          ? MockDataStorage.items()
+          : MockDataStorage.items().filter(item => item.userId === data.where.userId),
+      ),
     findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
       const dto = MockDataStorage.items().find(item => item.id === data.where.id);
 

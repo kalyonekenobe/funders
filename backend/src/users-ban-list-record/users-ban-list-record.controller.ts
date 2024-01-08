@@ -9,13 +9,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UsersBanListRecordEntity } from './entities/users-ban-list-record.entity';
-import { CreateUsersBanListRecordDto } from './dto/create-users-ban-list-record.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordDto } from './dto/update-users-ban-list-record.dto';
 import { UsersBanListRecordService } from './users-ban-list-record.service';
+import { CreateUsersBanListRecordRequestBodyDto } from './dto/create-users-ban-list-record-request-body.dto';
 
-@ApiTags('Users ban list records')
-@Controller('users-ban-list-records')
+@ApiTags('Users')
+@Controller('users')
 export class UsersBanListRecordController {
   constructor(private readonly usersBanListRecordService: UsersBanListRecordService) {}
 
@@ -29,10 +29,18 @@ export class UsersBanListRecordController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Post()
-  create(@Body() createUsersBanListRecordDto: CreateUsersBanListRecordDto) {
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user which should be banned',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Post(':id/bans')
+  create(
+    @Param('id') userId: string,
+    @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
+  ) {
     return this.usersBanListRecordService
-      .create(createUsersBanListRecordDto)
+      .create({ ...createUsersBanListRecordRequestBodyDto, userId })
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
@@ -44,10 +52,33 @@ export class UsersBanListRecordController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get()
+  @Get('bans')
   findAll() {
     return this.usersBanListRecordService
       .findAll()
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's ban list records",
+    type: [UsersBanListRecordEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of bans',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/bans')
+  findAllUserBans(@Param('id') userId: string) {
+    return this.usersBanListRecordService
+      .findAllUserBans(userId)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
@@ -62,7 +93,7 @@ export class UsersBanListRecordController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
+  @Get('bans/:id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the users ban list recod to be updated',
@@ -88,7 +119,7 @@ export class UsersBanListRecordController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
+  @Put('bans/:id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to be updated',
@@ -114,7 +145,7 @@ export class UsersBanListRecordController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
+  @Delete('bans/:id')
   @ApiParam({
     name: 'id',
     description: 'The id of the users ban list record to be deleted',
