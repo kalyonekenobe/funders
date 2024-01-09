@@ -90,5 +90,5 @@ export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId
   @IsDate()
   @MaxDate(new Date())
   @ValidateIf((_, value) => value)
-  removedAt: Date | null;
+  removedAt?: Date | null;
 }
