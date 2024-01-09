@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Post } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -12,8 +13,10 @@ import {
   Matches,
   MaxDate,
   MaxLength,
-  Min,
+  Validate,
+  ValidateIf,
 } from 'class-validator';
+import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
@@ -67,7 +70,6 @@ export class PostEntity implements Post {
       "Title: Supporting Ukraine's 12th Brigade: Fundraising for a Tank Ukraine's 12th Brigade of the Azov National Guard requires a critical asset — a tank. This fundraising effort aims to provide essential armored support to bolster their defense. Your contribution directly enhances the brigade's defensive capabilities, aiding them in protecting the nation's sovereignty. Join us in empowering these courageous soldiers with the resources they urgently need. Stand united with Ukraine's 12th Brigade. Contribute today to support their vital mission in safeguarding the country. Every donation makes a difference in fortifying their defense.",
   })
   @Matches(/^[\p{Letter}\p{Mark}\-!?\.,:@#№$;%^&*()_+="'`/\\{}\[\]|~\d\s]+$/gu)
-  @MaxLength(255)
   @IsString()
   @IsNotEmpty()
   @IsDefined()
@@ -78,12 +80,14 @@ export class PostEntity implements Post {
     examples: [10000.5, 1234.41, 8950],
     default: 8950,
   })
-  @Min(0)
+  @Transform(value => new Decimal(value.value))
+  @Validate(DecimalMin, [0.01])
   @IsDecimal()
   @IsDefined()
   fundsToBeRaised: Decimal;
 
   @ApiProperty({ description: 'The image of the post' })
+  @ValidateIf((_, value) => value)
   image: Buffer | null;
 
   @ApiProperty({

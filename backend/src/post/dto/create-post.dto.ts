@@ -9,9 +9,12 @@ import {
   IsUUID,
   Matches,
   MaxLength,
-  Min,
+  Validate,
+  ValidateIf,
 } from 'class-validator';
 import { PostEntity } from '../entities/post.entity';
+import { Transform } from 'class-transformer';
+import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 
 export class CreatePostDto
   implements Omit<PostEntity, 'id' | 'createdAt' | 'updatedAt' | 'removedAt'>
@@ -55,7 +58,6 @@ export class CreatePostDto
       "Title: Supporting Ukraine's 12th Brigade: Fundraising for a Tank Ukraine's 12th Brigade of the Azov National Guard requires a critical asset — a tank. This fundraising effort aims to provide essential armored support to bolster their defense. Your contribution directly enhances the brigade's defensive capabilities, aiding them in protecting the nation's sovereignty. Join us in empowering these courageous soldiers with the resources they urgently need. Stand united with Ukraine's 12th Brigade. Contribute today to support their vital mission in safeguarding the country. Every donation makes a difference in fortifying their defense.",
   })
   @Matches(/^[\p{Letter}\p{Mark}\-!?\.,:@#№$;%^&*()_+="'`/\\{}\[\]|~\d\s]+$/gu)
-  @MaxLength(255)
   @IsString()
   @IsNotEmpty()
   @IsDefined()
@@ -66,12 +68,15 @@ export class CreatePostDto
     examples: [10000.5, 1234.41, 8950],
     default: 8950,
   })
-  @Min(0)
+  @Transform(value => Number(value.value))
+  @Validate(DecimalMin, [0.01])
   @IsDecimal()
   @IsDefined()
+  @Transform(value => value.value.toString())
   fundsToBeRaised: Decimal;
 
   @ApiProperty({ description: 'The image of the post' })
+  @ValidateIf((_, value) => value)
   image: Buffer | null;
 
   @ApiProperty({
