@@ -26,10 +26,4 @@ export class CreateCategoriesOnPostsDto implements CategoriesOnPostsEntity {
   @IsNotEmpty()
   @IsDefined()
   category: string;
-
-  @ApiProperty({ description: 'The nested post object for this CategoriesOnPostsEntity' })
-  post?: PostEntity;
-
-  @ApiProperty({ description: 'The nested postCategory object for this CategoriesOnPostsEntity' })
-  postCategory?: PostCategoryEntity;
 }

@@ -38,7 +38,7 @@ async function bootstrap() {
   );
   app.enableCors();
   app.use(cookieParser());
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
