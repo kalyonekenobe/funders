@@ -6,6 +6,9 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
+import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
+import { MockDataStorage as BanMockDataStorage } from 'test/users-ban-list-record/users-ban-list-record.mock';
 
 // Mock data storage
 export class MockDataStorage {
@@ -168,6 +171,24 @@ export const mockUserService = {
 
     return Promise.resolve(dto);
   }),
+  findAllUserBans: jest
+    .fn()
+    .mockImplementation((userId: string) =>
+      Promise.resolve(BanMockDataStorage.items().filter(item => item.userId === userId)),
+    ),
+  createUsersBanListRecord: jest
+    .fn()
+    .mockImplementation((dto: CreateUsersBanListRecordDto): Promise<UsersBanListRecordEntity> => {
+      const created = {
+        ...dto,
+        id: '',
+        bannedAt: new Date(),
+      };
+
+      BanMockDataStorage.items().push(created);
+
+      return Promise.resolve(created);
+    }),
   create: jest.fn().mockImplementation((dto: CreateUserDto): Promise<UserPublicEntity> => {
     const exists = MockDataStorage.items().find(item => item.email === dto.email);
 

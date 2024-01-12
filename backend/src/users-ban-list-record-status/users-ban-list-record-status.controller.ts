@@ -14,8 +14,8 @@ import { CreateUsersBanListRecordStatusDto } from './dto/create-users-ban-list-r
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordStatusDto } from './dto/update-users-ban-list-record-status.dto';
 
-@ApiTags('Users')
-@Controller('users/bans/statuses')
+@ApiTags('Ban statuses')
+@Controller('ban-statuses')
 export class UsersBanListRecordStatusController {
   constructor(private readonly usersBanListRecordStatusService: UsersBanListRecordStatusService) {}
 

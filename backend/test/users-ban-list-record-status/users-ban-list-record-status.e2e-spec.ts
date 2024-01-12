@@ -28,12 +28,12 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
     await app.init();
   });
 
-  it('/users/bans/statuses (GET) --> 200 OK', () => {
+  it('/ban-statuses (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get('/users/bans/statuses')
+      .get('/ban-statuses')
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -42,12 +42,12 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses (POST) --> 201 CREATED', () => {
+  it('/ban-statuses (POST) --> 201 CREATED', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/users/bans/statuses')
+      .post('/ban-statuses')
       .send(MockDataStorage.createUsersBanListRecordStatusDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -62,12 +62,12 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses (POST) --> 409 CONFLICT | Users ban list record status with specified name already exists', () => {
+  it('/ban-statuses (POST) --> 409 CONFLICT | Users ban list record status with specified name already exists', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/users/bans/statuses')
+      .post('/ban-statuses')
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -76,12 +76,12 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses/:name (PUT) --> 200 OK', () => {
+  it('/ban-statuses/:name (PUT) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/users/bans/statuses/${MockDataStorage.updateUsersBanListRecordStatusDtoList[0].name}`)
+      .put(`/ban-statuses/${MockDataStorage.updateUsersBanListRecordStatusDtoList[0].name}`)
       .send(MockDataStorage.updateUsersBanListRecordStatusDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -99,13 +99,13 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses/:name (PUT) --> 404 NOT FOUND | Users ban list record status with specified name was not found', () => {
+  it('/ban-statuses/:name (PUT) --> 404 NOT FOUND | Users ban list record status with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(
-        `/users/bans/statuses/${MockDataStorage.createUsersBanListRecordStatusDtoList[0].name}_not_existing_name`,
+        `/ban-statuses/${MockDataStorage.createUsersBanListRecordStatusDtoList[0].name}_not_existing_name`,
       )
       .send(MockDataStorage.updateUsersBanListRecordStatusDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
@@ -115,14 +115,12 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses/:name (DELETE) --> 200 OK', () => {
+  it('/ban-statuses/:name (DELETE) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(
-        `/users/bans/statuses/${MockDataStorage.removeUsersBanListRecordStatusDtoList[1].name}`,
-      )
+      .delete(`/ban-statuses/${MockDataStorage.removeUsersBanListRecordStatusDtoList[1].name}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -137,13 +135,13 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       });
   });
 
-  it('/users/bans/statuses/:name (DELETE) --> 404 NOT FOUND | Users ban list record status with specified name was not found', () => {
+  it('/ban-statuses/:name (DELETE) --> 404 NOT FOUND | Users ban list record status with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(
-        `/users/bans/statuses/${MockDataStorage.removeUsersBanListRecordStatusDtoList[0].name}_not_existing_name`,
+        `/ban-statuses/${MockDataStorage.removeUsersBanListRecordStatusDtoList[0].name}_not_existing_name`,
       )
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
