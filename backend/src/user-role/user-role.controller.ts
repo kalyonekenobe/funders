@@ -14,8 +14,8 @@ import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
-@ApiTags('Users')
-@Controller('users/roles')
+@ApiTags('User roles')
+@Controller('user-roles')
 export class UserRoleController {
   constructor(private readonly userRoleService: UserRoleService) {}
 
