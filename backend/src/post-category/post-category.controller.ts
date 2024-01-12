@@ -14,8 +14,8 @@ import { PostCategoryEntity } from './entities/post-category.entity';
 import { CreatePostCategoryDto } from './dto/create-post-category.dto';
 import { UpdatePostCategoryDto } from './dto/update-post-category.dto';
 
-@ApiTags('Posts')
-@Controller('posts/categories')
+@ApiTags('Post categories')
+@Controller('post-categories')
 export class PostCategoryController {
   constructor(private readonly postCategoryService: PostCategoryService) {}
 
