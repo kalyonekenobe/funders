@@ -152,17 +152,27 @@ model Post {
   updatedAt       DateTime? @updatedAt
   removedAt       DateTime?
 
-  author     User                @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categories CategoriesOnPosts[]
-  donations  PostDonation[]
-  reactions  PostReaction[]
-  comments   PostComment[]
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categories  CategoriesOnPosts[]
+  donations   PostDonation[]
+  reactions   PostReaction[]
+  comments    PostComment[]
+  attachments PostAttachment[]
 }
 
 model PostCategory {
   name String @id @db.VarChar(50)
 
   posts CategoriesOnPosts[]
+}
+
+model PostAttachment {
+  id       String  @id @default(uuid())
+  postId   String
+  file     Bytes
+  filename String? @db.VarChar(255)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model PostDonation {
