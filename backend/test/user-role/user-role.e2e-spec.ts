@@ -8,7 +8,7 @@ import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
-  return this.toString();
+  return Number(this.toString());
 };
 
 describe('UserRoleController (e2e)', () => {
