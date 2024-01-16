@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserRoleModule } from 'src/user-role/user-role.module';
 import { MockDataStorage, mockUserRoleRepository } from './user-role.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -22,6 +23,7 @@ describe('UserRoleController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

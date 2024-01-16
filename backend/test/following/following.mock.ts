@@ -184,4 +184,19 @@ export const mockFollowingRepository = {
         },
       ),
   },
+  user: {
+    findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
+      const result = MockDataStorage.items().find(item => item.userId === data.where.id);
+
+      if (!result) {
+        throw new PrismaClientKnownRequestError('User with this id does not exist!', {
+          code: 'P2001',
+          clientVersion: '',
+        });
+      }
+
+      return Promise.resolve(result);
+    }),
+  },
+  $transaction: jest.fn().mockImplementation(callback => callback(mockFollowingRepository)),
 };

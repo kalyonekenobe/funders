@@ -1,15 +1,10 @@
-import {
-  BadRequestException,
-  ConflictException,
-  HttpStatus,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { MockDataStorage, mockChatRepository } from './chat.mock';
 import * as request from 'supertest';
 import { ChatModule } from 'src/chat/chat.module';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('ChatController (e2e)', () => {
   let app: INestApplication;
@@ -23,24 +18,7 @@ describe('ChatController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        exceptionFactory: errors => {
-          if (errors.find(error => Object.entries(error.constraints ?? {}).length > 0)) {
-            return new ConflictException(
-              errors.flatMap(error => Object.values(error.constraints ?? {})),
-            );
-          }
-
-          return new BadRequestException(
-            errors.flatMap(error => Object.values(error.constraints ?? {})),
-          );
-        },
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        forbidUnknownValues: true,
-      }),
-    );
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

@@ -7,6 +7,7 @@ import {
   mockUserRegistrationMethodRepository,
 } from './user-registration-method.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('UserRegistrationMethodController (e2e)', () => {
   let app: INestApplication;
@@ -20,6 +21,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

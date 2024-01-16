@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  HttpStatus,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserModule } from 'src/user/user.module';
@@ -14,6 +8,7 @@ import {
   mockUsersBanListRecordRepository,
 } from '../users-ban-list-record/users-ban-list-record.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -32,24 +27,7 @@ describe('UserController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        exceptionFactory: errors => {
-          if (errors.find(error => Object.entries(error.constraints ?? {}).length > 0)) {
-            return new ConflictException(
-              errors.flatMap(error => Object.values(error.constraints ?? {})),
-            );
-          }
-
-          return new BadRequestException(
-            errors.flatMap(error => Object.values(error.constraints ?? {})),
-          );
-        },
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        forbidUnknownValues: true,
-      }),
-    );
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

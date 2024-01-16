@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { MockDataStorage, mockPostCategoryRepository } from './post-category.mock';
 import * as request from 'supertest';
 import { PostCategoryModule } from 'src/post-category/post-category.module';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('PostCategoryController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +18,7 @@ describe('PostCategoryController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

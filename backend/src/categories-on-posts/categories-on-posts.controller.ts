@@ -11,6 +11,7 @@ import {
 import { CategoriesOnPostsService } from './categories-on-posts.service';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 @ApiTags('Posts')
 @Controller('posts/:id/categories')
@@ -20,6 +21,9 @@ export class CategoriesOnPostsController {
   @ApiCreatedResponse({
     description: 'The list of categories was successfully added to the post.',
     type: [PostCategoryEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The post with the requested id was not found.',
   })
   @ApiConflictResponse({
     description: 'Cannot add the list of categories to the post. Invalid data was provided.',
@@ -35,7 +39,8 @@ export class CategoriesOnPostsController {
   })
   createPostCategories(
     @Param('id') postId: string,
-    @Body() postCategoriesList: PostCategoryEntity[],
+    @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
+    postCategoriesList: PostCategoryEntity[],
   ) {
     return this.categoriesOnPostsService
       .createPostCategories(postId, postCategoriesList)
@@ -46,6 +51,9 @@ export class CategoriesOnPostsController {
   @ApiOkResponse({
     description: 'The list of categories of the post',
     type: [PostCategoryEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'Cannot find post with the specified id.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
@@ -84,7 +92,8 @@ export class CategoriesOnPostsController {
   })
   updatePostCategories(
     @Param('id') postId: string,
-    @Body() postCategoriesList: PostCategoryEntity[],
+    @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
+    postCategoriesList: PostCategoryEntity[],
   ) {
     return this.categoriesOnPostsService
       .updatePostCategories(postId, postCategoriesList)
@@ -108,7 +117,11 @@ export class CategoriesOnPostsController {
     description: 'The id of the post to delete the categories list',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
-  remove(@Param('id') postId: string, @Body() postCategoriesList: PostCategoryEntity[]) {
+  removePostCategories(
+    @Param('id') postId: string,
+    @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
+    postCategoriesList: PostCategoryEntity[],
+  ) {
     return this.categoriesOnPostsService
       .removePostCategories(postId, postCategoriesList)
       .then(response => response)

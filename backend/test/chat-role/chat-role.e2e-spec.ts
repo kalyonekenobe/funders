@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { MockDataStorage, mockChatRoleRepository } from './chat-role.mock';
 import * as request from 'supertest';
 import { ChatRoleModule } from 'src/chat-role/chat-role.module';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('ChatRoleController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +18,7 @@ describe('ChatRoleController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

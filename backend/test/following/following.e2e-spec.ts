@@ -25,7 +25,7 @@ describe('FollowingController (e2e)', () => {
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/users/${MockDataStorage.items()[0]}/followers`)
+      .get(`/users/${MockDataStorage.items()[0].userId}/followers`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify([MockDataStorage.items()[0]]));
@@ -39,7 +39,7 @@ describe('FollowingController (e2e)', () => {
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/users/${MockDataStorage.items()[0]}/followings`)
+      .get(`/users/${MockDataStorage.items()[0].userId}/followings`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify([MockDataStorage.items()[4]]));

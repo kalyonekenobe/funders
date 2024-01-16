@@ -7,6 +7,7 @@ import {
   mockUsersBanListRecordStatusRepository,
 } from './users-ban-list-record-status.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -25,6 +26,7 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

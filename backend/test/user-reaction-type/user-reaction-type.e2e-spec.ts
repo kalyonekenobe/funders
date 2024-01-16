@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserReactionTypeModule } from 'src/user-reaction-type/user-reaction-type.module';
 import { MockDataStorage, mockUserReactionTypeRepository } from './user-reaction-type.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('UserReactionTypeController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +18,7 @@ describe('UserReactionTypeController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 

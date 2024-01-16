@@ -8,55 +8,73 @@ export class CategoriesOnPostsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAllPostCategories(postId: string): Promise<PostCategoryEntity[]> {
-    return (
-      await this.prismaService.categoriesOnPosts.findMany({
-        where: { postId },
-        select: { postCategory: true },
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.post.findUniqueOrThrow({ where: { id: postId } });
+
+        return tx.categoriesOnPosts.findMany({
+          where: { postId },
+          select: { postCategory: true },
+        });
       })
-    ).map(item => item.postCategory);
+      .then(result => result.map(item => item.postCategory));
   }
 
   async createPostCategories(
     postId: string,
     categories: PostCategoryEntity[],
   ): Promise<PostCategoryEntity[]> {
-    await this.prismaService.categoriesOnPosts.createMany({
-      data: categories.map(
-        category => ({ postId, category: category.name }) as CreateCategoriesOnPostsDto,
-      ),
-    });
-
-    return categories;
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.post.findUniqueOrThrow({ where: { id: postId } });
+        await tx.categoriesOnPosts.createMany({
+          data: categories.map(category => ({
+            postId,
+            category: category.name,
+          })),
+          skipDuplicates: false,
+        });
+      })
+      .then(() => categories);
   }
 
   async updatePostCategories(
     postId: string,
     categories: PostCategoryEntity[],
   ): Promise<PostCategoryEntity[]> {
-    await this.prismaService.categoriesOnPosts.deleteMany({ where: { postId } });
-    await this.prismaService.categoriesOnPosts.createMany({
-      data: categories.map(
-        category => ({ postId, category: category.name }) as CreateCategoriesOnPostsDto,
-      ),
-    });
-
-    return categories;
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.post.findUniqueOrThrow({ where: { id: postId } });
+        await tx.categoriesOnPosts.deleteMany({ where: { postId } });
+        await tx.categoriesOnPosts.createMany({
+          data: categories.map(
+            category => ({ postId, category: category.name }) as CreateCategoriesOnPostsDto,
+          ),
+          skipDuplicates: false,
+        });
+      })
+      .then(() => categories);
   }
 
   async removePostCategories(
     postId: string,
     categories: PostCategoryEntity[],
   ): Promise<PostCategoryEntity[]> {
-    await this.prismaService.categoriesOnPosts.deleteMany({
-      where: {
-        AND: {
-          postId,
-          category: {
-            in: categories.map(category => category.name),
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.post.findUniqueOrThrow({ where: { id: postId } });
+
+        tx.categoriesOnPosts.deleteMany({
+          where: {
+            AND: {
+              postId,
+              category: {
+                in: categories.map(category => category.name),
+              },
+            },
           },
-        },
-      },
-    });
-    return categories;
+        });
+      })
+      .then(() => categories);
   }
 }
