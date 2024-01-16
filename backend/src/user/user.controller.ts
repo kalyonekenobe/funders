@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
 import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record-request-body.dto';
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
+import { PostService } from 'src/post/post.service';
 
 @ApiTags('Users')
 @Controller('users')
@@ -23,6 +24,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly usersBanListRecordService: UsersBanListRecordService,
+    private readonly postService: PostService,
   ) {}
 
   @ApiCreatedResponse({
@@ -108,7 +110,7 @@ export class UserController {
   }
 
   @ApiOkResponse({
-    description: 'The user with requested id',
+    description: 'The user with requested id.',
     type: UserPublicEntity,
   })
   @ApiNotFoundResponse({
@@ -120,12 +122,35 @@ export class UserController {
   @Get(':id')
   @ApiParam({
     name: 'id',
-    description: 'The uuid of the user to be updated',
+    description: 'The uuid of the user to be found.',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   findById(@Param('id') id: string) {
     return this.userService
       .findById(id)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @ApiOkResponse({
+    description: 'The user with requested id',
+    type: UserPublicEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @Get(':id/posts')
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the user to find all his posts',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  findAllUserPosts(@Param('id') id: string) {
+    return this.postService
+      .findAllUserPosts(id)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
