@@ -25,62 +25,11 @@ describe('UsersBanListRecordController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a list of new users ban list records', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.createUsersBanListRecordDtoList) {
-      const received = await controller.create(item.userId, item);
-      const expected = { ...received, ...item };
-      expect(received).toEqual(expected);
-      initialItems.push(received);
-    }
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUsersBanListRecordService.create).toHaveBeenCalled();
-  });
-
-  it('should not create a new users ban list record because of unknown value in create dto', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    expect(() => {
-      controller.create(MockDataStorage.items()[0].userId, {
-        ...MockDataStorage.items()[0],
-        sdasds: 123,
-      } as CreateUsersBanListRecordDto);
-
-      // Simulating validation error
-      MockDataStorage.items().pop();
-      throw new Error('Validation error');
-    }).toThrow();
-    expect(MockDataStorage.items()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUsersBanListRecordService.create).toHaveBeenCalled();
-  });
-
   it('should find all existing users ban list records', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     expect(await controller.findAll()).toEqual(initialItems);
-
-    MockDataStorage.setDefaultItems();
-    expect(mockUsersBanListRecordService.findAll).toHaveBeenCalled();
-  });
-
-  it('should find all existing users ban list records for user with specified id', async () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialItems = [...MockDataStorage.items()];
-    expect(await controller.findAllUserBans(MockDataStorage.items()[1].userId)).toEqual(
-      MockDataStorage.items().filter(item => item.userId === MockDataStorage.items()[1].userId),
-    );
-
-    expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
     expect(mockUsersBanListRecordService.findAll).toHaveBeenCalled();

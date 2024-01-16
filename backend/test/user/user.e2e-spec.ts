@@ -3,11 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserModule } from 'src/user/user.module';
 import { MockDataStorage, mockUserRepository } from './user.mock';
+import {
+  MockDataStorage as BanMockDataStorage,
+  mockUsersBanListRecordRepository,
+} from '../users-ban-list-record/users-ban-list-record.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
-  return this.toString();
+  return Number(this.toString());
 };
 
 describe('UserController (e2e)', () => {
@@ -18,10 +23,11 @@ describe('UserController (e2e)', () => {
       imports: [UserModule],
     })
       .overrideProvider(PrismaService)
-      .useValue(mockUserRepository)
+      .useValue(Object.assign({}, mockUserRepository, mockUsersBanListRecordRepository))
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 
@@ -63,6 +69,62 @@ describe('UserController (e2e)', () => {
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
         MockDataStorage.setDefaultItems();
+      });
+  });
+
+  it('/users/:id/bans (GET) --> 200 OK', () => {
+    BanMockDataStorage.setDefaultItems();
+
+    const initialData = [...BanMockDataStorage.items()];
+    return request(app.getHttpServer())
+      .get(`/users/${BanMockDataStorage.items()[1].userId}/bans`)
+      .expect(HttpStatus.OK)
+      .then(response => {
+        expect(JSON.stringify(response.body)).toEqual(
+          JSON.stringify(
+            BanMockDataStorage.items().filter(
+              item => item.userId === BanMockDataStorage.items()[1].userId,
+            ),
+          ),
+        );
+        expect(BanMockDataStorage.items()).toEqual(initialData);
+        BanMockDataStorage.setDefaultItems();
+      });
+  });
+
+  it('/users/:id/bans (POST) --> 201 CREATED', () => {
+    BanMockDataStorage.setDefaultItems();
+
+    const initialData = [...BanMockDataStorage.items()];
+    return request(app.getHttpServer())
+      .post(`/users/${BanMockDataStorage.createUsersBanListRecordDtoList[0].userId}/bans`)
+      .send({ ...BanMockDataStorage.createUsersBanListRecordDtoList[0], userId: undefined })
+      .expect(HttpStatus.CREATED)
+      .then(response => {
+        expect(JSON.stringify(response.body)).toEqual(
+          JSON.stringify({
+            ...response.body,
+            ...BanMockDataStorage.createUsersBanListRecordDtoList[0],
+          }),
+        );
+        expect(JSON.stringify(BanMockDataStorage.items())).toEqual(
+          JSON.stringify([...initialData, response.body]),
+        );
+        BanMockDataStorage.setDefaultItems();
+      });
+  });
+
+  it('/users/:id/bans (POST) --> 409 CONFLICT | Users ban list record create dto has invalid format', () => {
+    BanMockDataStorage.setDefaultItems();
+
+    const initialData = [...BanMockDataStorage.items()];
+    return request(app.getHttpServer())
+      .post(`/users/${BanMockDataStorage.items()[0].id}/bans`)
+      .send({ ...BanMockDataStorage.items()[0], asfasf: 123 })
+      .expect(HttpStatus.CONFLICT)
+      .then(() => {
+        expect(BanMockDataStorage.items()).toEqual(initialData);
+        BanMockDataStorage.setDefaultItems();
       });
   });
 

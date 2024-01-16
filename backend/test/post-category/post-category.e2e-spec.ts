@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { MockDataStorage, mockPostCategoryRepository } from './post-category.mock';
 import * as request from 'supertest';
 import { PostCategoryModule } from 'src/post-category/post-category.module';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('PostCategoryController (e2e)', () => {
   let app: INestApplication;
@@ -17,15 +18,16 @@ describe('PostCategoryController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 
-  it('/posts/categories (GET) --> 200 OK', () => {
+  it('/post-categories (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get('/posts/categories')
+      .get('/post-categories')
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -34,12 +36,12 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories (POST) --> 201 CREATED', () => {
+  it('/post-categories (POST) --> 201 CREATED', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/posts/categories')
+      .post('/post-categories')
       .send(MockDataStorage.createPostCategoryDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -54,12 +56,12 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories (POST) --> 409 CONFLICT | Post category with specified name already exists', () => {
+  it('/post-categories (POST) --> 409 CONFLICT | Post category with specified name already exists', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/posts/categories')
+      .post('/post-categories')
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -68,12 +70,12 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories/:name (PUT) --> 200 OK', () => {
+  it('/post-categories/:name (PUT) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/posts/categories/${MockDataStorage.updatePostCategoryDtoList[0].name}`)
+      .put(`/post-categories/${MockDataStorage.updatePostCategoryDtoList[0].name}`)
       .send(MockDataStorage.updatePostCategoryDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -91,13 +93,13 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories/:name (PUT) --> 404 NOT FOUND | Post category with specified name was not found', () => {
+  it('/post-categories/:name (PUT) --> 404 NOT FOUND | Post category with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(
-        `/posts/categories/${MockDataStorage.createPostCategoryDtoList[0].name}_not_existing_name`,
+        `/post-categories/${MockDataStorage.createPostCategoryDtoList[0].name}_not_existing_name`,
       )
       .send(MockDataStorage.updatePostCategoryDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
@@ -107,12 +109,12 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories/:name (DELETE) --> 200 OK', () => {
+  it('/post-categories/:name (DELETE) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/posts/categories/${MockDataStorage.removePostCategoryDtoList[1].name}`)
+      .delete(`/post-categories/${MockDataStorage.removePostCategoryDtoList[1].name}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -127,13 +129,13 @@ describe('PostCategoryController (e2e)', () => {
       });
   });
 
-  it('/posts/categories/:name (DELETE) --> 404 NOT FOUND | Post category with specified name was not found', () => {
+  it('/post-categories/:name (DELETE) --> 404 NOT FOUND | Post category with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(
-        `/posts/categories/${MockDataStorage.removePostCategoryDtoList[0].name}_not_existing_name`,
+        `/post-categories/${MockDataStorage.removePostCategoryDtoList[0].name}_not_existing_name`,
       )
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {

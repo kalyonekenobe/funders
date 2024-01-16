@@ -1,15 +1,10 @@
-import {
-  BadRequestException,
-  ConflictException,
-  HttpStatus,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-list-record.module';
 import { MockDataStorage, mockUsersBanListRecordRepository } from './users-ban-list-record.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -28,33 +23,16 @@ describe('UsersBanListRecordController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        exceptionFactory: errors => {
-          if (errors.find(error => Object.entries(error.constraints ?? {}).length > 0)) {
-            return new ConflictException(
-              errors.flatMap(error => Object.values(error.constraints ?? {})),
-            );
-          }
-
-          return new BadRequestException(
-            errors.flatMap(error => Object.values(error.constraints ?? {})),
-          );
-        },
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        forbidUnknownValues: true,
-      }),
-    );
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 
-  it('/users/bans (GET) --> 200 OK', () => {
+  it('/bans (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get('/users/bans')
+      .get('/bans')
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -63,12 +41,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/bans/:id (GET) --> 200 OK', () => {
+  it('/bans/:id (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/users/bans/${MockDataStorage.items()[0].id}`)
+      .get(`/bans/${MockDataStorage.items()[0].id}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -77,12 +55,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/bans/:id (GET) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
+  it('/bans/:id (GET) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/users/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .get(`/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -90,68 +68,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/:id/bans (GET) --> 200 OK', () => {
+  it('/bans/:id (PUT) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/users/${MockDataStorage.items()[1].userId}/bans`)
-      .expect(HttpStatus.OK)
-      .then(response => {
-        expect(JSON.stringify(response.body)).toEqual(
-          JSON.stringify(
-            MockDataStorage.items().filter(
-              item => item.userId === MockDataStorage.items()[1].userId,
-            ),
-          ),
-        );
-        expect(MockDataStorage.items()).toEqual(initialData);
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
-  it('/users/:id/bans (POST) --> 201 CREATED', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .post(`/users/${MockDataStorage.createUsersBanListRecordDtoList[0].userId}/bans`)
-      .send({ ...MockDataStorage.createUsersBanListRecordDtoList[0], userId: undefined })
-      .expect(HttpStatus.CREATED)
-      .then(response => {
-        expect(JSON.stringify(response.body)).toEqual(
-          JSON.stringify({
-            ...response.body,
-            ...MockDataStorage.createUsersBanListRecordDtoList[0],
-          }),
-        );
-        expect(JSON.stringify(MockDataStorage.items())).toEqual(
-          JSON.stringify([...initialData, response.body]),
-        );
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
-  it('/users/:id/bans (POST) --> 409 CONFLICT | Users ban list record create dto has invalid format', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .post(`/users/${MockDataStorage.items()[0].userId}/bans`)
-      .send({ ...MockDataStorage.items()[0], asfasf: 123 })
-      .expect(HttpStatus.CONFLICT)
-      .then(() => {
-        expect(MockDataStorage.items()).toEqual(initialData);
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
-  it('/users/bans/:id (PUT) --> 200 OK', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .put(`/users/bans/${MockDataStorage.updateUsersBanListRecordDtoList[0].id}`)
+      .put(`/bans/${MockDataStorage.updateUsersBanListRecordDtoList[0].id}`)
       .send(MockDataStorage.updateUsersBanListRecordDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -175,12 +97,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/bans/:id (PUT) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
+  it('/bans/:id (PUT) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/users/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .put(`/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
       .send(MockDataStorage.updateUsersBanListRecordDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -189,12 +111,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/bans/:id (DELETE) --> 200 OK', () => {
+  it('/bans/:id (DELETE) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/users/bans/${MockDataStorage.removeUsersBanListRecordDtoList[1].id}`)
+      .delete(`/bans/${MockDataStorage.removeUsersBanListRecordDtoList[1].id}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -212,14 +134,12 @@ describe('UsersBanListRecordController (e2e)', () => {
       });
   });
 
-  it('/users/bans/:id (DELETE) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
+  it('/bans/:id (DELETE) --> 404 NOT FOUND | Users ban list record with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(
-        `/users/bans/${MockDataStorage.removeUsersBanListRecordDtoList[0].id}_not_existing_id`,
-      )
+      .delete(`/bans/${MockDataStorage.removeUsersBanListRecordDtoList[0].id}_not_existing_id`)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

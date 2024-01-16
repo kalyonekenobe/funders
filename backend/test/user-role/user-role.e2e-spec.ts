@@ -4,10 +4,11 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserRoleModule } from 'src/user-role/user-role.module';
 import { MockDataStorage, mockUserRoleRepository } from './user-role.mock';
 import * as request from 'supertest';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
-  return this.toString();
+  return Number(this.toString());
 };
 
 describe('UserRoleController (e2e)', () => {
@@ -22,15 +23,16 @@ describe('UserRoleController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
     await app.init();
   });
 
-  it('/users/roles (GET) --> 200 OK', () => {
+  it('/user-roles (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get('/users/roles')
+      .get('/user-roles')
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -39,12 +41,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles (POST) --> 201 CREATED', () => {
+  it('/user-roles (POST) --> 201 CREATED', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/users/roles')
+      .post('/user-roles')
       .send(MockDataStorage.createUserRoleDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -58,12 +60,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles (POST) --> 409 CONFLICT | User role with specified name already exists', () => {
+  it('/user-roles (POST) --> 409 CONFLICT | User role with specified name already exists', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post('/users/roles')
+      .post('/user-roles')
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -72,12 +74,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles/:name (PUT) --> 200 OK', () => {
+  it('/user-roles/:name (PUT) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/users/roles/${MockDataStorage.updateUserRoleDtoList[0].name}`)
+      .put(`/user-roles/${MockDataStorage.updateUserRoleDtoList[0].name}`)
       .send(MockDataStorage.updateUserRoleDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -97,12 +99,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles/:name (PUT) --> 404 NOT FOUND | User role with specified name was not found', () => {
+  it('/user-roles/:name (PUT) --> 404 NOT FOUND | User role with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/users/roles/${MockDataStorage.createUserRoleDtoList[0].name}_not_existing_name`)
+      .put(`/user-roles/${MockDataStorage.createUserRoleDtoList[0].name}_not_existing_name`)
       .send(MockDataStorage.updateUserRoleDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -111,12 +113,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles/:name (DELETE) --> 200 OK', () => {
+  it('/user-roles/:name (DELETE) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/users/roles/${MockDataStorage.removeUserRoleDtoList[1].name}`)
+      .delete(`/user-roles/${MockDataStorage.removeUserRoleDtoList[1].name}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -129,12 +131,12 @@ describe('UserRoleController (e2e)', () => {
       });
   });
 
-  it('/users/roles/:name (DELETE) --> 404 NOT FOUND | User role with specified name was not found', () => {
+  it('/user-roles/:name (DELETE) --> 404 NOT FOUND | User role with specified name was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/users/roles/${MockDataStorage.removeUserRoleDtoList[0].name}_not_existing_name`)
+      .delete(`/user-roles/${MockDataStorage.removeUserRoleDtoList[0].name}_not_existing_name`)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

@@ -10,23 +10,29 @@ export class FollowingService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAllUserFollowers(userId: string): Promise<UserPublicEntity[]> {
-    return this.prismaService.following
-      .findMany({
-        where: { userId },
-        select: {
-          follower: { select: exclude('User', ['password']) },
-        },
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.user.findUniqueOrThrow({ where: { id: userId } });
+        return tx.following.findMany({
+          where: { userId },
+          select: {
+            follower: { select: exclude('User', ['password']) },
+          },
+        });
       })
       .then(result => result.map(entry => entry.follower));
   }
 
   async findAllUserFollowings(followerId: string): Promise<UserPublicEntity[]> {
-    return this.prismaService.following
-      .findMany({
-        where: { followerId },
-        select: {
-          user: { select: exclude('User', ['password']) },
-        },
+    return this.prismaService
+      .$transaction(async tx => {
+        await tx.user.findUniqueOrThrow({ where: { id: followerId } });
+        return tx.following.findMany({
+          where: { followerId },
+          select: {
+            user: { select: exclude('User', ['password']) },
+          },
+        });
       })
       .then(result => result.map(entry => entry.user));
   }

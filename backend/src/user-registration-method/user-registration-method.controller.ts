@@ -14,8 +14,8 @@ import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 
-@ApiTags('Users')
-@Controller('users/registration-methods')
+@ApiTags('User registration methods')
+@Controller('user-registration-methods')
 export class UserRegistrationMethodController {
   constructor(private readonly userRegistrationMethodService: UserRegistrationMethodService) {}
 

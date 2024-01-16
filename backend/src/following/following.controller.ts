@@ -22,6 +22,9 @@ export class FollowingController {
     description: 'Following was successfully created.',
     type: FollowingEntity,
   })
+  @ApiNotFoundResponse({
+    description: 'The following with the requested userId and followerId was not found.',
+  })
   @ApiConflictResponse({
     description: 'Cannot create the following. Invalid data was provided.',
   })

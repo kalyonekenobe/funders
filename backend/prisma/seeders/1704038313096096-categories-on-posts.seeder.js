@@ -15,6 +15,8 @@ module.exports = {
       { postId: posts[3].id, category: postCategories[2].name },
       { postId: posts[4].id, category: postCategories[4].name },
     ];
+
+    await prisma.categoriesOnPosts.createMany({ data });
   },
 
   async down() {

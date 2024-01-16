@@ -3,9 +3,10 @@ import { PrismaModule } from 'src/core/prisma/prisma.module';
 import { PostCategoryModule } from 'src/post-category/post-category.module';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
+import { CategoriesOnPostsModule } from 'src/categories-on-posts/categories-on-posts.module';
 
 @Module({
-  imports: [PrismaModule, PostCategoryModule],
+  imports: [PrismaModule, PostCategoryModule, CategoriesOnPostsModule],
   controllers: [PostController],
   providers: [PostService],
   exports: [PostService],

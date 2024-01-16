@@ -13,11 +13,17 @@ import { UserPublicEntity } from './entities/user-public.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
+import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record-request-body.dto';
+import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 
 @ApiTags('Users')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly usersBanListRecordService: UsersBanListRecordService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'User was successfully created.',
@@ -33,6 +39,55 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService
       .create(createUserDto)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @ApiCreatedResponse({
+    description: 'Users ban list record was successfully created.',
+    type: UsersBanListRecordEntity,
+  })
+  @ApiConflictResponse({
+    description: 'Cannot create users ban list record. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user which should be banned',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Post(':id/bans')
+  createUsersBanListRecord(
+    @Param('id') userId: string,
+    @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
+  ) {
+    return this.usersBanListRecordService
+      .create({ ...createUsersBanListRecordRequestBodyDto, userId })
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's ban list records",
+    type: [UsersBanListRecordEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of bans',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/bans')
+  findAllUserBans(@Param('id') userId: string) {
+    return this.usersBanListRecordService
+      .findAllUserBans(userId)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
