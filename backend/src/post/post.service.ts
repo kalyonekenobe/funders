@@ -19,7 +19,7 @@ export class PostService {
   async findAllUserPosts(userId: string): Promise<PostEntity[]> {
     return this.prismaService.$transaction(async tx => {
       await tx.user.findUniqueOrThrow({ where: { id: userId } });
-      return this.prismaService.post.findMany({ where: { authorId: userId } });
+      return tx.post.findMany({ where: { authorId: userId } });
     });
   }
 

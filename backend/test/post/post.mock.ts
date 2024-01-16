@@ -203,6 +203,9 @@ export const mockPostService = {
 
     return Promise.resolve(dto);
   }),
+  findAllUserPosts: jest.fn().mockImplementation((id: string) => {
+    return Promise.resolve(MockDataStorage.items().filter(item => item.authorId === id));
+  }),
   create: jest.fn().mockImplementation((dto: CreatePostDto): Promise<PostEntity> => {
     const created = {
       ...dto,
@@ -245,8 +248,28 @@ export const mockPostService = {
 };
 
 export const mockPostRepository = {
+  user: {
+    findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
+      const dto = MockDataStorage.items().find(item => item.authorId === data.where.id);
+
+      if (!dto) {
+        throw new PrismaClientKnownRequestError('User with this id does not exist!', {
+          code: 'P2001',
+          clientVersion: '',
+        });
+      }
+
+      return Promise.resolve(dto);
+    }),
+  },
   post: {
-    findMany: jest.fn().mockImplementation(() => MockDataStorage.items()),
+    findMany: jest.fn().mockImplementation((data?: { where: { authorId: string } }) => {
+      if (!data) {
+        return MockDataStorage.items();
+      } else {
+        return MockDataStorage.items().filter(item => item.authorId === data.where.authorId);
+      }
+    }),
     findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
       const dto = MockDataStorage.items().find(item => item.id === data.where.id);
 
@@ -309,4 +332,5 @@ export const mockPostRepository = {
       return Promise.resolve(dto);
     }),
   },
+  $transaction: jest.fn().mockImplementation(callback => callback(mockPostRepository)),
 };
