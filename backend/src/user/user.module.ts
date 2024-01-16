@@ -9,6 +9,7 @@ import { UserReactionTypeModule } from 'src/user-reaction-type/user-reaction-typ
 import { UserRegistrationMethodModule } from 'src/user-registration-method/user-registration-method.module';
 import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-list-record.module';
 import { UsersBanListRecordStatusModule } from 'src/users-ban-list-record-status/users-ban-list-record-status.module';
+import { PostModule } from 'src/post/post.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersBanListRecordStatusModule } from 'src/users-ban-list-record-status
     UsersBanListRecordModule,
     UsersBanListRecordStatusModule,
     FollowingModule,
+    PostModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',
       process.env.USER_PASSWORD_SALT_SUFFIX ?? '',

@@ -9,6 +9,7 @@ import {
 } from '../users-ban-list-record/users-ban-list-record.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { MockDataStorage as PostMockDataStorage, mockPostRepository } from 'test/post/post.mock';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -23,7 +24,14 @@ describe('UserController (e2e)', () => {
       imports: [UserModule],
     })
       .overrideProvider(PrismaService)
-      .useValue(Object.assign({}, mockUserRepository, mockUsersBanListRecordRepository))
+      .useValue(
+        Object.assign(
+          {},
+          { ...mockPostRepository, user: mockUserRepository.user },
+          mockUserRepository,
+          mockUsersBanListRecordRepository,
+        ),
+      )
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -89,6 +97,26 @@ describe('UserController (e2e)', () => {
         );
         expect(BanMockDataStorage.items()).toEqual(initialData);
         BanMockDataStorage.setDefaultItems();
+      });
+  });
+
+  it('/users/:id/posts (GET) --> 200 OK', () => {
+    PostMockDataStorage.setDefaultItems();
+
+    const initialData = [...PostMockDataStorage.items()];
+    return request(app.getHttpServer())
+      .get(`/users/${PostMockDataStorage.items()[0].authorId}/posts`)
+      .expect(HttpStatus.OK)
+      .then(response => {
+        expect(JSON.stringify(response.body)).toEqual(
+          JSON.stringify(
+            PostMockDataStorage.items().filter(
+              item => item.authorId === PostMockDataStorage.items()[0].authorId,
+            ),
+          ),
+        );
+        expect(PostMockDataStorage.items()).toEqual(initialData);
+        PostMockDataStorage.setDefaultItems();
       });
   });
 

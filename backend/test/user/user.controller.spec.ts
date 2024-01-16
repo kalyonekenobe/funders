@@ -5,8 +5,11 @@ import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
 import { mockUsersBanListRecordService } from 'test/users-ban-list-record/users-ban-list-record.mock';
+import { mockPostService } from 'test/post/post.mock';
 import { MockDataStorage as BanMockDataStorage } from 'test/users-ban-list-record/users-ban-list-record.mock';
+import { MockDataStorage as PostMockDataStorage } from 'test/post/post.mock';
 import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
+import { PostService } from 'src/post/post.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -22,6 +25,10 @@ describe('UserController', () => {
         {
           provide: UsersBanListRecordService,
           useValue: mockUsersBanListRecordService,
+        },
+        {
+          provide: PostService,
+          useValue: mockPostService,
         },
       ],
     }).compile();
@@ -128,6 +135,22 @@ describe('UserController', () => {
 
     BanMockDataStorage.setDefaultItems();
     expect(mockUsersBanListRecordService.findAllUserBans).toHaveBeenCalled();
+  });
+
+  it('should find all existing user posts for user with specified id', async () => {
+    PostMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostMockDataStorage.items()];
+    expect(await controller.findAllUserPosts(PostMockDataStorage.items()[1].authorId)).toEqual(
+      PostMockDataStorage.items().filter(
+        item => item.authorId === PostMockDataStorage.items()[1].authorId,
+      ),
+    );
+
+    expect(PostMockDataStorage.items()).toEqual(initialItems);
+
+    PostMockDataStorage.setDefaultItems();
+    expect(mockPostService.findAllUserPosts).toHaveBeenCalled();
   });
 
   it('should find users list by user id', async () => {
