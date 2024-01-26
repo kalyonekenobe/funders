@@ -6,6 +6,7 @@ export class UpdatePostAttachmentDto
   implements Omit<Partial<PostAttachmentEntity>, 'id' | 'postId'>
 {
   @ApiProperty({ description: 'The file of post attachment' })
+  @ValidateIf(() => false)
   file?: Buffer;
 
   @ApiProperty({

@@ -3,6 +3,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 
 @Injectable()
 export class PostService {
@@ -24,11 +25,39 @@ export class PostService {
   }
 
   async create(data: CreatePostDto): Promise<PostEntity> {
-    return this.prismaService.post.create({ data });
+    return this.prismaService.post.create({
+      data: {
+        ...data,
+        attachments: {
+          createMany: {
+            data: data.attachments ?? [],
+            skipDuplicates: false,
+          },
+        },
+      },
+    });
   }
 
   async update(id: string, data: UpdatePostDto): Promise<PostEntity> {
-    return this.prismaService.post.update({ where: { id }, data });
+    return this.prismaService.post.update({
+      where: { id },
+      data: {
+        ...data,
+        attachments: {
+          updateMany: {
+            data: data.attachments ?? [],
+            where: { postId: id },
+          },
+          createMany: {
+            data:
+              data.attachments?.map(
+                attachment => ({ ...attachment, postId: id }) as CreatePostAttachmentDto,
+              ) ?? [],
+            skipDuplicates: true,
+          },
+        },
+      },
+    });
   }
 
   async remove(id: string): Promise<PostEntity> {

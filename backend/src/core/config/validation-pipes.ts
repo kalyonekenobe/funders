@@ -26,6 +26,10 @@ const ValidationPipes = {
     new ParseArrayPipe({
       items: Items,
       exceptionFactory: errors => {
+        if (!Array.isArray(errors)) {
+          return new BadRequestException(errors);
+        }
+
         if (errors.find(error => Object.entries(error.constraints ?? {}).length > 0)) {
           return new ConflictException(
             errors.flatMap(error => Object.values(error.constraints ?? {})),

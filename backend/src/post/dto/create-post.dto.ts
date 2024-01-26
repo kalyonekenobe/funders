@@ -15,10 +15,14 @@ import {
 import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 
-export class CreatePostDto
-  implements Omit<PostEntity, 'id' | 'createdAt' | 'updatedAt' | 'removedAt'>
-{
+type CreatePost = Omit<
+  PostEntity,
+  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments'
+> & { attachments?: Omit<CreatePostAttachmentDto, 'postId'>[] };
+
+export class CreatePostDto implements CreatePost {
   @ApiProperty({
     description: "Post author's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],
@@ -87,4 +91,8 @@ export class CreatePostDto
   @IsBoolean()
   @IsDefined()
   isDraft: boolean;
+
+  @ApiProperty({ description: 'The nested array of attachments of this post' })
+  @ValidateIf((_, value) => value)
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
 }

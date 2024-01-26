@@ -15,6 +15,7 @@ export class CreatePostAttachmentDto implements Omit<PostAttachmentEntity, 'id'>
 
   @ApiProperty({ description: 'The file of post attachment' })
   @IsDefined()
+  @ValidateIf(() => false)
   file: Buffer;
 
   @ApiProperty({

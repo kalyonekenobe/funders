@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -13,11 +23,18 @@ import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly postAttachmentService: PostAttachmentService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'Post was successfully created.',
@@ -73,6 +90,39 @@ export class PostController {
       .findById(id)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @Get(':id/attachments')
+  findAllPostAttachments(@Param('id') id: string) {
+    return this.postAttachmentService
+      .findAllForPost(id)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  }
+
+  @Post(':id/attachments')
+  @UseInterceptors(FilesInterceptor('files'))
+  createPostAttachments(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('id') id: string,
+    @Body()
+    createPostAttachmentDto: any,
+  ) {
+    console.log(createPostAttachmentDto);
+    console.log(files);
+    const encoded = files[0].buffer.toString('base64');
+    console.log(encoded);
+    // console.log(
+    //   createPostAttachmentDto.map((item, index) => ({ ...item, file: files[index].buffer })),
+    // );
+    return 123;
+    // return this.postAttachmentService
+    //   .createManyForPost(
+    //     id,
+    //     createPostAttachmentDto.map((item, index) => ({ ...item, file: files[index].buffer })),
+    //   )
+    //   .then(response => response)
+    //   .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({

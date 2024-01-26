@@ -14,8 +14,11 @@ import {
 import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
+import { UpdatePostAttachmentDto } from 'src/post-attachment/dto/update-post-attachment.dto';
 
-export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt'> {
+export class UpdatePostDto
+  implements Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt' | 'attachments'>
+{
   @ApiProperty({
     description: 'The title of the post',
     examples: [
@@ -91,4 +94,7 @@ export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId
   @MaxDate(new Date())
   @ValidateIf((_, value) => value)
   removedAt?: Date | null;
+
+  @ApiProperty({ description: 'The nested array of attachments of this post' })
+  attachments?: UpdatePostAttachmentDto[];
 }
