@@ -33,7 +33,7 @@ export class PostAttachmentController {
     @Body() updatePostAttachmentDto: UpdatePostAttachmentDto,
   ) {
     return this.postAttachmentService
-      .update(id, { ...updatePostAttachmentDto, file: file.buffer })
+      .update(id, { ...updatePostAttachmentDto })
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }

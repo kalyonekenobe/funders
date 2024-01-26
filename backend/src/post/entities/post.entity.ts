@@ -87,9 +87,11 @@ export class PostEntity implements Post {
   @IsDefined()
   fundsToBeRaised: Decimal;
 
-  @ApiProperty({ description: 'The image of the post' })
+  @ApiProperty({ description: 'The image path of the post' })
+  @IsString()
+  @MaxLength(255)
   @ValidateIf((_, value) => value)
-  image: Buffer | null;
+  image: string | null;
 
   @ApiProperty({
     description: 'Is the post draft',

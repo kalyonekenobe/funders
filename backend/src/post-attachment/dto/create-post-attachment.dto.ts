@@ -13,10 +13,11 @@ export class CreatePostAttachmentDto implements Omit<PostAttachmentEntity, 'id'>
   @IsDefined()
   postId: string;
 
-  @ApiProperty({ description: 'The file of post attachment' })
+  @ApiProperty({ description: 'The file path of post attachment' })
+  @IsString()
+  @MaxLength(255)
   @IsDefined()
-  @ValidateIf(() => false)
-  file: Buffer;
+  file: string;
 
   @ApiProperty({
     description: 'Custom filename of the file of the post attachment',

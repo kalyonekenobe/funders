@@ -24,9 +24,11 @@ export class PostAttachmentEntity implements PostAttachment {
   @IsDefined()
   postId: string;
 
-  @ApiProperty({ description: 'The file of post attachment' })
+  @ApiProperty({ description: 'The filepath of post attachment' })
+  @IsString()
+  @MaxLength(255)
   @IsDefined()
-  file: Buffer;
+  file: string;
 
   @ApiProperty({
     description: 'Custom filename of the file of the post attachment',
