@@ -9,31 +9,31 @@ module.exports = {
     const data = [
       {
         postId: posts[0].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Video',
       },
       {
         postId: posts[0].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Document',
       },
       {
         postId: posts[2].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Image_16012024',
       },
       {
         postId: posts[2].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Image_13012024',
       },
       {
         postId: posts[3].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
       },
       {
         postId: posts[4].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Additional info',
       },
     ];
