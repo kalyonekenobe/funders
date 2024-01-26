@@ -24,9 +24,12 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { AddPostAttachmentsDto } from 'src/post-attachment/dto/add-post-attachments.dto';
+import { v4 as uuid } from 'uuid';
+import { getFileExtension } from 'src/core/utils/files.utils';
 import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
-import ValidationPipes from 'src/core/config/validation-pipes';
+import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -34,6 +37,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private readonly postAttachmentService: PostAttachmentService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   @ApiCreatedResponse({
@@ -101,28 +105,39 @@ export class PostController {
   }
 
   @Post(':id/attachments')
-  @UseInterceptors(FilesInterceptor('files'))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }]))
   createPostAttachments(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: { attachments: Express.Multer.File[] },
     @Param('id') id: string,
     @Body()
-    createPostAttachmentDto: any,
+    addPostAttachmentsDto: AddPostAttachmentsDto,
   ) {
-    console.log(createPostAttachmentDto);
-    console.log(files);
-    const encoded = files[0].buffer.toString('base64');
-    console.log(encoded);
-    // console.log(
-    //   createPostAttachmentDto.map((item, index) => ({ ...item, file: files[index].buffer })),
-    // );
-    return 123;
-    // return this.postAttachmentService
-    //   .createManyForPost(
-    //     id,
-    //     createPostAttachmentDto.map((item, index) => ({ ...item, file: files[index].buffer })),
-    //   )
-    //   .then(response => response)
-    //   .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    const createPostAttachmentDto: CreatePostAttachmentDto[] = files.attachments.map(
+      (item, index) => {
+        const filepath = `post_attachments/${uuid()}.${getFileExtension(item)}`;
+
+        this.cloudinaryService
+          .uploadFile(item, {
+            public_id: filepath,
+            resource_type: 'auto',
+          })
+          .catch(error => console.log(error));
+
+        return {
+          ...addPostAttachmentsDto.attachments[index],
+          file: filepath,
+          filename: `${addPostAttachmentsDto.attachments[index].filename}.${getFileExtension(
+            item,
+          )}`,
+          postId: id,
+        };
+      },
+    );
+
+    return this.postAttachmentService
+      .createManyForPost(id, createPostAttachmentDto)
+      .then(response => response)
+      .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
   @ApiOkResponse({

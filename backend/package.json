@@ -33,6 +33,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.6",
     "lodash": "^4.17.21",
     "multer": "^1.4.5-lts.1",
@@ -40,7 +41,9 @@
     "prisma": "^5.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.5",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "streamifier": "^0.1.1",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -52,7 +55,9 @@
     "@types/lodash": "^4.14.202",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.3.1",
+    "@types/streamifier": "^0.1.2",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",
