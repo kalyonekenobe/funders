@@ -12,10 +12,14 @@ import { PostAttachmentService } from './post-attachment.service';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
+import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 
 @Controller('post-attachments')
 export class PostAttachmentController {
-  constructor(private readonly postAttachmentService: PostAttachmentService) {}
+  constructor(
+    private readonly postAttachmentService: PostAttachmentService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Get(':id')
   findById(@Param('id') id: string) {
@@ -30,7 +34,7 @@ export class PostAttachmentController {
   update(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: string,
-    @Body() updatePostAttachmentDto: UpdatePostAttachmentDto,
+    @Body() updatePostAttachmentDto: Omit<UpdatePostAttachmentDto, 'file'>,
   ) {
     return this.postAttachmentService
       .update(id, { ...updatePostAttachmentDto })
@@ -42,7 +46,12 @@ export class PostAttachmentController {
   remove(@Param('id') id: string) {
     return this.postAttachmentService
       .remove(id)
-      .then(response => response)
+      .then(response => {
+        this.cloudinaryService
+          .removeFilesByUrls([response.file])
+          .catch(error => console.log(error));
+        return response;
+      })
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 }

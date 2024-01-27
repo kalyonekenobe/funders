@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CreatePostAttachmentDto } from './create-post-attachment.dto';
-import { IsArray, IsDefined, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsArray, IsDefined } from 'class-validator';
 
 type AddPostAttachments = {
   attachments: Omit<CreatePostAttachmentDto, 'postId' | 'file'>[];

@@ -26,10 +26,11 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AddPostAttachmentsDto } from 'src/post-attachment/dto/add-post-attachments.dto';
-import { v4 as uuid } from 'uuid';
 import { getFileExtension } from 'src/core/utils/files.utils';
 import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
+import { v4 as uuid } from 'uuid';
+import { UploadApiResponse } from 'cloudinary';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -112,30 +113,36 @@ export class PostController {
     @Body()
     addPostAttachmentsDto: AddPostAttachmentsDto,
   ) {
-    const createPostAttachmentDto: CreatePostAttachmentDto[] = files.attachments.map(
-      (item, index) => {
-        const filepath = `post_attachments/${uuid()}.${getFileExtension(item)}`;
+    return Promise.all(
+      files.attachments.map(item =>
+        this.cloudinaryService.uploadFile(item, {
+          resource_type: 'auto',
+          folder: 'post_attachments',
+          filename_override: `${uuid()}.${getFileExtension(item)}`,
+          use_filename: true,
+        }),
+      ),
+    )
+      .then(promises => {
+        const createPostAttachmentDto: CreatePostAttachmentDto[] = promises.map(
+          (response, index) => {
+            const resourse = response as UploadApiResponse;
 
-        this.cloudinaryService
-          .uploadFile(item, {
-            public_id: filepath,
-            resource_type: 'auto',
-          })
-          .catch(error => console.log(error));
+            const filename = addPostAttachmentsDto.attachments[index]?.filename
+              ? addPostAttachmentsDto.attachments[index]?.filename
+              : null;
 
-        return {
-          ...addPostAttachmentsDto.attachments[index],
-          file: filepath,
-          filename: `${addPostAttachmentsDto.attachments[index].filename}.${getFileExtension(
-            item,
-          )}`,
-          postId: id,
-        };
-      },
-    );
+            return {
+              ...addPostAttachmentsDto.attachments[index],
+              file: resourse.secure_url,
+              filename,
+              postId: id,
+            };
+          },
+        );
 
-    return this.postAttachmentService
-      .createManyForPost(id, createPostAttachmentDto)
+        return this.postAttachmentService.createManyForPost(id, createPostAttachmentDto);
+      })
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
