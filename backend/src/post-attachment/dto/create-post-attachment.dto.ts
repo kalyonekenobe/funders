@@ -28,4 +28,14 @@ export class CreatePostAttachmentDto implements Omit<PostAttachmentEntity, 'id'>
   @MaxLength(255)
   @ValidateIf((_, value) => value)
   filename: string | null;
+
+  @ApiProperty({
+    description: 'Resourse type of the file of the post attachment',
+    examples: ['raw', 'image', 'video'],
+    default: 'raw',
+  })
+  @IsString()
+  @MaxLength(255)
+  @IsDefined()
+  resourseType: string;
 }

@@ -40,6 +40,16 @@ export class PostAttachmentEntity implements PostAttachment {
   @ValidateIf((_, value) => value)
   filename: string | null;
 
+  @ApiProperty({
+    description: 'Resourse type of the file of the post attachment',
+    examples: ['raw', 'image', 'video'],
+    default: 'raw',
+  })
+  @IsString()
+  @MaxLength(255)
+  @IsDefined()
+  resourseType: string;
+
   @ApiProperty({ description: 'Nested post object for this post attachment' })
   post?: PostEntity;
 }

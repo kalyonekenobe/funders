@@ -134,9 +134,10 @@ export class PostController {
 
             return {
               ...addPostAttachmentsDto.attachments[index],
+              postId: id,
               file: resourse.public_id,
               filename,
-              postId: id,
+              resourseType: resourse.resource_type,
             };
           },
         );
