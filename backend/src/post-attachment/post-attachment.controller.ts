@@ -47,9 +47,7 @@ export class PostAttachmentController {
     return this.postAttachmentService
       .remove(id)
       .then(response => {
-        this.cloudinaryService
-          .removeFilesByUrls([response.file])
-          .catch(error => console.log(error));
+        this.cloudinaryService.removeFiles([response.file]).catch(error => console.log(error));
         return response;
       })
       .catch(error => throwHttpExceptionBasedOnErrorType(error));

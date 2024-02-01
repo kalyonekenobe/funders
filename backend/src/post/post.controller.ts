@@ -134,7 +134,7 @@ export class PostController {
 
             return {
               ...addPostAttachmentsDto.attachments[index],
-              file: resourse.secure_url,
+              file: resourse.public_id,
               filename,
               postId: id,
             };
