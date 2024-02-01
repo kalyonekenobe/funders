@@ -26,10 +26,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AddPostAttachmentsDto } from 'src/post-attachment/dto/add-post-attachments.dto';
-import { getFileExtension } from 'src/core/utils/files.utils';
-import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
-import { v4 as uuid } from 'uuid';
 import { UploadApiResponse } from 'cloudinary';
 
 @ApiTags('Posts')
@@ -115,18 +112,14 @@ export class PostController {
   ) {
     return Promise.all(
       files.attachments.map(item =>
-        this.cloudinaryService.uploadFile(item, {
-          resource_type: 'auto',
-          folder: 'post_attachments',
-          filename_override: `${uuid()}.${getFileExtension(item)}`,
-          use_filename: true,
-        }),
+        this.cloudinaryService.uploadFile(item, { folder: 'post_attachments' }),
       ),
     )
-      .then(promises => {
-        const createPostAttachmentDto: CreatePostAttachmentDto[] = promises.map(
-          (response, index) => {
-            const resourse = response as UploadApiResponse;
+      .then(promises =>
+        this.postAttachmentService.createManyForPost(
+          id,
+          promises.map((response, index) => {
+            const resource = response as UploadApiResponse;
 
             const filename = addPostAttachmentsDto.attachments[index]?.filename
               ? addPostAttachmentsDto.attachments[index]?.filename
@@ -135,15 +128,13 @@ export class PostController {
             return {
               ...addPostAttachmentsDto.attachments[index],
               postId: id,
-              file: resourse.public_id,
+              file: resource.public_id,
               filename,
-              resourseType: resourse.resource_type,
+              resourseType: resource.resource_type,
             };
-          },
-        );
-
-        return this.postAttachmentService.createManyForPost(id, createPostAttachmentDto);
-      })
+          }),
+        ),
+      )
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }

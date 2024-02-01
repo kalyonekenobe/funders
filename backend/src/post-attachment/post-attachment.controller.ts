@@ -13,6 +13,7 @@ import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/erro
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
+import { UploadApiResponse } from 'cloudinary';
 
 @Controller('post-attachments')
 export class PostAttachmentController {
@@ -36,9 +37,28 @@ export class PostAttachmentController {
     @Param('id') id: string,
     @Body() updatePostAttachmentDto: Omit<UpdatePostAttachmentDto, 'file'>,
   ) {
-    return this.postAttachmentService
-      .update(id, { ...updatePostAttachmentDto })
-      .then(response => response)
+    return this.cloudinaryService
+      .uploadFile(file, { folder: 'post_attachments' })
+      .then(response => {
+        const resourse = response as UploadApiResponse;
+        this.postAttachmentService.findById(id).then(deprecatedResourse => {
+          console.log(deprecatedResourse);
+          return this.cloudinaryService
+            .removeFiles([
+              {
+                resourse_type: deprecatedResourse.resourseType,
+                public_id: deprecatedResourse.file,
+              },
+            ])
+            .catch(error => console.log(error));
+        });
+
+        return this.postAttachmentService.update(id, {
+          ...updatePostAttachmentDto,
+          file: resourse.public_id,
+          resourseType: resourse.resource_type,
+        });
+      })
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
