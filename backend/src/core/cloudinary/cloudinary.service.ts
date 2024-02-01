@@ -37,10 +37,10 @@ export class CloudinaryService {
     return new Promise<CloudinaryResponse>(async (resolve, reject) => {
       const filesToDelete = publicIds.reduce(
         (previousValue, currentValue) => {
-          if (!previousValue[currentValue.resourse_type]) {
-            previousValue[currentValue.resourse_type] = [currentValue.public_id];
+          if (!previousValue[currentValue.resource_type]) {
+            previousValue[currentValue.resource_type] = [currentValue.public_id];
           } else {
-            previousValue[currentValue.resourse_type].push(currentValue.public_id);
+            previousValue[currentValue.resource_type].push(currentValue.public_id);
           }
 
           return previousValue;

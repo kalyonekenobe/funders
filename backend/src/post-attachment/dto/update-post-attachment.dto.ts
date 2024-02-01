@@ -22,12 +22,12 @@ export class UpdatePostAttachmentDto
   filename?: string | null;
 
   @ApiProperty({
-    description: 'Resourse type of the file of the post attachment',
+    description: 'Resource type of the file of the post attachment',
     examples: ['raw', 'image', 'video'],
     default: 'raw',
   })
   @IsString()
   @MaxLength(255)
   @ValidateIf((_, value) => value)
-  resourseType?: string;
+  resourceType?: string;
 }

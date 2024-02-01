@@ -19,16 +19,6 @@ export class PostAttachmentService {
     return this.prismaService.postAttachment.findUniqueOrThrow({ where: { id } });
   }
 
-  async createManyForPost(
-    postId: string,
-    data: CreatePostAttachmentDto[],
-  ): Promise<PostAttachmentEntity[]> {
-    return this.prismaService.$transaction(async tx => {
-      await tx.post.findUniqueOrThrow({ where: { id: postId } });
-      return Promise.all(data.map(item => tx.postAttachment.create({ data: item })));
-    });
-  }
-
   async update(id: string, data: UpdatePostAttachmentDto): Promise<PostAttachmentEntity> {
     return this.prismaService.postAttachment.update({ data, where: { id } });
   }

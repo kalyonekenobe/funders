@@ -4,5 +4,5 @@ export type CloudinaryResponse = UploadApiResponse | UploadApiErrorResponse | De
 
 export interface CloudinaryDeleteResourcesPayload {
   public_id: string;
-  resourse_type: string;
+  resource_type: string;
 }

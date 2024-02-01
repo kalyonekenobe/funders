@@ -39,24 +39,23 @@ export class PostAttachmentController {
   ) {
     return this.cloudinaryService
       .uploadFile(file, { folder: 'post_attachments' })
-      .then(response => {
-        const resourse = response as UploadApiResponse;
-        this.postAttachmentService.findById(id).then(deprecatedResourse => {
-          console.log(deprecatedResourse);
-          return this.cloudinaryService
-            .removeFiles([
-              {
-                resourse_type: deprecatedResourse.resourseType,
-                public_id: deprecatedResourse.file,
-              },
-            ])
-            .catch(error => console.log(error));
-        });
+      .then(async response => {
+        const resource = response as UploadApiResponse;
+        const deprecatedResource = await this.postAttachmentService.findById(id);
+        console.log(deprecatedResource);
+        this.cloudinaryService
+          .removeFiles([
+            {
+              resource_type: deprecatedResource.resourceType,
+              public_id: deprecatedResource.file,
+            },
+          ])
+          .catch(error => console.log(error));
 
         return this.postAttachmentService.update(id, {
           ...updatePostAttachmentDto,
-          file: resourse.public_id,
-          resourseType: resourse.resource_type,
+          file: resource.public_id,
+          resourceType: resource.resource_type,
         });
       })
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
@@ -68,7 +67,7 @@ export class PostAttachmentController {
       .remove(id)
       .then(response => {
         this.cloudinaryService
-          .removeFiles([{ resourse_type: response.resourseType, public_id: response.file }])
+          .removeFiles([{ resource_type: response.resourceType, public_id: response.file }])
           .catch(error => console.log(error));
         return response;
       })

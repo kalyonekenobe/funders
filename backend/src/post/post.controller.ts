@@ -130,7 +130,7 @@ export class PostController {
               postId: id,
               file: resource.public_id,
               filename,
-              resourseType: resource.resource_type,
+              resourceType: resource.resource_type,
             };
           }),
         ),
