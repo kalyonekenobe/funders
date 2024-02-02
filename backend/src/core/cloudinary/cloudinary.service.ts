@@ -15,6 +15,7 @@ export class CloudinaryService {
           resource_type: 'auto',
           filename_override: `${uuid()}.${getFileExtension(file)}`,
           use_filename: true,
+          unique_filename: false,
         },
         (error, result) => {
           if (error) {
