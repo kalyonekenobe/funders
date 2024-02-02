@@ -127,7 +127,6 @@ export class PostController {
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    console.log(files);
     return this.postService
       .update(id, updatePostDto, files)
       .then(response => response)

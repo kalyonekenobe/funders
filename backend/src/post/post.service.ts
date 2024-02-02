@@ -56,15 +56,7 @@ export class PostService {
 
   async update(id: string, data: UpdatePostDto, files: PostRequestBodyFiles): Promise<PostEntity> {
     this.removeRequestBodyFiles(id);
-    const [image, attachments] = await this.uploadRequestBodyFiles(
-      {
-        ...data,
-        attachments: data.attachments?.map(
-          attachment => ({ ...attachment, postId: id }) as CreatePostAttachmentDto,
-        ),
-      },
-      files,
-    );
+    const [image, attachments] = await this.uploadRequestBodyFiles(data, files);
 
     return this.prismaService.post.update({
       where: { id },
@@ -79,11 +71,9 @@ export class PostService {
           },
         },
         categories: {
+          deleteMany: {},
           createMany: {
-            data:
-              data.categories?.map(
-                category => ({ ...category, postId: id }) as CreateCategoriesOnPostsDto,
-              ) ?? [],
+            data: data.categories ?? [],
             skipDuplicates: true,
           },
         },
@@ -105,11 +95,11 @@ export class PostService {
       select: { image: true, attachments: true },
     });
 
-    if (options?.image && post.image) {
+    if (options.image && post.image) {
       this.cloudinaryService.removeFiles([{ public_id: post.image, resource_type: 'image' }]);
     }
 
-    if (options?.attachments && post.attachments.length > 0) {
+    if (options.attachments && post.attachments.length > 0) {
       this.cloudinaryService.removeFiles(
         post.attachments.map(attachment => ({
           public_id: attachment.file,
