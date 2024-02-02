@@ -33,7 +33,16 @@ export class CloudinaryService {
     });
   }
 
-  removeFiles(publicIds: CloudinaryDeleteResourcesPayload[]): Promise<CloudinaryResponse> {
+  uploadFiles(
+    files: Express.Multer.File[] | undefined = [],
+    options?: UploadApiOptions,
+  ): Promise<CloudinaryResponse[]> {
+    return Promise.all(files.map(file => this.uploadFile(file, options)));
+  }
+
+  removeFiles(
+    publicIds: CloudinaryDeleteResourcesPayload[] | undefined = [],
+  ): Promise<CloudinaryResponse> {
     return new Promise<CloudinaryResponse>(async (resolve, reject) => {
       const filesToDelete = publicIds.reduce(
         (previousValue, currentValue) => {

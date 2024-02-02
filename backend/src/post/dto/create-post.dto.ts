@@ -16,11 +16,15 @@ import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
+import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-categories-on-posts.dto';
 
 type CreatePost = Omit<
   PostEntity,
-  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments'
-> & { attachments?: Omit<CreatePostAttachmentDto, 'postId'>[] };
+  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments' | 'categories'
+> & {
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
+};
 
 export class CreatePostDto implements CreatePost {
   @ApiProperty({
@@ -91,8 +95,13 @@ export class CreatePostDto implements CreatePost {
     default: false,
   })
   @IsBoolean()
+  @Transform(value => Boolean(value))
   @IsDefined()
   isDraft: boolean;
+
+  @ApiProperty({ description: 'The nested array of categories of this post' })
+  @ValidateIf((_, value) => value)
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
 
   @ApiProperty({ description: 'The nested array of attachments of this post' })
   @ValidateIf((_, value) => value)

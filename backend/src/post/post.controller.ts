@@ -25,9 +25,8 @@ import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/erro
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { AddPostAttachmentsDto } from 'src/post-attachment/dto/add-post-attachments.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
-import { UploadApiResponse } from 'cloudinary';
+import { PostRequestBodyFiles } from './post.types';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -49,9 +48,10 @@ export class PostController {
     description: 'Internal server error was occured.',
   })
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
+  create(@UploadedFiles() files: PostRequestBodyFiles, @Body() createPostDto: CreatePostDto) {
     return this.postService
-      .create(createPostDto)
+      .create(createPostDto, files)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
@@ -102,43 +102,6 @@ export class PostController {
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
-  @Post(':id/attachments')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }]))
-  createPostAttachments(
-    @UploadedFiles() files: { attachments: Express.Multer.File[] },
-    @Param('id') id: string,
-    @Body()
-    addPostAttachmentsDto: AddPostAttachmentsDto,
-  ) {
-    return Promise.all(
-      files.attachments.map(item =>
-        this.cloudinaryService.uploadFile(item, { folder: 'post_attachments' }),
-      ),
-    )
-      .then(promises =>
-        this.postAttachmentService.createManyForPost(
-          id,
-          promises.map((response, index) => {
-            const resource = response as UploadApiResponse;
-
-            const filename = addPostAttachmentsDto.attachments[index]?.filename
-              ? addPostAttachmentsDto.attachments[index]?.filename
-              : null;
-
-            return {
-              ...addPostAttachmentsDto.attachments[index],
-              postId: id,
-              file: resource.public_id,
-              filename,
-              resourceType: resource.resource_type,
-            };
-          }),
-        ),
-      )
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
-  }
-
   @ApiOkResponse({
     description: 'Post was successfully updated.',
     type: PostEntity,
@@ -158,9 +121,15 @@ export class PostController {
     description: 'The uuid of the post to be updated',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
+  update(
+    @UploadedFiles() files: PostRequestBodyFiles,
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    console.log(files);
     return this.postService
-      .update(id, updatePostDto)
+      .update(id, updatePostDto, files)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }

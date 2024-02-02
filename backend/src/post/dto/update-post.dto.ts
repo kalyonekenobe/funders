@@ -15,9 +15,12 @@ import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { UpdatePostAttachmentDto } from 'src/post-attachment/dto/update-post-attachment.dto';
+import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-categories-on-posts.dto';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 
 export class UpdatePostDto
-  implements Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt' | 'attachments'>
+  implements
+    Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt' | 'attachments' | 'categories'>
 {
   @ApiProperty({
     description: 'The title of the post',
@@ -97,6 +100,9 @@ export class UpdatePostDto
   @ValidateIf((_, value) => value)
   removedAt?: Date | null;
 
+  @ApiProperty({ description: 'The nested array of categories of this post' })
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
+
   @ApiProperty({ description: 'The nested array of attachments of this post' })
-  attachments?: UpdatePostAttachmentDto[];
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
 }

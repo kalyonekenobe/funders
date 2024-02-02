@@ -10,17 +10,12 @@ import {
 } from '@nestjs/common';
 import { PostAttachmentService } from './post-attachment.service';
 import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
-import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
-import { UploadApiResponse } from 'cloudinary';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post-attachments')
 export class PostAttachmentController {
-  constructor(
-    private readonly postAttachmentService: PostAttachmentService,
-    private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  constructor(private readonly postAttachmentService: PostAttachmentService) {}
 
   @Get(':id')
   findById(@Param('id') id: string) {
@@ -37,27 +32,9 @@ export class PostAttachmentController {
     @Param('id') id: string,
     @Body() updatePostAttachmentDto: Omit<UpdatePostAttachmentDto, 'file'>,
   ) {
-    return this.cloudinaryService
-      .uploadFile(file, { folder: 'post_attachments' })
-      .then(async response => {
-        const resource = response as UploadApiResponse;
-        const deprecatedResource = await this.postAttachmentService.findById(id);
-        console.log(deprecatedResource);
-        this.cloudinaryService
-          .removeFiles([
-            {
-              resource_type: deprecatedResource.resourceType,
-              public_id: deprecatedResource.file,
-            },
-          ])
-          .catch(error => console.log(error));
-
-        return this.postAttachmentService.update(id, {
-          ...updatePostAttachmentDto,
-          file: resource.public_id,
-          resourceType: resource.resource_type,
-        });
-      })
+    return this.postAttachmentService
+      .update(id, updatePostAttachmentDto, file)
+      .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 
@@ -65,12 +42,7 @@ export class PostAttachmentController {
   remove(@Param('id') id: string) {
     return this.postAttachmentService
       .remove(id)
-      .then(response => {
-        this.cloudinaryService
-          .removeFiles([{ resource_type: response.resourceType, public_id: response.file }])
-          .catch(error => console.log(error));
-        return response;
-      })
+      .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
 }
