@@ -36,6 +36,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
     {
       id: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
@@ -55,6 +57,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
     {
       id: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
@@ -72,6 +76,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
     {
       id: '793e32be-36a4-4692-8237-fd022f7e1b0d',
@@ -91,6 +97,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
     {
       id: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
@@ -109,6 +117,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
   ];
 
@@ -120,6 +130,8 @@ export class MockDataStorage {
       fundsToBeRaised: new Decimal(20000),
       isDraft: true,
       image: null,
+      categories: [],
+      attachments: [],
     },
     {
       authorId: '28120570-6539-4abe-8e52-edc697b0ae89',
@@ -128,6 +140,8 @@ export class MockDataStorage {
       fundsToBeRaised: new Decimal(20000),
       isDraft: true,
       image: null,
+      categories: [],
+      attachments: [],
     },
   ];
 
@@ -159,6 +173,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
     {
       id: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
@@ -176,6 +192,8 @@ export class MockDataStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       removedAt: null,
+      categories: [],
+      attachments: [],
     },
   ];
 
@@ -206,34 +224,41 @@ export const mockPostService = {
   findAllUserPosts: jest.fn().mockImplementation((id: string) => {
     return Promise.resolve(MockDataStorage.items().filter(item => item.authorId === id));
   }),
-  create: jest.fn().mockImplementation((dto: CreatePostDto): Promise<PostEntity> => {
-    const created = {
-      ...dto,
-      id: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      removedAt: null,
-    };
+  create: jest
+    .fn()
+    .mockImplementation((dto: CreatePostDto, files: unknown): Promise<PostEntity> => {
+      const created = {
+        ...dto,
+        id: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        removedAt: null,
+      };
 
-    MockDataStorage.items().push(created);
+      MockDataStorage.items().push(created as any);
 
-    return Promise.resolve(created);
-  }),
-  update: jest.fn().mockImplementation((id: string, dto: UpdatePostDto): Promise<PostEntity> => {
-    let exists = MockDataStorage.items().find(item => item.id === id);
+      return Promise.resolve(created as any);
+    }),
+  update: jest
+    .fn()
+    .mockImplementation((id: string, dto: UpdatePostDto, files: unknown): Promise<PostEntity> => {
+      let exists = MockDataStorage.items().find(item => item.id === id);
 
-    if (!exists) {
-      throw new Error('Post with this id does not exist!');
-    }
+      if (!exists) {
+        throw new Error('Post with this id does not exist!');
+      }
 
-    const updated = { ...exists, ...dto };
+      const updated = {
+        ...exists,
+        ...dto,
+      };
 
-    MockDataStorage.setItems(
-      MockDataStorage.items().map(item => (item.id === id ? updated : item)),
-    );
+      MockDataStorage.setItems(
+        MockDataStorage.items().map(item => (item.id === id ? (updated as any) : item)),
+      );
 
-    return Promise.resolve(updated);
-  }),
+      return Promise.resolve(updated as any);
+    }),
   remove: jest.fn().mockImplementation((id: string): Promise<PostEntity> => {
     const dto = MockDataStorage.items().find(item => item.id === id);
 
@@ -289,6 +314,8 @@ export const mockPostRepository = {
         createdAt: new Date(),
         updatedAt: new Date(),
         removedAt: null,
+        categories: [],
+        attachments: [],
       };
 
       MockDataStorage.items().push(created);
@@ -308,13 +335,18 @@ export const mockPostRepository = {
             });
           }
 
-          const updated = { ...exists, ...dto.data };
+          const updated = {
+            ...exists,
+            ...{ ...dto.data, categories: [], attachments: [] },
+          };
 
           MockDataStorage.setItems(
-            MockDataStorage.items().map(item => (item.id === dto.where.id ? updated : item)),
+            MockDataStorage.items().map(item =>
+              item.id === dto.where.id ? (updated as any) : item,
+            ),
           );
 
-          return Promise.resolve(updated);
+          return Promise.resolve(updated as any);
         },
       ),
     delete: jest.fn().mockImplementation((data: { where: { id: string } }): Promise<PostEntity> => {
@@ -331,6 +363,13 @@ export const mockPostRepository = {
 
       return Promise.resolve(dto);
     }),
+    removeRequestBodyFiles: jest.fn().mockImplementation((id: string, options: any) => {}),
+    uploadRequestBodyFiles: jest
+      .fn()
+      .mockImplementation((data: any, files: any, id?: string) => [null, []]),
+  },
+  postAttachment: {
+    findMany: jest.fn().mockImplementation(() => []),
   },
   $transaction: jest.fn().mockImplementation(callback => callback(mockPostRepository)),
 };

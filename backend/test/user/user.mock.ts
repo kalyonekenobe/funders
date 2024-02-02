@@ -189,48 +189,52 @@ export const mockUserService = {
 
       return Promise.resolve(created);
     }),
-  create: jest.fn().mockImplementation((dto: CreateUserDto): Promise<UserPublicEntity> => {
-    const exists = MockDataStorage.items().find(item => item.email === dto.email);
-
-    if (exists) {
-      throw new Error('User with this email already exists!');
-    }
-
-    const created = {
-      ...dto,
-      bio: null,
-      avatar: null,
-      id: '',
-      phone: null,
-      refreshToken: null,
-      registeredAt: new Date(),
-    } as Partial<UserEntity>;
-
-    delete created.password;
-
-    MockDataStorage.items().push(created as UserPublicEntity);
-
-    return Promise.resolve(created as UserPublicEntity);
-  }),
-  update: jest
+  create: jest
     .fn()
-    .mockImplementation((id: string, dto: UpdateUserDto): Promise<UserPublicEntity> => {
-      let exists = MockDataStorage.items().find(item => item.id === id);
+    .mockImplementation((dto: CreateUserDto, files: unknown): Promise<UserPublicEntity> => {
+      const exists = MockDataStorage.items().find(item => item.email === dto.email);
 
-      if (!exists) {
-        throw new Error('User with this id does not exist!');
+      if (exists) {
+        throw new Error('User with this email already exists!');
       }
 
-      const updated = { ...exists, ...dto };
+      const created = {
+        ...dto,
+        bio: null,
+        avatar: null,
+        id: '',
+        phone: null,
+        refreshToken: null,
+        registeredAt: new Date(),
+      } as Partial<UserEntity>;
 
-      MockDataStorage.setItems(
-        MockDataStorage.items().map(item =>
-          item.id === id ? (updated as UserPublicEntity) : item,
-        ),
-      );
+      delete created.password;
 
-      return Promise.resolve(updated as UserPublicEntity);
+      MockDataStorage.items().push(created as UserPublicEntity);
+
+      return Promise.resolve(created as UserPublicEntity);
     }),
+  update: jest
+    .fn()
+    .mockImplementation(
+      (id: string, dto: UpdateUserDto, files: unknown): Promise<UserPublicEntity> => {
+        let exists = MockDataStorage.items().find(item => item.id === id);
+
+        if (!exists) {
+          throw new Error('User with this id does not exist!');
+        }
+
+        const updated = { ...exists, ...dto };
+
+        MockDataStorage.setItems(
+          MockDataStorage.items().map(item =>
+            item.id === id ? (updated as UserPublicEntity) : item,
+          ),
+        );
+
+        return Promise.resolve(updated as UserPublicEntity);
+      },
+    ),
   remove: jest.fn().mockImplementation((id: string): Promise<UserPublicEntity> => {
     const dto = MockDataStorage.items().find(item => item.id === id);
 

@@ -25,7 +25,6 @@ import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/erro
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { PostRequestBodyFiles } from './post.types';
 
 @ApiTags('Posts')
@@ -34,7 +33,6 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private readonly postAttachmentService: PostAttachmentService,
-    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   @ApiCreatedResponse({

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockPostService } from './post.mock';
 import { PostController } from 'src/post/post.controller';
 import { PostService } from 'src/post/post.service';
+import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 
 describe('PostController', () => {
   let controller: PostController;
@@ -10,6 +11,7 @@ describe('PostController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostController],
       providers: [
+        { provide: PostAttachmentService, useValue: {} },
         {
           provide: PostService,
           useValue: mockPostService,
@@ -29,7 +31,7 @@ describe('PostController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.createPostDtoList) {
-      const received = await controller.create(item);
+      const received = await controller.create({}, item);
       const expected = { ...received, ...item };
       expect(received).toEqual(expected);
       initialItems.push(received);
@@ -46,7 +48,7 @@ describe('PostController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     expect(() => {
-      controller.create(MockDataStorage.items()[0]);
+      controller.create({}, MockDataStorage.createPostDtoList[0]);
 
       // Simulating validation error
       MockDataStorage.items().pop();
@@ -100,7 +102,7 @@ describe('PostController', () => {
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
     for (const item of MockDataStorage.updatePostDtoList) {
-      const received = await controller.update(item.id, item.data);
+      const received = await controller.update({}, item.id, item.data);
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -126,7 +128,9 @@ describe('PostController', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.update('', { ...MockDataStorage.updatePostDtoList[0].data })).toThrow();
+    expect(() =>
+      controller.update({}, '', { ...MockDataStorage.updatePostDtoList[0].data }),
+    ).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

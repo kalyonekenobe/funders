@@ -35,7 +35,7 @@ export class UserService {
     });
   }
 
-  async create(data: CreateUserDto, files: UserRequestBodyFiles): Promise<UserPublicEntity> {
+  async create(data: CreateUserDto, files?: UserRequestBodyFiles): Promise<UserPublicEntity> {
     const [avatar] = await this.uploadRequestBodyFiles(data, files);
 
     return this.prismaService.user.create({
@@ -47,14 +47,14 @@ export class UserService {
   async update(
     id: string,
     data: UpdateUserDto,
-    files: UserRequestBodyFiles,
+    files?: UserRequestBodyFiles,
   ): Promise<UserPublicEntity> {
     if (data.password !== undefined) {
       data.password = await this.passwordService.hash(data.password);
     }
 
     await this.removeRequestBodyFiles(id, {
-      avatar: (files.avatar && files.avatar.length > 0) || data.avatar !== undefined,
+      avatar: (files?.avatar && files.avatar.length > 0) || data.avatar !== undefined,
     });
     const [avatar] = await this.uploadRequestBodyFiles(data, files, id);
 
@@ -79,7 +79,6 @@ export class UserService {
       select: { avatar: true },
     });
 
-    console.log(options.avatar, user.avatar);
     if (options.avatar && user.avatar) {
       this.cloudinaryService.removeFiles([{ public_id: user.avatar, resource_type: 'image' }]);
     }
@@ -87,12 +86,12 @@ export class UserService {
 
   private async uploadRequestBodyFiles(
     data: CreateUserDto | UpdateUserDto,
-    files: UserRequestBodyFiles,
+    files?: UserRequestBodyFiles,
     userId?: string,
   ): Promise<[string | null]> {
     let avatar: string | null = null;
 
-    if (files.avatar && files.avatar.length > 0) {
+    if (files?.avatar && files.avatar.length > 0) {
       const resource = (
         await this.cloudinaryService.uploadFiles(files.avatar, {
           folder: 'users',

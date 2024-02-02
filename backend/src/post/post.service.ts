@@ -53,11 +53,11 @@ export class PostService {
     });
   }
 
-  async update(id: string, data: UpdatePostDto, files: PostRequestBodyFiles): Promise<PostEntity> {
+  async update(id: string, data: UpdatePostDto, files?: PostRequestBodyFiles): Promise<PostEntity> {
     await this.removeRequestBodyFiles(id, {
-      image: (files.image && files.image.length > 0) || data.image !== undefined,
+      image: (files?.image && files.image.length > 0) || data.image !== undefined,
       attachments:
-        (files.attachments && files.attachments.length > 0) || data.attachments !== undefined,
+        (files?.attachments && files.attachments.length > 0) || data.attachments !== undefined,
     });
     const [image, attachments] = await this.uploadRequestBodyFiles(data, files, id);
 
@@ -114,13 +114,13 @@ export class PostService {
 
   private async uploadRequestBodyFiles(
     data: CreatePostDto | UpdatePostDto,
-    files: PostRequestBodyFiles,
+    files?: PostRequestBodyFiles,
     postId?: string,
   ): Promise<[string | null, Omit<CreatePostAttachmentDto, 'postId'>[]]> {
     let image: string | null = null;
     let attachments: Omit<CreatePostAttachmentDto, 'postId'>[] = [];
 
-    if (files.image?.length && files.image.length > 0) {
+    if (files?.image?.length && files.image.length > 0) {
       const resource = (
         await this.cloudinaryService.uploadFiles(files.image, {
           folder: 'posts',
@@ -131,7 +131,7 @@ export class PostService {
       image = (await this.findById(postId ?? '')).image ?? null;
     }
 
-    if (files.attachments?.length && files.attachments.length > 0) {
+    if (files?.attachments?.length && files.attachments.length > 0) {
       attachments = (
         await this.cloudinaryService.uploadFiles(files.attachments, {
           folder: 'post_attachments',
