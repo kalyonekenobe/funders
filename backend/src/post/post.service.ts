@@ -7,7 +7,6 @@ import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-att
 import { PostRequestBodyFiles, RemovePostFilesOptions } from './post.types';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { UploadApiResponse } from 'cloudinary';
-import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-categories-on-posts.dto';
 
 @Injectable()
 export class PostService {
@@ -55,8 +54,12 @@ export class PostService {
   }
 
   async update(id: string, data: UpdatePostDto, files: PostRequestBodyFiles): Promise<PostEntity> {
-    this.removeRequestBodyFiles(id);
-    const [image, attachments] = await this.uploadRequestBodyFiles(data, files);
+    await this.removeRequestBodyFiles(id, {
+      image: (files.image && files.image.length > 0) || data.image !== undefined,
+      attachments:
+        (files.attachments && files.attachments.length > 0) || data.attachments !== undefined,
+    });
+    const [image, attachments] = await this.uploadRequestBodyFiles(data, files, id);
 
     return this.prismaService.post.update({
       where: { id },
@@ -82,7 +85,7 @@ export class PostService {
   }
 
   async remove(id: string): Promise<PostEntity> {
-    this.removeRequestBodyFiles(id);
+    await this.removeRequestBodyFiles(id);
     return this.prismaService.post.delete({ where: { id } });
   }
 
@@ -112,6 +115,7 @@ export class PostService {
   private async uploadRequestBodyFiles(
     data: CreatePostDto | UpdatePostDto,
     files: PostRequestBodyFiles,
+    postId?: string,
   ): Promise<[string | null, Omit<CreatePostAttachmentDto, 'postId'>[]]> {
     let image: string | null = null;
     let attachments: Omit<CreatePostAttachmentDto, 'postId'>[] = [];
@@ -123,6 +127,8 @@ export class PostService {
         })
       )[0] as UploadApiResponse;
       image = resource.public_id ?? null;
+    } else if (postId && data.image === undefined) {
+      image = (await this.findById(postId ?? '')).image ?? null;
     }
 
     if (files.attachments?.length && files.attachments.length > 0) {
@@ -142,6 +148,11 @@ export class PostService {
           filename,
           resourceType: resource.resource_type,
         };
+      });
+    } else if (postId && data.attachments === undefined) {
+      attachments = await this.prismaService.postAttachment.findMany({
+        where: { postId },
+        select: { file: true, filename: true, resourceType: true },
       });
     }
 

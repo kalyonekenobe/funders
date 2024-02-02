@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -17,6 +27,8 @@ import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-l
 import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record-request-body.dto';
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { PostService } from 'src/post/post.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UserRequestBodyFiles } from './user.types';
 
 @ApiTags('Users')
 @Controller('users')
@@ -38,9 +50,10 @@ export class UserController {
     description: 'Internal server error was occured.',
   })
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  create(@UploadedFiles() files: UserRequestBodyFiles, @Body() createUserDto: CreateUserDto) {
     return this.userService
-      .create(createUserDto)
+      .create(createUserDto, files)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
@@ -174,9 +187,14 @@ export class UserController {
     description: 'The uuid of the user to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  update(
+    @UploadedFiles() files: UserRequestBodyFiles,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.userService
-      .update(id, updateUserDto)
+      .update(id, updateUserDto, files)
       .then(response => response)
       .catch(error => throwHttpExceptionBasedOnErrorType(error));
   }
