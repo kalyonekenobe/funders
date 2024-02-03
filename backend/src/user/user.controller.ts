@@ -21,7 +21,6 @@ import {
 import { UserService } from './user.service';
 import { UserPublicEntity } from './entities/user-public.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/exception/error-handler';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
 import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record-request-body.dto';
@@ -52,10 +51,7 @@ export class UserController {
   @Post()
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   create(@UploadedFiles() files: UserRequestBodyFiles, @Body() createUserDto: CreateUserDto) {
-    return this.userService
-      .create(createUserDto, files)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.create(createUserDto, files);
   }
 
   @ApiCreatedResponse({
@@ -78,10 +74,10 @@ export class UserController {
     @Param('id') userId: string,
     @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
   ) {
-    return this.usersBanListRecordService
-      .create({ ...createUsersBanListRecordRequestBodyDto, userId })
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordService.create({
+      ...createUsersBanListRecordRequestBodyDto,
+      userId,
+    });
   }
 
   @ApiOkResponse({
@@ -101,10 +97,7 @@ export class UserController {
   })
   @Get(':id/bans')
   findAllUserBans(@Param('id') userId: string) {
-    return this.usersBanListRecordService
-      .findAllUserBans(userId)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordService.findAllUserBans(userId);
   }
 
   @ApiOkResponse({
@@ -116,10 +109,7 @@ export class UserController {
   })
   @Get()
   findAll() {
-    return this.userService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.findAll();
   }
 
   @ApiOkResponse({
@@ -139,10 +129,7 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   findById(@Param('id') id: string) {
-    return this.userService
-      .findById(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.findById(id);
   }
 
   @ApiOkResponse({
@@ -162,10 +149,7 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   findAllUserPosts(@Param('id') id: string) {
-    return this.postService
-      .findAllUserPosts(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findAllUserPosts(id);
   }
 
   @ApiOkResponse({
@@ -193,10 +177,7 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService
-      .update(id, updateUserDto, files)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.update(id, updateUserDto, files);
   }
 
   @ApiOkResponse({
@@ -216,9 +197,6 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   remove(@Param('id') id: string) {
-    return this.userService
-      .remove(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.remove(id);
   }
 }
