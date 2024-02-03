@@ -21,7 +21,6 @@ import {
 import { PostService } from './post.service';
 import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -48,10 +47,7 @@ export class PostController {
   @Post()
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   create(@UploadedFiles() files: PostRequestBodyFiles, @Body() createPostDto: CreatePostDto) {
-    return this.postService
-      .create(createPostDto, files)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.create(createPostDto, files);
   }
 
   @ApiOkResponse({
@@ -63,10 +59,7 @@ export class PostController {
   })
   @Get()
   findAll() {
-    return this.postService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findAll();
   }
 
   @ApiOkResponse({
@@ -82,22 +75,16 @@ export class PostController {
   @Get(':id')
   @ApiParam({
     name: 'id',
-    description: 'The uuid of the post to be updated',
+    description: 'The uuid of the post to be found.',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   findById(@Param('id') id: string) {
-    return this.postService
-      .findById(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findById(id);
   }
 
   @Get(':id/attachments')
   findAllPostAttachments(@Param('id') id: string) {
-    return this.postAttachmentService
-      .findAllForPost(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postAttachmentService.findAllForPost(id);
   }
 
   @ApiOkResponse({
@@ -125,10 +112,7 @@ export class PostController {
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return this.postService
-      .update(id, updatePostDto, files)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.update(id, updatePostDto, files);
   }
 
   @ApiOkResponse({
@@ -148,9 +132,6 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   remove(@Param('id') id: string) {
-    return this.postService
-      .remove(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.remove(id);
   }
 }

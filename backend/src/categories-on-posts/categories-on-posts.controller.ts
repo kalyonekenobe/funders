@@ -10,7 +10,6 @@ import {
 } from '@nestjs/swagger';
 import { CategoriesOnPostsService } from './categories-on-posts.service';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import ValidationPipes from 'src/core/config/validation-pipes';
 
 @ApiTags('Posts')
@@ -42,10 +41,7 @@ export class CategoriesOnPostsController {
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],
   ) {
-    return this.categoriesOnPostsService
-      .createPostCategories(postId, postCategoriesList)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.categoriesOnPostsService.createPostCategories(postId, postCategoriesList);
   }
 
   @ApiOkResponse({
@@ -65,10 +61,7 @@ export class CategoriesOnPostsController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   findAllPostCategories(@Param('id') postId: string) {
-    return this.categoriesOnPostsService
-      .findAllPostCategories(postId)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.categoriesOnPostsService.findAllPostCategories(postId);
   }
 
   @ApiOkResponse({
@@ -95,10 +88,7 @@ export class CategoriesOnPostsController {
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],
   ) {
-    return this.categoriesOnPostsService
-      .updatePostCategories(postId, postCategoriesList)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.categoriesOnPostsService.updatePostCategories(postId, postCategoriesList);
   }
 
   @ApiOkResponse({
@@ -122,9 +112,6 @@ export class CategoriesOnPostsController {
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],
   ) {
-    return this.categoriesOnPostsService
-      .removePostCategories(postId, postCategoriesList)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.categoriesOnPostsService.removePostCategories(postId, postCategoriesList);
   }
 }

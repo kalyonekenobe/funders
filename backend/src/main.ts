@@ -1,8 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import ValidationPipes from './core/config/validation-pipes';
+import { AllExceptionFilter } from './core/exception/exception.filter';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -19,6 +20,7 @@ async function bootstrap() {
     .build();
 
   app.useGlobalPipes(ValidationPipes.validationPipe);
+  app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
   app.enableCors();
   app.use(cookieParser());
   app.setGlobalPrefix('api/v1');

@@ -8,7 +8,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { FollowingService } from './following.service';
 import { FollowingEntity } from './entities/following.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
@@ -43,10 +42,7 @@ export class FollowingController {
   })
   @Post(':userId/followers/:followerId')
   create(@Param('userId') userId: string, @Param('followerId') followerId: string) {
-    return this.followingService
-      .create({ userId, followerId })
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.followingService.create({ userId, followerId });
   }
 
   @ApiOkResponse({
@@ -66,10 +62,7 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   findAllUserFollowings(@Param('id') id: string) {
-    return this.followingService
-      .findAllUserFollowings(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.followingService.findAllUserFollowings(id);
   }
 
   @ApiOkResponse({
@@ -89,10 +82,7 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   findAllUserFollowers(@Param('id') id: string) {
-    return this.followingService
-      .findAllUserFollowers(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.followingService.findAllUserFollowers(id);
   }
 
   @ApiOkResponse({
@@ -117,9 +107,6 @@ export class FollowingController {
     schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
   })
   remove(@Param('userId') userId: string, @Param('followerId') followerId: string) {
-    return this.followingService
-      .remove(userId, followerId)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.followingService.remove(userId, followerId);
   }
 }

@@ -8,7 +8,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { ChatRoleService } from './chat-role.service';
 import { ChatRoleEntity } from './entities/chat-role.entity';
 import { CreateChatRoleDto } from './dto/create-chat-role.dto';
@@ -31,10 +30,7 @@ export class ChatRoleController {
   })
   @Post()
   create(@Body() createChatRoleDto: CreateChatRoleDto) {
-    return this.chatRoleService
-      .create(createChatRoleDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatRoleService.create(createChatRoleDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class ChatRoleController {
   })
   @Get()
   findAll() {
-    return this.chatRoleService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatRoleService.findAll();
   }
 
   @ApiOkResponse({
@@ -72,10 +65,7 @@ export class ChatRoleController {
     schema: { example: 'Owner' },
   })
   update(@Param('name') name: string, @Body() updateChatRoleDto: UpdateChatRoleDto) {
-    return this.chatRoleService
-      .update(name, updateChatRoleDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatRoleService.update(name, updateChatRoleDto);
   }
 
   @ApiOkResponse({
@@ -95,9 +85,6 @@ export class ChatRoleController {
     schema: { example: 'Owner' },
   })
   remove(@Param('name') name: string) {
-    return this.chatRoleService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatRoleService.remove(name);
   }
 }
