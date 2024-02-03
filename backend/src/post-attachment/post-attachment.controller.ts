@@ -13,6 +13,7 @@ import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiConflictResponse,
+  ApiConsumes,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,12 +37,12 @@ export class PostAttachmentController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the post attachment to be found.',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
     return this.postAttachmentService.findById(id);
   }
@@ -59,13 +60,14 @@ export class PostAttachmentController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the post attachment to be updated',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
+  @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
+  @Put(':id')
   update(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: string,
@@ -84,12 +86,12 @@ export class PostAttachmentController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the post attachment to be deleted',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.postAttachmentService.remove(id);
   }

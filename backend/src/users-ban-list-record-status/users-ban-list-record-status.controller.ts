@@ -58,12 +58,12 @@ export class UsersBanListRecordStatusController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the users ban list record status to be updated',
     schema: { example: 'Permanent' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUsersBanListRecordStatusDto: UpdateUsersBanListRecordStatusDto,
@@ -81,12 +81,12 @@ export class UsersBanListRecordStatusController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the users ban list record status to be deleted',
     schema: { example: 'Permanent' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.usersBanListRecordStatusService.remove(name);
   }

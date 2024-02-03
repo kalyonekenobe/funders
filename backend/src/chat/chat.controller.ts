@@ -55,12 +55,12 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the chat to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
     return this.chatService.findById(id);
   }
@@ -78,12 +78,12 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the chat to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
     return this.chatService.update(id, updateChatDto);
   }
@@ -98,12 +98,12 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the chat to be deleted',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.chatService.remove(id);
   }

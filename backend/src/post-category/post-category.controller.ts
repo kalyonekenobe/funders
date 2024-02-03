@@ -58,12 +58,12 @@ export class PostCategoryController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the post category to be updated',
     schema: { example: 'Army' },
   })
+  @Put(':name')
   update(@Param('name') name: string, @Body() updatePostCategoryDto: UpdatePostCategoryDto) {
     return this.postCategoryService.update(name, updatePostCategoryDto);
   }
@@ -78,12 +78,12 @@ export class PostCategoryController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the post category to be deleted',
     schema: { example: 'Army' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.postCategoryService.remove(name);
   }

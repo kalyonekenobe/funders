@@ -4,7 +4,7 @@ import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
-import { PostRequestBodyFiles, RemovePostFilesOptions } from './post.types';
+import { PostRequestBodyFiles, RemovePostFilesOptions } from './types/post.types';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { UploadApiResponse } from 'cloudinary';
 

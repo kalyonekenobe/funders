@@ -58,12 +58,12 @@ export class UserReactionTypeController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user reaction type to be updated',
     schema: { example: 'Like' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUserReactionTypeDto: UpdateUserReactionTypeDto,
@@ -81,12 +81,12 @@ export class UserReactionTypeController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user reaction type to be deleted',
     schema: { example: 'Like' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.userReactionTypeService.remove(name);
   }

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -27,7 +28,7 @@ import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-recor
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { PostService } from 'src/post/post.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { UserRequestBodyFiles } from './user.types';
+import { UserRequestBodyFiles } from './types/user.types';
 
 @ApiTags('Users')
 @Controller('users')
@@ -48,8 +49,9 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Post()
+  @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  @Post()
   create(@UploadedFiles() files: UserRequestBodyFiles, @Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto, files);
   }
@@ -122,12 +124,12 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to be found.',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
     return this.userService.findById(id);
   }
@@ -142,12 +144,12 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id/posts')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to find all his posts',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id/posts')
   findAllUserPosts(@Param('id') id: string) {
     return this.postService.findAllUserPosts(id);
   }
@@ -165,13 +167,14 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  @Put(':id')
   update(
     @UploadedFiles() files: UserRequestBodyFiles,
     @Param('id') id: string,
@@ -190,12 +193,12 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the user to be deleted',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }

@@ -58,12 +58,12 @@ export class ChatRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the chat role to be updated',
     schema: { example: 'Owner' },
   })
+  @Put(':name')
   update(@Param('name') name: string, @Body() updateChatRoleDto: UpdateChatRoleDto) {
     return this.chatRoleService.update(name, updateChatRoleDto);
   }
@@ -78,12 +78,12 @@ export class ChatRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the chat role to be deleted',
     schema: { example: 'Owner' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.chatRoleService.remove(name);
   }

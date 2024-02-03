@@ -58,12 +58,12 @@ export class UserRegistrationMethodController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user registration method to be updated',
     schema: { example: 'Google' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUserRegistrationMethodDto: UpdateUserRegistrationMethodDto,
@@ -81,12 +81,12 @@ export class UserRegistrationMethodController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user registration method to be deleted',
     schema: { example: 'Google' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.userRegistrationMethodService.remove(name);
   }

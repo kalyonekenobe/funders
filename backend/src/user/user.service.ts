@@ -6,7 +6,7 @@ import { UserPublicEntity } from './entities/user-public.entity';
 import { exclude } from 'src/core/prisma/prisma.utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RemoveUserFilesOptions, UserRequestBodyFiles } from './user.types';
+import { RemoveUserFilesOptions, UserRequestBodyFiles } from './types/user.types';
 import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()

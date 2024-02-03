@@ -58,12 +58,12 @@ export class UserRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user role to be updated',
     schema: { example: 'Administrator' },
   })
+  @Put(':name')
   update(@Param('name') name: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
     return this.userRoleService.update(name, updateUserRoleDto);
   }
@@ -78,12 +78,12 @@ export class UserRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user role to be deleted',
     schema: { example: 'Administrator' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
     return this.userRoleService.remove(name);
   }
