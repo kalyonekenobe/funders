@@ -9,6 +9,7 @@ import {
 
 export class ExceptionUtils {
   static convertToHttpException(exception: unknown): HttpException {
+    console.log(exception);
     if (exception instanceof HttpException) {
       return exception;
     }

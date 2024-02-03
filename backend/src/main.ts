@@ -3,7 +3,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import ValidationPipes from './core/config/validation-pipes';
-import { AllExceptionFilter } from './core/exception/exception.filter';
+import { AllExceptionFilter } from './core/exceptions/exception.filter';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {

@@ -5,12 +5,12 @@ import {
   Get,
   Param,
   Put,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostAttachmentService } from './post-attachment.service';
 import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiConflictResponse,
   ApiConsumes,
@@ -21,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PostAttachmentEntity } from './entities/post-attachment.entity';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 
 @ApiTags('Post attachments')
 @Controller('post-attachments')
@@ -66,14 +67,22 @@ export class PostAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @ApiConsumes('application/json', 'multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
   @Put(':id')
   update(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'file',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: { file: Express.Multer.File[] },
     @Param('id') id: string,
     @Body() updatePostAttachmentDto: Omit<UpdatePostAttachmentDto, 'file'>,
   ) {
-    return this.postAttachmentService.update(id, updatePostAttachmentDto, file);
+    return this.postAttachmentService.update(id, updatePostAttachmentDto, files.file[0]);
   }
 
   @ApiOkResponse({

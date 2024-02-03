@@ -29,6 +29,8 @@ import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/use
 import { PostService } from 'src/post/post.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserRequestBodyFiles } from './types/user.types';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { UploadResourceTypes } from 'src/core/constants/constants';
 
 @ApiTags('Users')
 @Controller('users')
@@ -52,7 +54,19 @@ export class UserController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @Post()
-  create(@UploadedFiles() files: UserRequestBodyFiles, @Body() createUserDto: CreateUserDto) {
+  create(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'avatar',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+    ])
+    files: UserRequestBodyFiles,
+    @Body() createUserDto: CreateUserDto,
+  ) {
     return this.userService.create(createUserDto, files);
   }
 
@@ -176,7 +190,16 @@ export class UserController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @Put(':id')
   update(
-    @UploadedFiles() files: UserRequestBodyFiles,
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'avatar',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+    ])
+    files: UserRequestBodyFiles,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {

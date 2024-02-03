@@ -27,6 +27,8 @@ import { PostAttachmentService } from 'src/post-attachment/post-attachment.servi
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PostRequestBodyFiles } from './types/post.types';
 import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { UploadResourceTypes } from 'src/core/constants/constants';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -49,7 +51,24 @@ export class PostController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   @Post()
-  create(@UploadedFiles() files: PostRequestBodyFiles, @Body() createPostDto: CreatePostDto) {
+  create(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'image',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+      {
+        fieldname: 'attachments',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: PostRequestBodyFiles,
+    @Body() createPostDto: CreatePostDto,
+  ) {
     return this.postService.create(createPostDto, files);
   }
 
@@ -119,7 +138,21 @@ export class PostController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   @Put(':id')
   update(
-    @UploadedFiles() files: PostRequestBodyFiles,
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'image',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+      {
+        fieldname: 'attachments',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: PostRequestBodyFiles,
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
