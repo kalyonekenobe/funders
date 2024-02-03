@@ -13,11 +13,9 @@ export class AllExceptionFilter implements ExceptionFilter {
     const httpException = ExceptionUtils.convertToHttpException(exception);
 
     const body = {
-      message: httpException.message,
-      error: httpException.message,
+      ...(httpException.getResponse() as object),
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(context.getRequest()),
-      statusCode: httpException.getStatus(),
     };
 
     httpAdapter.reply(context.getResponse(), body, httpException.getStatus());

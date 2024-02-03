@@ -9,7 +9,10 @@ import {
 
 export class ExceptionUtils {
   static convertToHttpException(exception: unknown): HttpException {
-    console.error(exception);
+    if (exception instanceof HttpException) {
+      return exception;
+    }
+
     const prismaHttpException = ExceptionUtils.convertToHttpExceptionIfPrismaException(exception);
 
     return (
