@@ -6,8 +6,11 @@ import { UserPublicEntity } from './entities/user-public.entity';
 import { exclude } from 'src/core/prisma/prisma.utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RemoveUserFilesOptions, UserRequestBodyFiles } from './types/user.types';
-import { UploadApiResponse } from 'cloudinary';
+import { UserRequestBodyFiles } from './types/user.types';
+import {
+  IPrepareSingleResourceForDelete,
+  IPrepareSingleResourceForUpload,
+} from 'src/core/cloudinary/cloudinary.types';
 
 @Injectable()
 export class UserService {
@@ -36,12 +39,27 @@ export class UserService {
   }
 
   async create(data: CreateUserDto, files?: UserRequestBodyFiles): Promise<UserPublicEntity> {
-    const [avatar] = await this.uploadRequestBodyFiles(data, files);
+    let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
 
-    return this.prismaService.user.create({
-      data: { ...data, avatar, password: await this.passwordService.hash(data.password) },
-      select: exclude('User', ['password']),
-    });
+    if (files?.avatar && files.avatar.length > 0) {
+      uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
+        mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
+      });
+    }
+
+    return this.prismaService.user
+      .create({
+        data: {
+          ...data,
+          avatar: uploader?.resource.publicId ?? null,
+          password: await this.passwordService.hash(data.password),
+        },
+        select: exclude('User', ['password']),
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        return response;
+      });
   }
 
   async update(
@@ -53,55 +71,50 @@ export class UserService {
       data.password = await this.passwordService.hash(data.password);
     }
 
-    await this.removeRequestBodyFiles(id, {
-      avatar: (files?.avatar && files.avatar.length > 0) || data.avatar !== undefined,
-    });
-    const [avatar] = await this.uploadRequestBodyFiles(data, files, id);
+    const user = await this.findById(id);
 
-    return this.prismaService.user.update({
-      data: { ...data, avatar },
-      where: { id },
-      select: exclude('User', ['password']),
-    });
+    let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
+    let destroyer: IPrepareSingleResourceForDelete | undefined = undefined;
+
+    if (files?.avatar && files.avatar.length > 0) {
+      uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
+        mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
+      });
+    }
+
+    if (((files?.avatar && files.avatar.length > 0) || data.avatar !== undefined) && user.avatar) {
+      destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
+        publicId: user.avatar,
+        resourceType: 'image',
+      });
+    }
+
+    return this.prismaService.user
+      .update({
+        data: { ...data, avatar: uploader?.resource.publicId ?? null },
+        where: { id },
+        select: exclude('User', ['password']),
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        if (destroyer) destroyer.delete();
+        return response;
+      });
   }
 
   async remove(id: string) {
-    await this.removeRequestBodyFiles(id);
-    return this.prismaService.user.delete({ where: { id }, select: exclude('User', ['password']) });
-  }
+    return this.prismaService.user
+      .delete({ where: { id }, select: exclude('User', ['password']) })
+      .then(response => {
+        if (response.avatar) {
+          const destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
+            publicId: response.avatar,
+            resourceType: 'image',
+          });
 
-  private async removeRequestBodyFiles(
-    userId: string,
-    options: RemoveUserFilesOptions = { avatar: true },
-  ): Promise<void> {
-    const user = await this.prismaService.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: { avatar: true },
-    });
-
-    if (options.avatar && user.avatar) {
-      this.cloudinaryService.removeFiles([{ public_id: user.avatar, resource_type: 'image' }]);
-    }
-  }
-
-  private async uploadRequestBodyFiles(
-    data: CreateUserDto | UpdateUserDto,
-    files?: UserRequestBodyFiles,
-    userId?: string,
-  ): Promise<[string | null]> {
-    let avatar: string | null = null;
-
-    if (files?.avatar && files.avatar.length > 0) {
-      const resource = (
-        await this.cloudinaryService.uploadFiles(files.avatar, {
-          folder: 'users',
-        })
-      )[0] as UploadApiResponse;
-      avatar = resource.public_id ?? null;
-    } else if (userId && (data as UpdateUserDto).avatar === undefined) {
-      avatar = (await this.findById(userId)).avatar ?? null;
-    }
-
-    return [avatar];
+          destroyer.delete();
+        }
+        return response;
+      });
   }
 }

@@ -3,10 +3,13 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
-import { PostRequestBodyFiles, RemovePostFilesOptions } from './types/post.types';
+import { PostRequestBodyFiles } from './types/post.types';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
-import { UploadApiResponse } from 'cloudinary';
+import {
+  ICloudinaryLikeResource,
+  IPrepareMultipleResourcesForDelete,
+  IPrepareMultipleResourcesForUpload,
+} from 'src/core/cloudinary/cloudinary.types';
 
 @Injectable()
 export class PostService {
@@ -30,132 +33,163 @@ export class PostService {
     });
   }
 
-  async create(data: CreatePostDto, files: PostRequestBodyFiles): Promise<PostEntity> {
-    const [image, attachments] = await this.uploadRequestBodyFiles(data, files);
+  async create(data: CreatePostDto, files?: PostRequestBodyFiles): Promise<PostEntity> {
+    const uploadResources: Express.Multer.File[] = [];
+    let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
 
-    return this.prismaService.post.create({
-      data: {
-        ...data,
-        image,
-        attachments: {
-          createMany: {
-            data: attachments ?? [],
-            skipDuplicates: false,
+    if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
+    if (files?.attachments && data.attachments) uploadResources.push(...files.attachments);
+
+    if (uploadResources.length > 0) {
+      uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
+        mapping: { image: 'posts', attachments: 'post_attachments' },
+      });
+    }
+
+    const image = uploader?.resources.find(resource => resource.fieldname === 'image');
+    const uploadAttachments = uploader?.resources.filter(
+      resources => resources.fieldname === 'attachments',
+    );
+
+    const attachments = uploadAttachments
+      ? files?.attachments?.map((_, index) => ({
+          ...data.attachments?.[index],
+          file: uploadAttachments[index].publicId,
+          resourceType: uploadAttachments[index].resourceType,
+        })) ?? []
+      : [];
+
+    return this.prismaService.post
+      .create({
+        data: {
+          ...data,
+          image: image?.publicId ?? null,
+          attachments: {
+            createMany: {
+              data: attachments,
+              skipDuplicates: false,
+            },
+          },
+          categories: {
+            createMany: {
+              data: data.categories ?? [],
+              skipDuplicates: false,
+            },
           },
         },
-        categories: {
-          createMany: {
-            data: data.categories ?? [],
-            skipDuplicates: false,
-          },
-        },
-      },
-    });
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        return response;
+      });
   }
 
   async update(id: string, data: UpdatePostDto, files?: PostRequestBodyFiles): Promise<PostEntity> {
-    await this.removeRequestBodyFiles(id, {
-      image: (files?.image && files.image.length > 0) || data.image !== undefined,
-      attachments:
-        (files?.attachments && files.attachments.length > 0) || data.attachments !== undefined,
-    });
-    const [image, attachments] = await this.uploadRequestBodyFiles(data, files, id);
-
-    return this.prismaService.post.update({
+    const post = await this.prismaService.post.findFirstOrThrow({
       where: { id },
-      data: {
-        ...data,
-        image,
-        attachments: {
-          deleteMany: {},
-          createMany: {
-            data: attachments ?? [],
-            skipDuplicates: false,
-          },
-        },
-        categories: {
-          deleteMany: {},
-          createMany: {
-            data: data.categories ?? [],
-            skipDuplicates: true,
-          },
-        },
-      },
-    });
-  }
-
-  async remove(id: string): Promise<PostEntity> {
-    await this.removeRequestBodyFiles(id);
-    return this.prismaService.post.delete({ where: { id } });
-  }
-
-  private async removeRequestBodyFiles(
-    postId: string,
-    options: RemovePostFilesOptions = { image: true, attachments: true },
-  ): Promise<void> {
-    const post = await this.prismaService.post.findUniqueOrThrow({
-      where: { id: postId },
       select: { image: true, attachments: true },
     });
 
-    if (options.image && post.image) {
-      this.cloudinaryService.removeFiles([{ public_id: post.image, resource_type: 'image' }]);
+    const uploadResources: Express.Multer.File[] = [];
+    const deleteResources: ICloudinaryLikeResource[] = [];
+    let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
+    let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
+
+    if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
+    if (files?.attachments && data.attachments) uploadResources.push(...files.attachments);
+
+    if (uploadResources.length > 0) {
+      uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
+        mapping: { image: 'posts', attachments: 'post_attachments' },
+      });
     }
 
-    if (options.attachments && post.attachments.length > 0) {
-      this.cloudinaryService.removeFiles(
-        post.attachments.map(attachment => ({
-          public_id: attachment.file,
-          resource_type: attachment.resourceType,
-        })),
+    const image = uploader?.resources.find(resource => resource.fieldname === 'image');
+    const uploadAttachments = uploader?.resources.filter(
+      resources => resources.fieldname === 'attachments',
+    );
+
+    const attachments = uploadAttachments
+      ? files?.attachments?.map((_, index) => ({
+          ...data.attachments?.[index],
+          file: uploadAttachments[index].publicId,
+          resourceType: uploadAttachments[index].resourceType,
+        })) ?? []
+      : [];
+
+    if (((files?.image && files.image.length > 0) || data.image !== undefined) && post.image) {
+      deleteResources.push({ publicId: post.image, resourceType: 'image' });
+    }
+
+    if (
+      ((files?.attachments && files.attachments.length > 0) || files?.attachments !== undefined) &&
+      post.attachments.length > 0
+    ) {
+      deleteResources.push(
+        ...post.attachments.map(({ file, resourceType }) => ({ publicId: file, resourceType })),
       );
     }
+
+    if (deleteResources.length > 0) {
+      destroyer = this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
+    }
+
+    return this.prismaService.post
+      .update({
+        where: { id },
+        data: {
+          ...data,
+          image: image?.publicId ?? null,
+          attachments: {
+            deleteMany: {},
+            createMany: {
+              data: attachments,
+              skipDuplicates: false,
+            },
+          },
+          categories: {
+            deleteMany: {},
+            createMany: {
+              data: data.categories ?? [],
+              skipDuplicates: true,
+            },
+          },
+        },
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        if (destroyer) destroyer.delete();
+        return response;
+      });
   }
 
-  private async uploadRequestBodyFiles(
-    data: CreatePostDto | UpdatePostDto,
-    files?: PostRequestBodyFiles,
-    postId?: string,
-  ): Promise<[string | null, Omit<CreatePostAttachmentDto, 'postId'>[]]> {
-    let image: string | null = null;
-    let attachments: Omit<CreatePostAttachmentDto, 'postId'>[] = [];
+  async remove(id: string): Promise<PostEntity> {
+    return this.prismaService.post
+      .delete({ where: { id }, include: { attachments: true } })
+      .then(response => {
+        const deleteResources: ICloudinaryLikeResource[] = [];
 
-    if (files?.image?.length && files.image.length > 0) {
-      const resource = (
-        await this.cloudinaryService.uploadFiles(files.image, {
-          folder: 'posts',
-        })
-      )[0] as UploadApiResponse;
-      image = resource.public_id ?? null;
-    } else if (postId && data.image === undefined) {
-      image = (await this.findById(postId ?? '')).image ?? null;
-    }
+        if (response.attachments.length > 0) {
+          deleteResources.push(
+            ...response.attachments.map(({ file, resourceType }) => ({
+              publicId: file,
+              resourceType,
+            })),
+          );
+        }
 
-    if (files?.attachments?.length && files.attachments.length > 0) {
-      attachments = (
-        await this.cloudinaryService.uploadFiles(files.attachments, {
-          folder: 'post_attachments',
-        })
-      ).map((attachment, index) => {
-        const resource = attachment as UploadApiResponse;
-        const filename = data.attachments?.[index]?.filename
-          ? data.attachments?.[index]?.filename
-          : null;
+        if (response.image) {
+          deleteResources.push({ publicId: response.image, resourceType: 'image' });
+        }
 
-        return {
-          ...data.attachments?.[index],
-          file: resource.public_id,
-          filename,
-          resourceType: resource.resource_type,
-        };
+        if (deleteResources.length > 0) {
+          const destroyer =
+            this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
+
+          destroyer.delete();
+        }
+
+        return response;
       });
-    } else if (postId && data.attachments === undefined) {
-      attachments = await this.prismaService.postAttachment.findMany({
-        where: { postId },
-        select: { file: true, filename: true, resourceType: true },
-      });
-    }
-
-    return [image, attachments];
   }
 }
