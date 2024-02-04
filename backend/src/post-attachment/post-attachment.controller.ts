@@ -78,11 +78,11 @@ export class PostAttachmentController {
         maxFileSize: 1024 * 1024 * 50,
       },
     ])
-    files: { file: Express.Multer.File[] },
+    files: { file?: Express.Multer.File[] },
     @Param('id') id: string,
     @Body() updatePostAttachmentDto: Omit<UpdatePostAttachmentDto, 'file'>,
   ) {
-    return this.postAttachmentService.update(id, updatePostAttachmentDto, files.file[0]);
+    return this.postAttachmentService.update(id, updatePostAttachmentDto, files?.file?.[0]);
   }
 
   @ApiOkResponse({

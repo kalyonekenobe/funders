@@ -4,6 +4,7 @@ import { PostAttachmentEntity } from './entities/post-attachment.entity';
 import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { CreatePostAttachmentDto } from './dto/create-post-attachment.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PostAttachmentService {
@@ -38,9 +39,17 @@ export class PostAttachmentService {
   async update(
     id: string,
     data: UpdatePostAttachmentDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ): Promise<PostAttachmentEntity> {
     const attachment = await this.findById(id);
+
+    if (!file) {
+      throw new PrismaClientKnownRequestError('Uploaded file does not exist', {
+        clientVersion: '',
+        code: 'P2019',
+      });
+    }
+
     const uploader = this.cloudinaryService.prepareSingleResourceForUpload(file, {
       mapping: { [`${file.fieldname}`]: 'post_attachments' },
       beforeUpload: () => {
