@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 export const UploadRestrictions = createParamDecorator(
   async (restrictions: IUploadRestriction[], context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
-    const files = _.concat(...(Object.values(request.files) as Express.Multer.File[]));
+    const files = _.concat(...(Object.values(request.files ?? {}) as Express.Multer.File[]));
     files.forEach(file => {
       const currentFileRestrictions = restrictions.find(
         restriction => restriction.fieldname === file.fieldname,

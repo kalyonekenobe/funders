@@ -5,6 +5,8 @@ import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-li
 import { MockDataStorage, mockUsersBanListRecordRepository } from './users-ban-list-record.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -24,6 +26,7 @@ describe('UsersBanListRecordController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
+    app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     await app.init();
   });
 

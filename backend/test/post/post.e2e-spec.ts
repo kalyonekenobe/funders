@@ -5,6 +5,8 @@ import { PostModule } from 'src/post/post.module';
 import { MockDataStorage, mockPostRepository } from './post.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 describe('PostController (e2e)', () => {
   let app: INestApplication;
@@ -19,6 +21,7 @@ describe('PostController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
+    app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     await app.init();
   });
 

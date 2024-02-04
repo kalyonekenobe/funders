@@ -85,7 +85,7 @@ export class PostService {
   }
 
   async update(id: string, data: UpdatePostDto, files?: PostRequestBodyFiles): Promise<PostEntity> {
-    const post = await this.prismaService.post.findFirstOrThrow({
+    const post = await this.prismaService.post.findUniqueOrThrow({
       where: { id },
       select: { image: true, attachments: true },
     });

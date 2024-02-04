@@ -8,6 +8,8 @@ import {
 } from './users-ban-list-record-status.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -27,6 +29,7 @@ describe('UsersBanListRecordStatusController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
+    app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     await app.init();
   });
 

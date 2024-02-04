@@ -8,6 +8,8 @@ import {
 } from './user-registration-method.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 describe('UserRegistrationMethodController (e2e)', () => {
   let app: INestApplication;
@@ -22,6 +24,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
+    app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     await app.init();
   });
 
