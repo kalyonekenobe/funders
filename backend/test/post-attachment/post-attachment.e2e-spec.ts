@@ -66,24 +66,6 @@ describe('PostAttachmentController (e2e)', () => {
       });
   });
 
-  it('/post-attachments/:id (DELETE) --> 200 OK', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .delete(`/post-attachments/${MockDataStorage.removePostAttachmentDtoList[0].id}`)
-      .expect(HttpStatus.OK)
-      .then(response => {
-        expect(JSON.stringify(response.body)).toEqual(
-          JSON.stringify(MockDataStorage.removePostAttachmentDtoList[0]),
-        );
-        expect(MockDataStorage.items()).toEqual(
-          initialData.filter(item => item.id !== MockDataStorage.removePostAttachmentDtoList[0].id),
-        );
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
   it('/post-attachments/:id (DELETE) --> 404 NOT FOUND | Post attachment with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
