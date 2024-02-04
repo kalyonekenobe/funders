@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PasswordService } from 'src/core/password/password.service';
+import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { UserPublicEntity } from './entities/user-public.entity';
+import { exclude } from 'src/core/prisma/prisma.utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { exclude } from 'src/core/prisma/prisma.utils';
+import { UserRequestBodyFiles } from './types/user.types';
+import {
+  IPrepareSingleResourceForDelete,
+  IPrepareSingleResourceForUpload,
+} from 'src/core/cloudinary/cloudinary.types';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly passwordService: PasswordService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(): Promise<UserPublicEntity[]> {
@@ -31,26 +38,83 @@ export class UserService {
     });
   }
 
-  async create(data: CreateUserDto): Promise<UserPublicEntity> {
-    return this.prismaService.user.create({
-      data: { ...data, password: await this.passwordService.hash(data.password) },
-      select: exclude('User', ['password']),
-    });
+  async create(data: CreateUserDto, files?: UserRequestBodyFiles): Promise<UserPublicEntity> {
+    let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
+
+    if (files?.avatar && files.avatar.length > 0) {
+      uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
+        mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
+      });
+    }
+
+    return this.prismaService.user
+      .create({
+        data: {
+          ...data,
+          avatar: uploader?.resource.publicId ?? null,
+          password: await this.passwordService.hash(data.password),
+        },
+        select: exclude('User', ['password']),
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        return response;
+      });
   }
 
-  async update(id: string, data: UpdateUserDto): Promise<UserPublicEntity> {
+  async update(
+    id: string,
+    data: UpdateUserDto,
+    files?: UserRequestBodyFiles,
+  ): Promise<UserPublicEntity> {
     if (data.password !== undefined) {
       data.password = await this.passwordService.hash(data.password);
     }
 
-    return this.prismaService.user.update({
-      data,
-      where: { id },
-      select: exclude('User', ['password']),
-    });
+    const user = await this.findById(id);
+
+    let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
+    let destroyer: IPrepareSingleResourceForDelete | undefined = undefined;
+
+    if (files?.avatar && files.avatar.length > 0) {
+      uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
+        mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
+      });
+    }
+
+    if (((files?.avatar && files.avatar.length > 0) || data.avatar !== undefined) && user.avatar) {
+      destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
+        publicId: user.avatar,
+        resourceType: 'image',
+      });
+    }
+
+    return this.prismaService.user
+      .update({
+        data: { ...data, avatar: uploader?.resource.publicId ?? null },
+        where: { id },
+        select: exclude('User', ['password']),
+      })
+      .then(response => {
+        if (uploader) uploader.upload();
+        if (destroyer) destroyer.delete();
+        return response;
+      });
   }
 
   async remove(id: string) {
-    return this.prismaService.user.delete({ where: { id }, select: exclude('User', ['password']) });
+    return this.prismaService.user
+      .delete({ where: { id }, select: exclude('User', ['password']) })
+      .then(response => {
+        if (response.avatar) {
+          const destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
+            publicId: response.avatar,
+            resourceType: 'image',
+          });
+
+          destroyer.delete();
+        }
+        return response;
+      });
   }
 }

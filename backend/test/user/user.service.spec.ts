@@ -4,6 +4,7 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { PasswordModule } from 'src/core/password/password.module';
+import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
 
 describe('UserService', () => {
   let service: UserService;
@@ -16,6 +17,7 @@ describe('UserService', () => {
           process.env.USER_PASSWORD_SALT_PREFIX ?? '',
           process.env.USER_PASSWORD_SALT_SUFFIX ?? '',
         ),
+        CloudinaryModule,
       ],
       providers: [
         UserService,
@@ -39,7 +41,7 @@ describe('UserService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.createUserDtoList) {
-      const received = await service.create(item);
+      const received = await service.create(item, {});
       const expected = { ...received, ...item };
       expect({ ...received, password: item.password }).toEqual(expected);
       initialItems.push(received);
@@ -56,11 +58,14 @@ describe('UserService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     await expect(
-      service.create({
-        ...MockDataStorage.items()[0],
-        email: 'johndoe@gmail.com',
-        password: '123',
-      } as CreateUserDto),
+      service.create(
+        {
+          ...MockDataStorage.items()[0],
+          email: 'johndoe@gmail.com',
+          password: '123',
+        } as CreateUserDto,
+        {},
+      ),
     ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
@@ -110,7 +115,7 @@ describe('UserService', () => {
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
     for (const item of MockDataStorage.updateUserDtoList) {
-      const received = await service.update(item.id, item.data);
+      const received = await service.update(item.id, item.data, {});
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -137,7 +142,7 @@ describe('UserService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     await expect(
-      service.update('', { ...MockDataStorage.updateUserDtoList[0].data }),
+      service.update('', { ...MockDataStorage.updateUserDtoList[0].data }, {}),
     ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 

@@ -1,6 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -11,13 +22,21 @@ import {
 import { PostService } from './post.service';
 import { PostEntity } from './entities/post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PostRequestBodyFiles } from './types/post.types';
+import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { UploadResourceTypes } from 'src/core/constants/constants';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly postAttachmentService: PostAttachmentService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'Post was successfully created.',
@@ -29,12 +48,28 @@ export class PostController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService
-      .create(createPostDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  create(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'image',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+      {
+        fieldname: 'attachments',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: PostRequestBodyFiles,
+    @Body() createPostDto: CreatePostDto,
+  ) {
+    return this.postService.create(createPostDto, files);
   }
 
   @ApiOkResponse({
@@ -46,10 +81,7 @@ export class PostController {
   })
   @Get()
   findAll() {
-    return this.postService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findAll();
   }
 
   @ApiOkResponse({
@@ -62,17 +94,26 @@ export class PostController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
-    description: 'The uuid of the post to be updated',
+    description: 'The uuid of the post to be found.',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
-    return this.postService
-      .findById(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findById(id);
+  }
+
+  @ApiOkResponse({
+    description: 'The list of post attachments',
+    type: [PostAttachmentEntity],
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @Get(':id/attachments')
+  findAllPostAttachments(@Param('id') id: string) {
+    return this.postAttachmentService.findAllForPost(id);
   }
 
   @ApiOkResponse({
@@ -88,17 +129,34 @@ export class PostController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the post to be updated',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService
-      .update(id, updatePostDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
+  @Put(':id')
+  update(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'image',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+      {
+        fieldname: 'attachments',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: PostRequestBodyFiles,
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    return this.postService.update(id, updatePostDto, files);
   }
 
   @ApiOkResponse({
@@ -111,16 +169,13 @@ export class PostController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the post to be deleted',
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postService
-      .remove(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.remove(id);
   }
 }

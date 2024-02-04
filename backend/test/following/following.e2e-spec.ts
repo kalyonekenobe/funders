@@ -4,6 +4,9 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 import { MockDataStorage, mockFollowingRepository } from './following.mock';
 import { FollowingModule } from 'src/following/following.module';
 import * as request from 'supertest';
+import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
+import ValidationPipes from 'src/core/config/validation-pipes';
 
 describe('FollowingController (e2e)', () => {
   let app: INestApplication;
@@ -17,6 +20,8 @@ describe('FollowingController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(ValidationPipes.validationPipe);
+    app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     await app.init();
   });
 

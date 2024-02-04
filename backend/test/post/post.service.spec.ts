@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockPostRepository } from './post.mock';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PostService } from 'src/post/post.service';
+import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 
 describe('PostService', () => {
   let service: PostService;
@@ -11,6 +12,7 @@ describe('PostService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PostService,
+        CloudinaryService,
         {
           provide: PrismaService,
           useValue: mockPostRepository,
@@ -31,7 +33,7 @@ describe('PostService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.createPostDtoList) {
-      const received = await service.create(item);
+      const received = await service.create(item, {});
       const expected = { ...received, ...item };
       expect(received).toEqual(expected);
       initialItems.push(received);
@@ -49,13 +51,13 @@ describe('PostService', () => {
     const initialItems = [...MockDataStorage.items()];
     await expect(
       new Promise(() => {
-        service.create(MockDataStorage.items()[0]);
+        service.create(MockDataStorage.createPostDtoList[0], {});
 
         // Simulating validation error
-        MockDataStorage.items().pop();
         throw new Error('Validation error');
       }),
     ).rejects.toThrow();
+    MockDataStorage.items().pop();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -104,7 +106,7 @@ describe('PostService', () => {
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
     for (const item of MockDataStorage.updatePostDtoList) {
-      const received = await service.update(item.id, item.data);
+      const received = await service.update(item.id, item.data, {});
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -131,7 +133,7 @@ describe('PostService', () => {
 
     const initialItems = [...MockDataStorage.items()];
     await expect(
-      service.update('', { ...MockDataStorage.updatePostDtoList[0].data }),
+      service.update('', { ...MockDataStorage.updatePostDtoList[0].data }, {}),
     ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 

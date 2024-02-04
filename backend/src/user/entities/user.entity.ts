@@ -135,8 +135,11 @@ export class UserEntity implements User {
   @ValidateIf((_, value) => value)
   bio: string | null;
 
-  @ApiProperty({ description: "User's avatar" })
-  avatar: Buffer | null;
+  @ApiProperty({ description: "User's avatar path" })
+  @IsString()
+  @MaxLength(255)
+  @ValidateIf((_, value) => value)
+  avatar: string | null;
 
   @ApiProperty({
     description: "User's refresh roken",

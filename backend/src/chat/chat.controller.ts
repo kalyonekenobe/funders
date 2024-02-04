@@ -9,7 +9,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -31,10 +30,7 @@ export class ChatController {
   })
   @Post()
   create(@Body() createChatDto: CreateChatDto) {
-    return this.chatService
-      .create(createChatDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatService.create(createChatDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class ChatController {
   })
   @Get()
   findAll() {
-    return this.chatService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatService.findAll();
   }
 
   @ApiOkResponse({
@@ -62,17 +55,14 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the chat to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
-    return this.chatService
-      .findById(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatService.findById(id);
   }
 
   @ApiOkResponse({
@@ -88,17 +78,14 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the chat to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatService
-      .update(id, updateChatDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatService.update(id, updateChatDto);
   }
 
   @ApiOkResponse({
@@ -111,16 +98,13 @@ export class ChatController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the chat to be deleted',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.chatService
-      .remove(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.chatService.remove(id);
   }
 }

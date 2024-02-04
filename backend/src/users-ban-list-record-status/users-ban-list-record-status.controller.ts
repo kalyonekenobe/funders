@@ -11,7 +11,6 @@ import {
 import { UsersBanListRecordStatusService } from './users-ban-list-record-status.service';
 import { UsersBanListRecordStatusEntity } from './entities/users-ban-list-record-status.entity';
 import { CreateUsersBanListRecordStatusDto } from './dto/create-users-ban-list-record-status.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUsersBanListRecordStatusDto } from './dto/update-users-ban-list-record-status.dto';
 
 @ApiTags('Ban statuses')
@@ -31,10 +30,7 @@ export class UsersBanListRecordStatusController {
   })
   @Post()
   create(@Body() createUsersBanListRecordStatusDto: CreateUsersBanListRecordStatusDto) {
-    return this.usersBanListRecordStatusService
-      .create(createUsersBanListRecordStatusDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordStatusService.create(createUsersBanListRecordStatusDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class UsersBanListRecordStatusController {
   })
   @Get()
   findAll() {
-    return this.usersBanListRecordStatusService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordStatusService.findAll();
   }
 
   @ApiOkResponse({
@@ -65,20 +58,17 @@ export class UsersBanListRecordStatusController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the users ban list record status to be updated',
     schema: { example: 'Permanent' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUsersBanListRecordStatusDto: UpdateUsersBanListRecordStatusDto,
   ) {
-    return this.usersBanListRecordStatusService
-      .update(name, updateUsersBanListRecordStatusDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordStatusService.update(name, updateUsersBanListRecordStatusDto);
   }
 
   @ApiOkResponse({
@@ -91,16 +81,13 @@ export class UsersBanListRecordStatusController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the users ban list record status to be deleted',
     schema: { example: 'Permanent' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
-    return this.usersBanListRecordStatusService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordStatusService.remove(name);
   }
 }

@@ -9,7 +9,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PostCategoryService } from './post-category.service';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { PostCategoryEntity } from './entities/post-category.entity';
 import { CreatePostCategoryDto } from './dto/create-post-category.dto';
 import { UpdatePostCategoryDto } from './dto/update-post-category.dto';
@@ -31,10 +30,7 @@ export class PostCategoryController {
   })
   @Post()
   create(@Body() createPostCategoryDto: CreatePostCategoryDto) {
-    return this.postCategoryService
-      .create(createPostCategoryDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postCategoryService.create(createPostCategoryDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class PostCategoryController {
   })
   @Get()
   findAll() {
-    return this.postCategoryService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postCategoryService.findAll();
   }
 
   @ApiOkResponse({
@@ -65,17 +58,14 @@ export class PostCategoryController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the post category to be updated',
     schema: { example: 'Army' },
   })
+  @Put(':name')
   update(@Param('name') name: string, @Body() updatePostCategoryDto: UpdatePostCategoryDto) {
-    return this.postCategoryService
-      .update(name, updatePostCategoryDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postCategoryService.update(name, updatePostCategoryDto);
   }
 
   @ApiOkResponse({
@@ -88,16 +78,13 @@ export class PostCategoryController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the post category to be deleted',
     schema: { example: 'Army' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
-    return this.postCategoryService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postCategoryService.remove(name);
   }
 }

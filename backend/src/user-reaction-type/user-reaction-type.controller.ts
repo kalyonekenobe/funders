@@ -9,7 +9,6 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UserReactionTypeEntity } from './entities/user-reaction-type.entity';
 import { UpdateUserReactionTypeDto } from './dto/update-user-reaction-type.dto';
 import { CreateUserReactionTypeDto } from './dto/create-user-reaction-type.dto';
@@ -31,10 +30,7 @@ export class UserReactionTypeController {
   })
   @Post()
   create(@Body() createUserReactionTypeDto: CreateUserReactionTypeDto) {
-    return this.userReactionTypeService
-      .create(createUserReactionTypeDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userReactionTypeService.create(createUserReactionTypeDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class UserReactionTypeController {
   })
   @Get()
   findAll() {
-    return this.userReactionTypeService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userReactionTypeService.findAll();
   }
 
   @ApiOkResponse({
@@ -65,20 +58,17 @@ export class UserReactionTypeController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user reaction type to be updated',
     schema: { example: 'Like' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUserReactionTypeDto: UpdateUserReactionTypeDto,
   ) {
-    return this.userReactionTypeService
-      .update(name, updateUserReactionTypeDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userReactionTypeService.update(name, updateUserReactionTypeDto);
   }
 
   @ApiOkResponse({
@@ -91,16 +81,13 @@ export class UserReactionTypeController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user reaction type to be deleted',
     schema: { example: 'Like' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
-    return this.userReactionTypeService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userReactionTypeService.remove(name);
   }
 }

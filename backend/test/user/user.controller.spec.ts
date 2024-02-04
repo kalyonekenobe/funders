@@ -45,7 +45,7 @@ describe('UserController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.createUserDtoList) {
-      const received = await controller.create(item);
+      const received = await controller.create({}, item);
       const expected = { ...received, ...item };
       expect({ ...received, password: item.password }).toEqual(expected);
       initialItems.push(received);
@@ -62,7 +62,7 @@ describe('UserController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     expect(() =>
-      controller.create({
+      controller.create({}, {
         ...MockDataStorage.items()[0],
         email: 'johndoe@gmail.com',
         password: '123',
@@ -185,7 +185,7 @@ describe('UserController', () => {
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
     for (const item of MockDataStorage.updateUserDtoList) {
-      const received = await controller.update(item.id, item.data);
+      const received = await controller.update({}, item.id, item.data);
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -211,7 +211,9 @@ describe('UserController', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.update('', { ...MockDataStorage.updateUserDtoList[0].data })).toThrow();
+    expect(() =>
+      controller.update({}, '', { ...MockDataStorage.updateUserDtoList[0].data }),
+    ).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

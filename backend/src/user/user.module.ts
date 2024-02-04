@@ -10,11 +10,13 @@ import { UserRegistrationMethodModule } from 'src/user-registration-method/user-
 import { UsersBanListRecordModule } from 'src/users-ban-list-record/users-ban-list-record.module';
 import { UsersBanListRecordStatusModule } from 'src/users-ban-list-record-status/users-ban-list-record-status.module';
 import { PostModule } from 'src/post/post.module';
+import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     PrismaModule,
     UserRoleModule,
+    CloudinaryModule,
     UserReactionTypeModule,
     UserRegistrationMethodModule,
     UsersBanListRecordModule,

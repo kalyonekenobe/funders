@@ -17,6 +17,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
+import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
@@ -86,9 +87,11 @@ export class PostEntity implements Post {
   @IsDefined()
   fundsToBeRaised: Decimal;
 
-  @ApiProperty({ description: 'The image of the post' })
+  @ApiProperty({ description: 'The image path of the post' })
+  @IsString()
+  @MaxLength(255)
   @ValidateIf((_, value) => value)
-  image: Buffer | null;
+  image: string | null;
 
   @ApiProperty({
     description: 'Is the post draft',
@@ -137,6 +140,9 @@ export class PostEntity implements Post {
 
   @ApiProperty({ description: 'The nested array of categories of this post' })
   categories?: PostCategoryEntity[];
+
+  @ApiProperty({ description: 'The nested array of attachments of this post' })
+  attachments?: PostAttachmentEntity[];
   //donations?: PostDonationEntity[]
   //reactions?: PostReactionEntity[]
   //comments?: PostCommentEntity[]

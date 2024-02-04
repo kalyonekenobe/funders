@@ -11,7 +11,6 @@ import {
 import { UserRoleService } from './user-role.service';
 import { UserRoleEntity } from './entities/user-role.entity';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @ApiTags('User roles')
@@ -31,10 +30,7 @@ export class UserRoleController {
   })
   @Post()
   create(@Body() createUserRoleDto: CreateUserRoleDto) {
-    return this.userRoleService
-      .create(createUserRoleDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRoleService.create(createUserRoleDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class UserRoleController {
   })
   @Get()
   findAll() {
-    return this.userRoleService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRoleService.findAll();
   }
 
   @ApiOkResponse({
@@ -65,17 +58,14 @@ export class UserRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user role to be updated',
     schema: { example: 'Administrator' },
   })
+  @Put(':name')
   update(@Param('name') name: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
-    return this.userRoleService
-      .update(name, updateUserRoleDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRoleService.update(name, updateUserRoleDto);
   }
 
   @ApiOkResponse({
@@ -88,16 +78,13 @@ export class UserRoleController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user role to be deleted',
     schema: { example: 'Administrator' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
-    return this.userRoleService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRoleService.remove(name);
   }
 }

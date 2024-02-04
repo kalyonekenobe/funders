@@ -44,7 +44,7 @@ model User {
   password           String
   phone              String?  @db.VarChar(15)
   bio                String?
-  avatar             Bytes?
+  avatar             String?  @db.VarChar(255)
   refreshToken       String?
   registeredAt       DateTime @default(now())
 
@@ -105,10 +105,11 @@ model ChatRole {
 }
 
 model ChatMessageAttachment {
-  id        String  @id @default(uuid())
-  messageId String
-  file      Bytes
-  filename  String? @db.VarChar(255)
+  id           String  @id @default(uuid())
+  messageId    String
+  file         String  @db.VarChar(255)
+  filename     String? @db.VarChar(255)
+  resourceType String  @default("raw") @db.VarChar(255)
 
   message ChatMessage @relation(fields: [messageId], references: [id])
 }
@@ -146,23 +147,34 @@ model Post {
   title           String    @db.VarChar(255)
   content         String
   fundsToBeRaised Decimal   @db.Money
-  image           Bytes?
+  image           String?   @db.VarChar(255)
   isDraft         Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
   removedAt       DateTime?
 
-  author     User                @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categories CategoriesOnPosts[]
-  donations  PostDonation[]
-  reactions  PostReaction[]
-  comments   PostComment[]
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categories  CategoriesOnPosts[]
+  donations   PostDonation[]
+  reactions   PostReaction[]
+  comments    PostComment[]
+  attachments PostAttachment[]
 }
 
 model PostCategory {
   name String @id @db.VarChar(50)
 
   posts CategoriesOnPosts[]
+}
+
+model PostAttachment {
+  id           String  @id @default(uuid())
+  postId       String
+  file         String  @db.VarChar(255)
+  filename     String? @db.VarChar(255)
+  resourceType String  @default("raw") @db.VarChar(255)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model PostDonation {
@@ -220,10 +232,11 @@ model PostCommentReaction {
 }
 
 model PostCommentAttachment {
-  id        String  @id @default(uuid())
-  commentId String
-  file      Bytes
-  filename  String? @db.VarChar(255)
+  id           String  @id @default(uuid())
+  commentId    String
+  file         String  @db.VarChar(255)
+  filename     String? @db.VarChar(255)
+  resourceType String  @default("raw") @db.VarChar(255)
 
   comment PostComment @relation(fields: [commentId], references: [id])
 }

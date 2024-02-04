@@ -12,7 +12,6 @@ import { UserRegistrationMethodService } from './user-registration-method.servic
 import { UserRegistrationMethodEntity } from './entities/user-registration-method.entity';
 import { CreateUserRegistrationMethodDto } from './dto/create-user-registration-method.dto';
 import { UpdateUserRegistrationMethodDto } from './dto/update-user-registration-method.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 
 @ApiTags('User registration methods')
 @Controller('user-registration-methods')
@@ -31,10 +30,7 @@ export class UserRegistrationMethodController {
   })
   @Post()
   create(@Body() createUserRegistrationMethodDto: CreateUserRegistrationMethodDto) {
-    return this.userRegistrationMethodService
-      .create(createUserRegistrationMethodDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRegistrationMethodService.create(createUserRegistrationMethodDto);
   }
 
   @ApiOkResponse({
@@ -46,10 +42,7 @@ export class UserRegistrationMethodController {
   })
   @Get()
   findAll() {
-    return this.userRegistrationMethodService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRegistrationMethodService.findAll();
   }
 
   @ApiOkResponse({
@@ -65,20 +58,17 @@ export class UserRegistrationMethodController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user registration method to be updated',
     schema: { example: 'Google' },
   })
+  @Put(':name')
   update(
     @Param('name') name: string,
     @Body() updateUserRegistrationMethodDto: UpdateUserRegistrationMethodDto,
   ) {
-    return this.userRegistrationMethodService
-      .update(name, updateUserRegistrationMethodDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRegistrationMethodService.update(name, updateUserRegistrationMethodDto);
   }
 
   @ApiOkResponse({
@@ -91,16 +81,13 @@ export class UserRegistrationMethodController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':name')
   @ApiParam({
     name: 'name',
     description: 'The name of the user registration method to be deleted',
     schema: { example: 'Google' },
   })
+  @Delete(':name')
   remove(@Param('name') name: string) {
-    return this.userRegistrationMethodService
-      .remove(name)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userRegistrationMethodService.remove(name);
   }
 }

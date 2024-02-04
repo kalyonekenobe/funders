@@ -1,6 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -11,12 +22,15 @@ import {
 import { UserService } from './user.service';
 import { UserPublicEntity } from './entities/user-public.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { throwHttpExceptionBasedOnErrorType } from 'src/core/error-handling/error-handler';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
 import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record-request-body.dto';
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { PostService } from 'src/post/post.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UserRequestBodyFiles } from './types/user.types';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { UploadResourceTypes } from 'src/core/constants/constants';
 
 @ApiTags('Users')
 @Controller('users')
@@ -37,12 +51,23 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService
-      .create(createUserDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  create(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'avatar',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+    ])
+    files: UserRequestBodyFiles,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return this.userService.create(createUserDto, files);
   }
 
   @ApiCreatedResponse({
@@ -65,10 +90,10 @@ export class UserController {
     @Param('id') userId: string,
     @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
   ) {
-    return this.usersBanListRecordService
-      .create({ ...createUsersBanListRecordRequestBodyDto, userId })
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordService.create({
+      ...createUsersBanListRecordRequestBodyDto,
+      userId,
+    });
   }
 
   @ApiOkResponse({
@@ -88,10 +113,7 @@ export class UserController {
   })
   @Get(':id/bans')
   findAllUserBans(@Param('id') userId: string) {
-    return this.usersBanListRecordService
-      .findAllUserBans(userId)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.usersBanListRecordService.findAllUserBans(userId);
   }
 
   @ApiOkResponse({
@@ -103,10 +125,7 @@ export class UserController {
   })
   @Get()
   findAll() {
-    return this.userService
-      .findAll()
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.findAll();
   }
 
   @ApiOkResponse({
@@ -119,17 +138,14 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to be found.',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id')
   findById(@Param('id') id: string) {
-    return this.userService
-      .findById(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.findById(id);
   }
 
   @ApiOkResponse({
@@ -142,17 +158,14 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Get(':id/posts')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to find all his posts',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Get(':id/posts')
   findAllUserPosts(@Param('id') id: string) {
-    return this.postService
-      .findAllUserPosts(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.postService.findAllUserPosts(id);
   }
 
   @ApiOkResponse({
@@ -168,17 +181,29 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Put(':id')
   @ApiParam({
     name: 'id',
     description: 'The uuid of the user to be updated',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService
-      .update(id, updateUserDto)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
+  @Put(':id')
+  update(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'avatar',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 5,
+        allowedMimeTypes: UploadResourceTypes.IMAGE,
+      },
+    ])
+    files: UserRequestBodyFiles,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto, files);
   }
 
   @ApiOkResponse({
@@ -191,16 +216,13 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
-  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: 'The id of the user to be deleted',
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
+  @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService
-      .remove(id)
-      .then(response => response)
-      .catch(error => throwHttpExceptionBasedOnErrorType(error));
+    return this.userService.remove(id);
   }
 }

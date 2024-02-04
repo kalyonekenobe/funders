@@ -14,8 +14,13 @@ import {
 import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
+import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-categories-on-posts.dto';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
 
-export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt'> {
+export class UpdatePostDto
+  implements
+    Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt' | 'attachments' | 'categories'>
+{
   @ApiProperty({
     description: 'The title of the post',
     examples: [
@@ -59,9 +64,11 @@ export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId
   @ValidateIf((_, value) => value)
   fundsToBeRaised?: Decimal;
 
-  @ApiProperty({ description: 'The image of the post' })
+  @ApiProperty({ description: 'The image path of the post' })
+  @IsString()
+  @MaxLength(255)
   @ValidateIf((_, value) => value)
-  image?: Buffer | null;
+  image?: string | null;
 
   @ApiProperty({
     description: 'Is the post draft',
@@ -69,6 +76,7 @@ export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId
     default: false,
   })
   @IsBoolean()
+  @Transform(value => Boolean(value))
   @ValidateIf((_, value) => value)
   isDraft?: boolean;
 
@@ -91,4 +99,12 @@ export class UpdatePostDto implements Omit<Partial<PostEntity>, 'id' | 'authorId
   @MaxDate(new Date())
   @ValidateIf((_, value) => value)
   removedAt?: Date | null;
+
+  @ApiProperty({ description: 'The nested array of categories of this post' })
+  @ValidateIf((_, value) => value)
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
+
+  @ApiProperty({ description: 'The nested array of attachments of this post' })
+  @ValidateIf((_, value) => value)
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
 }

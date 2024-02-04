@@ -15,10 +15,18 @@ import {
 import { PostEntity } from '../entities/post.entity';
 import { Transform } from 'class-transformer';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
+import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-attachment.dto';
+import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-categories-on-posts.dto';
 
-export class CreatePostDto
-  implements Omit<PostEntity, 'id' | 'createdAt' | 'updatedAt' | 'removedAt'>
-{
+type CreatePost = Omit<
+  PostEntity,
+  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments' | 'categories'
+> & {
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
+};
+
+export class CreatePostDto implements CreatePost {
   @ApiProperty({
     description: "Post author's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],
@@ -75,9 +83,11 @@ export class CreatePostDto
   @Transform(value => value.value.toString())
   fundsToBeRaised: Decimal;
 
-  @ApiProperty({ description: 'The image of the post' })
+  @ApiProperty({ description: 'The image path of the post' })
+  @IsString()
+  @MaxLength(255)
   @ValidateIf((_, value) => value)
-  image: Buffer | null;
+  image: string | null;
 
   @ApiProperty({
     description: 'Is the post draft',
@@ -85,6 +95,15 @@ export class CreatePostDto
     default: false,
   })
   @IsBoolean()
+  @Transform(value => Boolean(value))
   @IsDefined()
   isDraft: boolean;
+
+  @ApiProperty({ description: 'The nested array of categories of this post' })
+  @ValidateIf((_, value) => value)
+  categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
+
+  @ApiProperty({ description: 'The nested array of attachments of this post' })
+  @ValidateIf((_, value) => value)
+  attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
 }

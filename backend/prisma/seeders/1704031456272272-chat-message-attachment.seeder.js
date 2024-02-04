@@ -9,21 +9,21 @@ module.exports = {
     const data = [
       {
         messageId: chatMessages[0].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
       },
       {
         messageId: chatMessages[0].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'File',
       },
       {
         messageId: chatMessages[1].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Greetings',
       },
       {
         messageId: chatMessages[2].id,
-        file: Buffer.from(await new Blob([''], { type: 'text/plain' }).arrayBuffer()),
+        file: 'some_file.txt',
         filename: 'Important information',
       },
     ];
