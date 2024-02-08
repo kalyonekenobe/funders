@@ -29,18 +29,22 @@ import { PostRequestBodyFiles } from './types/post.types';
 import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { UploadResourceTypes } from 'src/core/constants/constants';
+import { PostDonationService } from 'src/post-donation/post-donation.service';
+import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
+import { CreatePostDonationDto } from 'src/post-donation/dto/create-post-donation.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostController {
   constructor(
     private readonly postService: PostService,
+    private readonly postDonationService: PostDonationService,
     private readonly postAttachmentService: PostAttachmentService,
   ) {}
 
   @ApiCreatedResponse({
     description: 'Post was successfully created.',
-    type: [PostEntity],
+    type: PostEntity,
   })
   @ApiConflictResponse({
     description: 'Cannot create post. Invalid data was provided.',
@@ -70,6 +74,29 @@ export class PostController {
     @Body() createPostDto: CreatePostDto,
   ) {
     return this.postService.create(createPostDto, files);
+  }
+
+  @ApiCreatedResponse({
+    description: 'Post donation was successfully created.',
+    type: PostDonationEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post with the requested id was not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Cannot create post donation. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post to be found.',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Post(':id/donations')
+  createDonation(@Param('id') id: string, @Body() createPostDonationDto: CreatePostDonationDto) {
+    return this.postDonationService.create(id, createPostDonationDto);
   }
 
   @ApiOkResponse({
@@ -108,12 +135,40 @@ export class PostController {
     description: 'The list of post attachments',
     type: [PostAttachmentEntity],
   })
+  @ApiNotFoundResponse({
+    description: 'The post with specified id was not found.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post to be found',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/attachments')
   findAllPostAttachments(@Param('id') id: string) {
     return this.postAttachmentService.findAllForPost(id);
+  }
+
+  @ApiOkResponse({
+    description: 'The list of post donations',
+    type: [PostDonationEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The post with specified id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post to be found',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Get(':id/donations')
+  findAllPostDonations(@Param('id') id: string) {
+    return this.postDonationService.findAllForPost(id);
   }
 
   @ApiOkResponse({

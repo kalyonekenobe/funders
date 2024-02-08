@@ -39,6 +39,7 @@ export class UpdatePostDonationDto
   @Validate(DecimalMin, [0.01])
   @IsDecimal()
   @IsDefined()
+  @Transform(value => value.value.toString())
   @ValidateIf((_, value) => value)
   donation?: Decimal;
 }
