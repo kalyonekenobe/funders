@@ -46,7 +46,7 @@ export class MockDataStorage {
       },
     },
     {
-      postId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
+      postId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
       data: {
         cardNumber: '6965394867570345',
         donation: new Decimal(400),
