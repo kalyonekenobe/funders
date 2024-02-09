@@ -29,7 +29,10 @@ describe('UserController (e2e)', () => {
       .useValue(
         Object.assign(
           {},
-          { ...mockPostRepository, user: mockUserRepository.user },
+          {
+            ...mockPostRepository,
+            user: mockUserRepository.user,
+          },
           mockUserRepository,
           mockUsersBanListRecordRepository,
         ),

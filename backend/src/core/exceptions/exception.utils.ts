@@ -43,6 +43,10 @@ export class ExceptionUtils {
           message = `Duplicate field value: ${exception.meta?.target}`;
           status = HttpStatus.CONFLICT;
           break;
+        case 'P2003':
+          message = `Invalid input data was provided.`;
+          status = HttpStatus.CONFLICT;
+          break;
         case 'P2019':
           message = `Invalid input data: ${exception.meta?.target}`;
           status = HttpStatus.CONFLICT;

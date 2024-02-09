@@ -4,12 +4,18 @@ import { UserController } from 'src/user/user.controller';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
-import { mockUsersBanListRecordService } from 'test/users-ban-list-record/users-ban-list-record.mock';
-import { mockPostService } from 'test/post/post.mock';
-import { MockDataStorage as BanMockDataStorage } from 'test/users-ban-list-record/users-ban-list-record.mock';
-import { MockDataStorage as PostMockDataStorage } from 'test/post/post.mock';
+import {
+  MockDataStorage as BanMockDataStorage,
+  mockUsersBanListRecordService,
+} from 'test/users-ban-list-record/users-ban-list-record.mock';
+import { MockDataStorage as PostMockDataStorage, mockPostService } from 'test/post/post.mock';
+import {
+  MockDataStorage as PostReactionMockDataStorage,
+  mockPostReactionService,
+} from 'test/post-reaction/post-reaction.mock';
 import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 import { PostService } from 'src/post/post.service';
+import { PostReactionService } from 'src/post-reaction/post-reaction.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -29,6 +35,10 @@ describe('UserController', () => {
         {
           provide: PostService,
           useValue: mockPostService,
+        },
+        {
+          provide: PostReactionService,
+          useValue: mockPostReactionService,
         },
       ],
     }).compile();
@@ -135,6 +145,24 @@ describe('UserController', () => {
 
     BanMockDataStorage.setDefaultItems();
     expect(mockUsersBanListRecordService.findAllUserBans).toHaveBeenCalled();
+  });
+
+  it('should find all existing users post reactions for user with specified id', async () => {
+    PostReactionMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostReactionMockDataStorage.items()];
+    expect(
+      await controller.findAllUserPostReactions(PostReactionMockDataStorage.items()[0].userId),
+    ).toEqual(
+      PostReactionMockDataStorage.items().filter(
+        item => item.userId === PostReactionMockDataStorage.items()[0].userId,
+      ),
+    );
+
+    expect(PostReactionMockDataStorage.items()).toEqual(initialItems);
+
+    PostReactionMockDataStorage.setDefaultItems();
+    expect(mockPostReactionService.findAllForUser).toHaveBeenCalled();
   });
 
   it('should find all existing user posts for user with specified id', async () => {

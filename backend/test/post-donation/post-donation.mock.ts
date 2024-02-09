@@ -46,7 +46,7 @@ export class MockDataStorage {
       },
     },
     {
-      postId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
+      postId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
       data: {
         cardNumber: '6965394867570345',
         donation: new Decimal(400),
@@ -118,6 +118,12 @@ export const mockPostDonationService = {
     .fn()
     .mockImplementation(
       (postId: string, dto: CreatePostDonationDto): Promise<PostDonationEntity> => {
+        const post = MockDataStorage.items().find(item => item.postId === postId);
+
+        if (!post) {
+          throw new Error('Post with this id does not exist!');
+        }
+
         const created = { ...dto, postId, id: '', datetime: new Date() };
         MockDataStorage.items().push(created);
 
@@ -184,6 +190,15 @@ export const mockPostDonationRepository = {
         (dto: {
           data: CreatePostDonationDto & { postId: string };
         }): Promise<PostDonationEntity> => {
+          const post = MockDataStorage.items().find(item => item.postId === dto.data.postId);
+
+          if (!post) {
+            throw new PrismaClientKnownRequestError('Post with this id does not exist!', {
+              code: 'P2001',
+              clientVersion: '',
+            });
+          }
+
           const created = { ...dto.data, id: '', datetime: new Date() };
           MockDataStorage.items().push(created);
 

@@ -1,23 +1,23 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/core/prisma/prisma.service';
-import { MockDataStorage, mockPostDonationRepository } from './post-donation.mock';
+import { MockDataStorage, mockPostReactionRepository } from './post-reaction.mock';
 import * as request from 'supertest';
 import ValidationPipes from 'src/core/config/validation-pipes';
 import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
-import { PostDonationModule } from 'src/post-donation/post-donation.module';
 import { PostModule } from 'src/post/post.module';
+import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
 
 describe('PostDonationController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [PostDonationModule, PostModule],
+      imports: [PostReactionModule, PostModule],
     })
       .overrideProvider(PrismaService)
-      .useValue(mockPostDonationRepository)
+      .useValue(mockPostReactionRepository)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -26,12 +26,12 @@ describe('PostDonationController (e2e)', () => {
     await app.init();
   });
 
-  it('/posts/:id/donations (GET) --> 200 OK', () => {
+  it('/posts/:id/reactions (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/posts/${MockDataStorage.items()[0].postId}/donations`)
+      .get(`/posts/${MockDataStorage.items()[0].postId}/reactions`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -46,12 +46,12 @@ describe('PostDonationController (e2e)', () => {
       });
   });
 
-  it('/posts/:id/donations (GET) --> 404 NOT FOUND | Post with specified id was not found', () => {
+  it('/posts/:id/reactions (GET) --> 404 NOT FOUND | Post with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/posts/${MockDataStorage.items()[0].postId}_not_existing_id/donations`)
+      .get(`/posts/${MockDataStorage.items()[0].postId}_not_existing_id/reactions`)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -59,46 +59,19 @@ describe('PostDonationController (e2e)', () => {
       });
   });
 
-  it('/post-donations/:id (GET) --> 200 OK', () => {
+  it('/posts/:id/reactions (POST) --> 201 CREATED', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/post-donations/${MockDataStorage.items()[0].id}`)
-      .expect(HttpStatus.OK)
-      .then(response => {
-        expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
-        expect(MockDataStorage.items()).toEqual(initialData);
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
-  it('/post-donations/:id (GET) --> 404 NOT FOUND | Post donation with specified id was not found', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .get(`/post-donations/${MockDataStorage.items()[0].id}_not_existing_id`)
-      .expect(HttpStatus.NOT_FOUND)
-      .then(() => {
-        expect(MockDataStorage.items()).toEqual(initialData);
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
-  it('/posts/:id/donations (POST) --> 201 CREATED', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .post(`/posts/${MockDataStorage.createPostDonationDtoList[0].postId}/donations`)
-      .send(MockDataStorage.createPostDonationDtoList[0].data)
+      .post(`/posts/${MockDataStorage.createPostReactionDtoList[0].postId}/reactions`)
+      .send(MockDataStorage.createPostReactionDtoList[0].data)
       .expect(HttpStatus.CREATED)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
           JSON.stringify({
             ...response.body,
-            ...MockDataStorage.createPostDonationDtoList[0].data,
+            ...MockDataStorage.createPostReactionDtoList[0].data,
           }),
         );
         expect(JSON.stringify(MockDataStorage.items())).toEqual(
@@ -108,15 +81,15 @@ describe('PostDonationController (e2e)', () => {
       });
   });
 
-  it('/posts/:id/donations (POST) --> 404 NOT FOUND | Post with specified id was not found', () => {
+  it('/posts/:id/reactions (POST) --> 404 NOT FOUND | Post with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post(
-        `/posts/${MockDataStorage.createPostDonationDtoList[0].postId}_not_existing_id/donations`,
+        `/posts/${MockDataStorage.createPostReactionDtoList[0].postId}_not_existing_id/reactions`,
       )
-      .send(MockDataStorage.createPostDonationDtoList[0].data)
+      .send(MockDataStorage.createPostReactionDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -124,12 +97,12 @@ describe('PostDonationController (e2e)', () => {
       });
   });
 
-  it('/posts/:id/donations (POST) --> 409 CONFLICT | Create post donation dto has invalid format', () => {
+  it('/posts/:id/reactions (POST) --> 409 CONFLICT | Create post reaction dto has invalid format', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .post(`/posts/${MockDataStorage.createPostDonationDtoList[0].postId}/donations`)
+      .post(`/posts/${MockDataStorage.createPostReactionDtoList[0].postId}/reactions`)
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -138,13 +111,15 @@ describe('PostDonationController (e2e)', () => {
       });
   });
 
-  it('/post-donations/:id (PUT) --> 200 OK', () => {
+  it('/posts/:postId/reactions/:userId (PUT) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/post-donations/${MockDataStorage.updatePostDonationDtoList[0].id}`)
-      .send(MockDataStorage.updatePostDonationDtoList[0].data)
+      .put(
+        `/posts/${MockDataStorage.updatePostReactionDtoList[0].postId}/reactions/${MockDataStorage.updatePostReactionDtoList[0].userId}`,
+      )
+      .send(MockDataStorage.updatePostReactionDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -152,62 +127,78 @@ describe('PostDonationController (e2e)', () => {
             Object.assign(
               {},
               MockDataStorage.items().find(
-                item => item.id === MockDataStorage.updatePostDonationDtoList[0].id,
+                item =>
+                  item.userId === MockDataStorage.updatePostReactionDtoList[0].userId &&
+                  item.postId === MockDataStorage.updatePostReactionDtoList[0].postId,
               ),
-              MockDataStorage.updatePostDonationDtoList[0].data,
+              MockDataStorage.updatePostReactionDtoList[0].data,
             ),
           ),
         );
         expect(JSON.stringify(MockDataStorage.items())).toEqual(
           JSON.stringify(
-            initialData.map(item => (item.id === response.body.id ? response.body : item)),
+            initialData.map(item =>
+              item.userId === response.body.userId && item.postId === response.body.postId
+                ? response.body
+                : item,
+            ),
           ),
         );
         MockDataStorage.setDefaultItems();
       });
   });
 
-  it('/post-donations/:id (PUT) --> 404 NOT FOUND | Post with specified id was not found', () => {
+  it('/posts/:postId/reactions/:userId (PUT) --> 404 NOT FOUND | Post reaction with these postId and userId was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/post-donations/${MockDataStorage.items()[0].id}_not_existing_id`)
-      .send(MockDataStorage.updatePostDonationDtoList[0].data)
+      .put(
+        `/posts/${MockDataStorage.updatePostReactionDtoList[0].postId}_not_existing_id/reactions/${MockDataStorage.updatePostReactionDtoList[0].userId}_not_existing_id`,
+      )
+      .send(MockDataStorage.updatePostReactionDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
-        expect(MockDataStorage.items()).toEqual(initialData);
+        expect(JSON.stringify(MockDataStorage.items())).toEqual(JSON.stringify(initialData));
         MockDataStorage.setDefaultItems();
       });
   });
 
-  it('/post-donations/:id (DELETE) --> 200 OK', () => {
+  it('/posts/:postId/reactions/:userId (DELETE) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/post-donations/${MockDataStorage.removePostDonationDtoList[0].id}`)
+      .delete(
+        `/posts/${MockDataStorage.removePostReactionDtoList[0].postId}/reactions/${MockDataStorage.removePostReactionDtoList[0].userId}`,
+      )
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
           JSON.stringify({
-            ...MockDataStorage.removePostDonationDtoList[0],
+            ...MockDataStorage.removePostReactionDtoList[0],
             datetime: response.body.datetime,
           }),
         );
         expect(MockDataStorage.items()).toEqual(
-          initialData.filter(item => item.id !== MockDataStorage.removePostDonationDtoList[0].id),
+          initialData.filter(
+            item =>
+              item.postId !== MockDataStorage.removePostReactionDtoList[0].postId ||
+              item.userId !== MockDataStorage.removePostReactionDtoList[0].userId,
+          ),
         );
         MockDataStorage.setDefaultItems();
       });
   });
 
-  it('/post-donations/:id (DELETE) --> 404 NOT FOUND | Post donation with specified id was not found', () => {
+  it('/posts/:postId/reactions/:userId (DELETE) --> 404 NOT FOUND | Post reaction with these postId and userId was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .delete(`/post-donations/${MockDataStorage.removePostDonationDtoList[0].id}_not_existing_id`)
+      .delete(
+        `/posts/${MockDataStorage.removePostReactionDtoList[0].postId}_not_existing_id/reactions/${MockDataStorage.removePostReactionDtoList[0].userId}_not_existing_id`,
+      )
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

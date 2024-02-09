@@ -74,6 +74,7 @@ describe('PostDonationService', () => {
     );
 
     MockDataStorage.setDefaultItems();
+    expect(mockPostDonationRepository.post.findUniqueOrThrow).toHaveBeenCalled();
     expect(mockPostDonationRepository.postDonation.findMany).toHaveBeenCalled();
   });
 
