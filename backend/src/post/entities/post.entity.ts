@@ -19,6 +19,7 @@ import {
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
+import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class PostEntity implements Post {
@@ -143,7 +144,10 @@ export class PostEntity implements Post {
 
   @ApiProperty({ description: 'The nested array of attachments of this post' })
   attachments?: PostAttachmentEntity[];
-  //donations?: PostDonationEntity[]
+
+  @ApiProperty({ description: 'The nested array of donations of this post' })
+  donations?: PostDonationEntity[];
+
   //reactions?: PostReactionEntity[]
   //comments?: PostCommentEntity[]
 }
