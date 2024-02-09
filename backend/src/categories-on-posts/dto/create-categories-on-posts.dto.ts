@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsNotEmpty, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
-import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
-import { PostEntity } from 'src/post/entities/post.entity';
 import { CategoriesOnPostsEntity } from '../entities/categories-on-posts.entity';
 
 export class CreateCategoriesOnPostsDto implements CategoriesOnPostsEntity {

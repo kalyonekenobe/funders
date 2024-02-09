@@ -6,6 +6,7 @@ import { PostService } from './post.service';
 import { CategoriesOnPostsModule } from 'src/categories-on-posts/categories-on-posts.module';
 import { PostAttachmentModule } from 'src/post-attachment/post-attachment.module';
 import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
+import { PostDonationModule } from 'src/post-donation/post-donation.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
     PostCategoryModule,
     CategoriesOnPostsModule,
     PostAttachmentModule,
+    PostDonationModule,
     CloudinaryModule,
   ],
   controllers: [PostController],

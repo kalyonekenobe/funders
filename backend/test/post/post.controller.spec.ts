@@ -3,6 +3,7 @@ import { MockDataStorage, mockPostService } from './post.mock';
 import { PostController } from 'src/post/post.controller';
 import { PostService } from 'src/post/post.service';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
+import { PostDonationService } from 'src/post-donation/post-donation.service';
 
 describe('PostController', () => {
   let controller: PostController;
@@ -12,6 +13,7 @@ describe('PostController', () => {
       controllers: [PostController],
       providers: [
         { provide: PostAttachmentService, useValue: {} },
+        { provide: PostDonationService, useValue: {} },
         {
           provide: PostService,
           useValue: mockPostService,
