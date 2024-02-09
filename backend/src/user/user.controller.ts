@@ -31,6 +31,8 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UserRequestBodyFiles } from './types/user.types';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { UploadResourceTypes } from 'src/core/constants/constants';
+import { PostReactionService } from 'src/post-reaction/post-reaction.service';
+import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -39,6 +41,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly usersBanListRecordService: UsersBanListRecordService,
     private readonly postService: PostService,
+    private readonly postReactionService: PostReactionService,
   ) {}
 
   @ApiCreatedResponse({
@@ -114,6 +117,26 @@ export class UserController {
   @Get(':id/bans')
   findAllUserBans(@Param('id') userId: string) {
     return this.usersBanListRecordService.findAllUserBans(userId);
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's post reactions",
+    type: [PostReactionEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of post reactions',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/post-reactions')
+  findAllUserPostReactions(@Param('id') userId: string) {
+    return this.postReactionService.findAllForUser(userId);
   }
 
   @ApiOkResponse({

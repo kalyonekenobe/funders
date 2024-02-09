@@ -15,6 +15,13 @@ export class PostReactionService {
     });
   }
 
+  async findAllForUser(userId: string): Promise<PostReactionEntity[]> {
+    return this.prismaService.$transaction(async tx => {
+      await tx.user.findUniqueOrThrow({ where: { id: userId } });
+      return tx.postReaction.findMany({ where: { userId } });
+    });
+  }
+
   async create(postId: string, data: CreatePostReactionDto): Promise<PostReactionEntity> {
     return this.prismaService.postReaction.create({ data: { ...data, postId } });
   }
