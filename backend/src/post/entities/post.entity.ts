@@ -19,7 +19,9 @@ import {
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
+import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
+import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class PostEntity implements Post {
@@ -148,6 +150,9 @@ export class PostEntity implements Post {
   @ApiProperty({ description: 'The nested array of donations of this post' })
   donations?: PostDonationEntity[];
 
-  //reactions?: PostReactionEntity[]
-  //comments?: PostCommentEntity[]
+  @ApiProperty({ description: 'The nested array of reactions of this post' })
+  reactions?: PostReactionEntity[];
+
+  @ApiProperty({ description: 'The nested array of comments of this post' })
+  comments?: PostCommentEntity[];
 }

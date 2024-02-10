@@ -58,7 +58,7 @@ model User {
   posts                  Post[]
   postsReactions         PostReaction[]
   postsComments          PostComment[]
-  postsCommentsReactions PostCommentReaction[]
+  postsCommentReactions  PostCommentReaction[]
 }
 
 model UsersBanListRecordStatus {
