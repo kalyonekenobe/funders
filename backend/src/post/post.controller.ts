@@ -32,6 +32,10 @@ import { UploadResourceTypes } from 'src/core/constants/constants';
 import { PostDonationService } from 'src/post-donation/post-donation.service';
 import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
 import { CreatePostDonationDto } from 'src/post-donation/dto/create-post-donation.dto';
+import { PostCommentService } from 'src/post-comment/post-comment.service';
+import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
+import { PostCommentRequestBodyFiles } from 'src/post-comment/types/post-comment.types';
+import { CreatePostCommentDto } from 'src/post-comment/dto/create-post-comment.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -40,6 +44,7 @@ export class PostController {
     private readonly postService: PostService,
     private readonly postDonationService: PostDonationService,
     private readonly postAttachmentService: PostAttachmentService,
+    private readonly postCommentService: PostCommentService,
   ) {}
 
   @ApiCreatedResponse({
@@ -74,6 +79,43 @@ export class PostController {
     @Body() createPostDto: CreatePostDto,
   ) {
     return this.postService.create(createPostDto, files);
+  }
+
+  @ApiCreatedResponse({
+    description: 'Post was successfully created.',
+    type: PostEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post with the requested id was not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Cannot create post. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }]))
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post to be found.',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Post(':id/comments')
+  createComment(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'attachments',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: PostCommentRequestBodyFiles,
+    @Param('id') id: string,
+    @Body() createPostCommentDto: CreatePostCommentDto,
+  ) {
+    return this.postCommentService.create(id, createPostCommentDto, files);
   }
 
   @ApiCreatedResponse({
@@ -169,6 +211,26 @@ export class PostController {
   @Get(':id/donations')
   findAllPostDonations(@Param('id') id: string) {
     return this.postDonationService.findAllForPost(id);
+  }
+
+  @ApiOkResponse({
+    description: 'The list of post comments',
+    type: [PostCommentEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The post with specified id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post to be found',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Get(':id/comments')
+  findAllPostComments(@Param('id') id: string) {
+    return this.postCommentService.findAllForPost(id);
   }
 
   @ApiOkResponse({

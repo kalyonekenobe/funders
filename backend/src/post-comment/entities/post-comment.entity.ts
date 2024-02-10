@@ -107,5 +107,5 @@ export class PostCommentEntity implements PostComment {
 
   // reactions?: PostCommentReactionEntity[];
 
-  // attachments?: PostCommentAttachmentEntity[];
+  attachments?: any[];
 }

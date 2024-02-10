@@ -12,6 +12,7 @@ import { UsersBanListRecordStatusModule } from 'src/users-ban-list-record-status
 import { PostModule } from 'src/post/post.module';
 import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
 import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
+import { PostCommentModule } from 'src/post-comment/post-comment.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
     UsersBanListRecordStatusModule,
     FollowingModule,
     PostReactionModule,
+    PostCommentModule,
     PostModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',

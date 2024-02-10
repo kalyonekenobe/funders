@@ -38,7 +38,8 @@ export class PostService {
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
 
     if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
-    if (files?.attachments && data.attachments) uploadResources.push(...files.attachments);
+    if (files?.attachments && files.attachments.length > 0)
+      uploadResources.push(...files.attachments);
 
     if (uploadResources.length > 0) {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
@@ -96,7 +97,8 @@ export class PostService {
     let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
 
     if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
-    if (files?.attachments && data.attachments) uploadResources.push(...files.attachments);
+    if (files?.attachments && files.attachments.length > 0)
+      uploadResources.push(...files.attachments);
 
     if (uploadResources.length > 0) {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {

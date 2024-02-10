@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsDefined, IsNotEmpty, IsString, IsUUID, Matches, MaxDate } from 'class-validator';
-import { PostEntity } from 'src/post/entities/post.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
+import {
+  IsDate,
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxDate,
+  ValidateIf,
+} from 'class-validator';
 import { PostCommentEntity } from '../entities/post-comment.entity';
 
 export class CreatePostCommentDto
@@ -27,8 +34,8 @@ export class CreatePostCommentDto
     default: null,
   })
   @IsUUID()
-  @IsNotEmpty()
   @IsDefined()
+  @ValidateIf((_, value) => value)
   parentCommentId: string | null;
 
   @ApiProperty({
@@ -42,38 +49,5 @@ export class CreatePostCommentDto
   @IsDefined()
   content: string;
 
-  @ApiProperty({
-    description: 'The date and time the post comment was created',
-    examples: [new Date('2024-01-03'), new Date('2023-11-02'), new Date('2023-06-30')],
-    default: new Date('2023-06-30'),
-  })
-  @IsDate()
-  @MaxDate(new Date())
-  @IsNotEmpty()
-  @IsDefined()
-  createdAt: Date;
-
-  @ApiProperty({
-    description: 'The date and time the post comment was updated',
-    examples: [new Date('2024-01-03'), new Date('2023-11-02'), new Date('2023-06-30')],
-    default: new Date('2023-11-02'),
-  })
-  @IsDate()
-  @MaxDate(new Date())
-  @IsNotEmpty()
-  @IsDefined()
-  updatedAt: Date | null;
-
-  @ApiProperty({
-    description: 'The date and time the post comment was removed',
-    examples: [new Date('2024-01-03'), new Date('2023-11-02'), new Date('2023-06-30')],
-    default: new Date('2024-01-03'),
-  })
-  @IsDate()
-  @MaxDate(new Date())
-  @IsNotEmpty()
-  @IsDefined()
-  removedAt: Date | null;
-
-  // attachments?: PostCommentAttachmentEntity[];
+  attachments?: any[];
 }

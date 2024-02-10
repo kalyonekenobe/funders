@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { PostCommentEntity } from '../entities/post-comment.entity';
 
-export class CreatePostCommentDto
+export class UpdatePostCommentDto
   implements
     Omit<
       Partial<PostCommentEntity>,
@@ -41,5 +41,5 @@ export class CreatePostCommentDto
   @ValidateIf((_, value) => value)
   removedAt?: Date | null;
 
-  // attachments?: PostCommentAttachmentEntity[];
+  attachments?: any[];
 }
