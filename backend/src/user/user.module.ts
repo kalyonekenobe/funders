@@ -23,8 +23,8 @@ import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
     UsersBanListRecordModule,
     UsersBanListRecordStatusModule,
     FollowingModule,
-    PostModule,
     PostReactionModule,
+    PostModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',
       process.env.USER_PASSWORD_SALT_SUFFIX ?? '',
