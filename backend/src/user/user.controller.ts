@@ -33,6 +33,8 @@ import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.deco
 import { UploadResourceTypes } from 'src/core/constants/constants';
 import { PostReactionService } from 'src/post-reaction/post-reaction.service';
 import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
+import { PostCommentService } from 'src/post-comment/post-comment.service';
+import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -42,6 +44,7 @@ export class UserController {
     private readonly usersBanListRecordService: UsersBanListRecordService,
     private readonly postService: PostService,
     private readonly postReactionService: PostReactionService,
+    private readonly postCommentService: PostCommentService,
   ) {}
 
   @ApiCreatedResponse({
@@ -137,6 +140,26 @@ export class UserController {
   @Get(':id/post-reactions')
   findAllUserPostReactions(@Param('id') userId: string) {
     return this.postReactionService.findAllForUser(userId);
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's post comments",
+    type: [PostCommentEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of post comments',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/comments')
+  findAllUserComments(@Param('id') userId: string) {
+    return this.postCommentService.findAllForUser(userId);
   }
 
   @ApiOkResponse({

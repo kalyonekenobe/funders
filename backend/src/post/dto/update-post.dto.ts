@@ -19,7 +19,10 @@ import { CreatePostAttachmentDto } from 'src/post-attachment/dto/create-post-att
 
 export class UpdatePostDto
   implements
-    Omit<Partial<PostEntity>, 'id' | 'authorId' | 'createdAt' | 'attachments' | 'categories'>
+    Omit<
+      Partial<PostEntity>,
+      'id' | 'authorId' | 'createdAt' | 'updatedAt' | 'attachments' | 'categories'
+    >
 {
   @ApiProperty({
     description: 'The title of the post',
@@ -79,16 +82,6 @@ export class UpdatePostDto
   @Transform(value => Boolean(value))
   @ValidateIf((_, value) => value)
   isDraft?: boolean;
-
-  @ApiProperty({
-    description: 'The date and time the post was updated',
-    examples: [new Date('2024-01-03'), new Date('2023-11-02'), new Date('2023-06-30')],
-    default: new Date('2023-11-02'),
-  })
-  @IsDate()
-  @MaxDate(new Date())
-  @ValidateIf((_, value) => value)
-  updatedAt?: Date | null;
 
   @ApiProperty({
     description: 'The date and time the post was removed',

@@ -13,9 +13,14 @@ import {
   MockDataStorage as PostReactionMockDataStorage,
   mockPostReactionService,
 } from 'test/post-reaction/post-reaction.mock';
+import {
+  MockDataStorage as PostCommentMockDataStorage,
+  mockPostCommentService,
+} from 'test/post-comment/post-comment.mock';
 import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 import { PostService } from 'src/post/post.service';
 import { PostReactionService } from 'src/post-reaction/post-reaction.service';
+import { PostCommentService } from 'src/post-comment/post-comment.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -39,6 +44,10 @@ describe('UserController', () => {
         {
           provide: PostReactionService,
           useValue: mockPostReactionService,
+        },
+        {
+          provide: PostCommentService,
+          useValue: mockPostCommentService,
         },
       ],
     }).compile();
@@ -163,6 +172,24 @@ describe('UserController', () => {
 
     PostReactionMockDataStorage.setDefaultItems();
     expect(mockPostReactionService.findAllForUser).toHaveBeenCalled();
+  });
+
+  it('should find all existing users post comments for user with specified id', async () => {
+    PostCommentMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostCommentMockDataStorage.items()];
+    expect(
+      await controller.findAllUserComments(PostCommentMockDataStorage.items()[0].authorId),
+    ).toEqual(
+      PostCommentMockDataStorage.items().filter(
+        item => item.authorId === PostCommentMockDataStorage.items()[0].authorId,
+      ),
+    );
+
+    expect(PostCommentMockDataStorage.items()).toEqual(initialItems);
+
+    PostCommentMockDataStorage.setDefaultItems();
+    expect(mockPostCommentService.findAllForUser).toHaveBeenCalled();
   });
 
   it('should find all existing user posts for user with specified id', async () => {

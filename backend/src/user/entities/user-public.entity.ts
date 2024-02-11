@@ -16,6 +16,12 @@ import {
 } from 'class-validator';
 import { UserRegistrationMethodEntity } from 'src/user-registration-method/entities/user-registration-method.entity';
 import { UserRoleEntity } from 'src/user-role/entities/user-role.entity';
+import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
+import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
+import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
+import { PostEntity } from 'src/post/entities/post.entity';
+import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
+import { FollowingEntity } from 'src/following/entities/following.entity';
 
 export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   @ApiProperty({
@@ -158,4 +164,34 @@ export class UserPublicEntity implements Omit<UserEntity, 'password'> {
 
   @ApiProperty({ description: "User's role nested object" })
   userRole?: UserRoleEntity;
+
+  @ApiProperty({ description: 'The nested array of followings of this user' })
+  followings?: FollowingEntity[];
+
+  @ApiProperty({ description: 'The nested array of followers of this user' })
+  followers?: FollowingEntity[];
+
+  @ApiProperty({ description: 'The nested array of bans of this user' })
+  bans?: UsersBanListRecordEntity[];
+
+  // @ApiProperty({ description: 'The nested array of chats of this user' })
+  // chats?: ChatEntity[];
+
+  // @ApiProperty({ description: 'The nested array of messages of this user' })
+  // messages: ChatMessageEntity[];
+
+  @ApiProperty({ description: 'The nested array of posts of this user' })
+  posts?: PostEntity[];
+
+  @ApiProperty({ description: 'The nested array of post reactions of this user' })
+  postReactions?: PostReactionEntity[];
+
+  @ApiProperty({ description: 'The nested array of donations of this user' })
+  donations?: PostDonationEntity[];
+
+  @ApiProperty({ description: 'The nested array of comments of this user' })
+  comments?: PostCommentEntity[];
+
+  // @ApiProperty({ description: 'The nested array of comment reactions of this user' })
+  // commentReactions?: PostCommentReactionEntity[];
 }

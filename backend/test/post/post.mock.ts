@@ -363,10 +363,6 @@ export const mockPostRepository = {
 
       return Promise.resolve(dto);
     }),
-    removeRequestBodyFiles: jest.fn().mockImplementation((id: string, options: any) => {}),
-    uploadRequestBodyFiles: jest
-      .fn()
-      .mockImplementation((data: any, files: any, id?: string) => [null, []]),
   },
   postAttachment: {
     findMany: jest.fn().mockImplementation(() => []),
