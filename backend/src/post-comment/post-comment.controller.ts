@@ -23,11 +23,15 @@ import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { PostCommentRequestBodyFiles } from './types/post-comment.types';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
 
 @ApiTags('Post comments')
 @Controller('comments')
 export class PostCommentController {
-  constructor(private readonly postCommentService: PostCommentService) {}
+  constructor(
+    private readonly postCommentService: PostCommentService,
+    private readonly postCommentAttachmentService: PostCommentAttachmentService,
+  ) {}
 
   @Get(':id')
   findById(@Param('id') id: string) {
