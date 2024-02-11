@@ -4,6 +4,19 @@ import { PostController } from 'src/post/post.controller';
 import { PostService } from 'src/post/post.service';
 import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
 import { PostDonationService } from 'src/post-donation/post-donation.service';
+import { PostCommentService } from 'src/post-comment/post-comment.service';
+import {
+  MockDataStorage as PostAttachmentMockDataStorage,
+  mockPostAttachmentService,
+} from 'test/post-attachment/post-attachment.mock';
+import {
+  MockDataStorage as PostDonationMockDataStorage,
+  mockPostDonationService,
+} from 'test/post-donation/post-donation.mock';
+import {
+  MockDataStorage as PostCommentMockDataStorage,
+  mockPostCommentService,
+} from 'test/post-comment/post-comment.mock';
 
 describe('PostController', () => {
   let controller: PostController;
@@ -12,8 +25,9 @@ describe('PostController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostController],
       providers: [
-        { provide: PostAttachmentService, useValue: {} },
-        { provide: PostDonationService, useValue: {} },
+        { provide: PostAttachmentService, useValue: mockPostAttachmentService },
+        { provide: PostDonationService, useValue: mockPostDonationService },
+        { provide: PostCommentService, useValue: mockPostCommentService },
         {
           provide: PostService,
           useValue: mockPostService,
@@ -62,6 +76,36 @@ describe('PostController', () => {
     expect(mockPostService.create).toHaveBeenCalled();
   });
 
+  it('should create a list of new post comments', async () => {
+    PostCommentMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostCommentMockDataStorage.items()];
+    for (const item of PostCommentMockDataStorage.createPostCommentDtoList) {
+      const received = await controller.createComment({}, item.postId, item.data);
+      const expected = { ...received, ...item.data, postId: item.postId };
+      expect(received).toEqual(expected);
+      initialItems.push(received);
+    }
+
+    expect(PostCommentMockDataStorage.items()).toEqual(initialItems);
+
+    PostCommentMockDataStorage.setDefaultItems();
+    expect(mockPostCommentService.create).toHaveBeenCalled();
+  });
+
+  it('should not create a new post comment because post with specified id was not found', () => {
+    PostCommentMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostCommentMockDataStorage.items()];
+    expect(() =>
+      controller.createComment({}, '', PostCommentMockDataStorage.createPostCommentDtoList[0].data),
+    ).toThrow();
+    expect(PostCommentMockDataStorage.items()).toEqual(initialItems);
+
+    PostCommentMockDataStorage.setDefaultItems();
+    expect(mockPostCommentService.create).toHaveBeenCalled();
+  });
+
   it('should find all existing posts', async () => {
     MockDataStorage.setDefaultItems();
 
@@ -70,6 +114,24 @@ describe('PostController', () => {
 
     MockDataStorage.setDefaultItems();
     expect(mockPostService.findAll).toHaveBeenCalled();
+  });
+
+  it('should find all existing post comments for post with specified id', async () => {
+    PostCommentMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostCommentMockDataStorage.items()];
+    expect(
+      await controller.findAllPostComments(PostCommentMockDataStorage.items()[0].postId),
+    ).toEqual(
+      PostCommentMockDataStorage.items().filter(
+        item => item.postId === PostCommentMockDataStorage.items()[0].postId,
+      ),
+    );
+
+    expect(PostCommentMockDataStorage.items()).toEqual(initialItems);
+
+    PostCommentMockDataStorage.setDefaultItems();
+    expect(mockPostCommentService.findAllForPost).toHaveBeenCalled();
   });
 
   it('should find posts list by post id', async () => {
