@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockPostCommentService } from './post-comment.mock';
+import { mockPostCommentAttachmentService } from '../post-comment-attachment/post-comment-attachment.mock';
 import { PostCommentController } from 'src/post-comment/post-comment.controller';
 import { PostCommentService } from 'src/post-comment/post-comment.service';
+import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
 
 describe('PostCommentController', () => {
   let controller: PostCommentController;
@@ -13,6 +15,10 @@ describe('PostCommentController', () => {
         {
           provide: PostCommentService,
           useValue: mockPostCommentService,
+        },
+        {
+          provide: PostCommentAttachmentService,
+          useValue: mockPostCommentAttachmentService,
         },
       ],
     }).compile();
