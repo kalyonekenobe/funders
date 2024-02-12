@@ -7,7 +7,7 @@ import { AllExceptionFilter } from './core/exceptions/exception.filter';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
-  return this.toString();
+  return Number(this.toString());
 };
 
 async function bootstrap() {
