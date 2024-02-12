@@ -3,14 +3,14 @@ import { IsDefined, IsNotEmpty, IsString, IsUUID, Matches, ValidateIf } from 'cl
 import { PostCommentEntity } from '../entities/post-comment.entity';
 import { CreatePostCommentAttachmentDto } from 'src/post-comment-attachment/dto/create-post-comment-attachment.dto';
 
-type CreatePostAttachment = Omit<
+type CreatePostComment = Omit<
   PostCommentEntity,
   'id' | 'postId' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments'
 > & {
   attachments?: Omit<CreatePostCommentAttachmentDto, 'commentId'>[];
 };
 
-export class CreatePostCommentDto implements CreatePostAttachment {
+export class CreatePostCommentDto implements CreatePostComment {
   @ApiProperty({
     description: "Post comment author's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],

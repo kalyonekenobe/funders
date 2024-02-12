@@ -192,10 +192,10 @@ export const mockPostCommentService = {
         };
 
         MockDataStorage.setItems(
-          MockDataStorage.items().map(item => (item.id === id ? updated : item)),
+          MockDataStorage.items().map(item => (item.id === id ? (updated as any) : item)),
         );
 
-        return Promise.resolve(updated);
+        return Promise.resolve(updated as any);
       },
     ),
   remove: jest.fn().mockImplementation((id: string): Promise<PostCommentEntity> => {
