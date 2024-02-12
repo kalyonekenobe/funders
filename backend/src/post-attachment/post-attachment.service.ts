@@ -5,6 +5,7 @@ import { UpdatePostAttachmentDto } from './dto/update-post-attachment.dto';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { CreatePostAttachmentDto } from './dto/create-post-attachment.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { IPrepareSingleResourceForUpload } from 'src/core/cloudinary/cloudinary.types';
 
 @Injectable()
 export class PostAttachmentService {
@@ -41,38 +42,36 @@ export class PostAttachmentService {
     data: UpdatePostAttachmentDto,
     file?: Express.Multer.File,
   ): Promise<PostAttachmentEntity> {
-    const attachment = await this.findById(id);
+    let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
 
-    if (!file) {
-      throw new PrismaClientKnownRequestError('Uploaded file does not exist', {
-        clientVersion: '',
-        code: 'P2019',
+    if (file) {
+      const attachment = await this.findById(id);
+      uploader = this.cloudinaryService.prepareSingleResourceForUpload(file, {
+        mapping: { [`${file.fieldname}`]: 'post_attachments' },
+        beforeUpload: () => {
+          const destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
+            ...attachment,
+            publicId: attachment.file,
+          });
+
+          destroyer.delete();
+        },
       });
+
+      data = {
+        ...data,
+        file: uploader.resource.publicId,
+        resourceType: uploader.resource.resourceType,
+      };
     }
-
-    const uploader = this.cloudinaryService.prepareSingleResourceForUpload(file, {
-      mapping: { [`${file.fieldname}`]: 'post_attachments' },
-      beforeUpload: () => {
-        const destroyer = this.cloudinaryService.prepareSingleResourceForDelete({
-          ...attachment,
-          publicId: attachment.file,
-        });
-
-        destroyer.delete();
-      },
-    });
 
     return this.prismaService.postAttachment
       .update({
-        data: {
-          ...data,
-          file: uploader.resource.publicId,
-          resourceType: uploader.resource.resourceType,
-        },
+        data,
         where: { id },
       })
       .then(response => {
-        uploader.upload();
+        if (uploader) uploader.upload();
         return response;
       });
   }

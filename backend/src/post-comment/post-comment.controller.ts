@@ -24,6 +24,7 @@ import { PostCommentRequestBodyFiles } from './types/post-comment.types';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
+import { PostCommentAttachmentEntity } from 'src/post-comment-attachment/entities/post-comment-attachment.entity';
 
 @ApiTags('Post comments')
 @Controller('comments')
@@ -33,9 +34,44 @@ export class PostCommentController {
     private readonly postCommentAttachmentService: PostCommentAttachmentService,
   ) {}
 
+  @ApiOkResponse({
+    description: 'The post comment with requested id',
+    type: PostCommentEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post comment with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post comment to be found.',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.postCommentService.findById(id);
+  }
+
+  @ApiOkResponse({
+    description: 'The list of post comment attachments',
+    type: [PostCommentAttachmentEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The post comment with specified id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post comment to be found',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Get(':id/attachments')
+  findAllPostCommentAttachments(@Param('id') id: string) {
+    return this.postCommentAttachmentService.findAllForComment(id);
   }
 
   @ApiOkResponse({

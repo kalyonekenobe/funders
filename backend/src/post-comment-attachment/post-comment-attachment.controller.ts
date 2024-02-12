@@ -1,9 +1,111 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiConflictResponse,
+  ApiConsumes,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PostCommentAttachmentService } from './post-comment-attachment.service';
+import { PostCommentAttachmentEntity } from './entities/post-comment-attachment.entity';
+import { UpdatePostCommentAttachmentDto } from './dto/update-post-comment-attachment.dto';
+import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Post comment attachments')
 @Controller('comment-attachments')
 export class PostCommentAttachmentController {
   constructor(private readonly postCommentAttachmentService: PostCommentAttachmentService) {}
+
+  @ApiOkResponse({
+    description: 'The post comment attachment with requested id',
+    type: PostCommentAttachmentEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post comment attachment with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post comment attachment to be found.',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.postCommentAttachmentService.findById(id);
+  }
+
+  @ApiOkResponse({
+    description: 'Post comment attachment was successfully updated.',
+    type: PostCommentAttachmentEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post comment attachment with the requested id was not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Cannot update post comment attachment. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the post comment attachment to be updated',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @ApiConsumes('application/json', 'multipart/form-data')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
+  @Put(':id')
+  update(
+    @UploadedFiles()
+    @UploadRestrictions([
+      {
+        fieldname: 'file',
+        minFileSize: 1,
+        maxFileSize: 1024 * 1024 * 50,
+      },
+    ])
+    files: { file?: Express.Multer.File[] },
+    @Param('id') id: string,
+    @Body() updatePostCommentAttachmentDto: Omit<UpdatePostCommentAttachmentDto, 'file'>,
+  ) {
+    return this.postCommentAttachmentService.update(
+      id,
+      updatePostCommentAttachmentDto,
+      files?.file?.[0],
+    );
+  }
+
+  @ApiOkResponse({
+    description: 'Post comment attachment was successfully removed.',
+    type: PostCommentAttachmentEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'The post comment attachment with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the post comment attachment to be deleted',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.postCommentAttachmentService.remove(id);
+  }
 }
