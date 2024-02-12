@@ -22,6 +22,7 @@ import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.ent
 import { PostEntity } from 'src/post/entities/post.entity';
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { FollowingEntity } from 'src/following/entities/following.entity';
+import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
 
 export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   @ApiProperty({
@@ -192,6 +193,6 @@ export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   @ApiProperty({ description: 'The nested array of comments of this user' })
   comments?: PostCommentEntity[];
 
-  // @ApiProperty({ description: 'The nested array of comment reactions of this user' })
-  // commentReactions?: PostCommentReactionEntity[];
+  @ApiProperty({ description: 'The nested array of comment reactions of this user' })
+  commentReactions?: PostCommentReactionEntity[];
 }
