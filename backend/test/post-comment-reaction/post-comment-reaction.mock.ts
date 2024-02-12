@@ -1,55 +1,58 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CreatePostReactionDto } from 'src/post-reaction/dto/create-post-reaction.dto';
-import { UpdatePostReactionDto } from 'src/post-reaction/dto/update-post-reaction.dto';
-import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
+import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
+import { CreatePostCommentReactionDto } from 'src/post-comment-reaction/dto/create-post-comment-reaction.dto';
+import { UpdatePostCommentReactionDto } from 'src/post-comment-reaction/dto/update-post-comment-reaction.dto';
 
 // Mock data storage
 export class MockDataStorage {
-  static #data: PostReactionEntity[] = [];
-  static #defaultData: PostReactionEntity[] = [
+  static #data: PostCommentReactionEntity[] = [];
+  static #defaultData: PostCommentReactionEntity[] = [
     {
-      postId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
+      commentId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       reactionType: 'Like',
       datetime: new Date(),
     },
     {
-      postId: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
+      commentId: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       reactionType: 'Dislike',
       datetime: new Date(),
     },
     {
-      postId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
+      commentId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
       userId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
       reactionType: 'Dislike',
       datetime: new Date(),
     },
     {
-      postId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
+      commentId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       reactionType: 'Laugh',
       datetime: new Date(),
     },
   ];
 
-  static createPostReactionDtoList: { postId: string; data: CreatePostReactionDto }[] = [
+  static createPostCommentReactionDtoList: {
+    commentId: string;
+    data: CreatePostCommentReactionDto;
+  }[] = [
     {
-      postId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
+      commentId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
       data: {
         userId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
         reactionType: 'Anger',
       },
     },
     {
-      postId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
+      commentId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
       data: {
         userId: '86362221-935b-4b15-a8cb-00be736f1795',
         reactionType: 'Crying',
       },
     },
     {
-      postId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
+      commentId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
       data: {
         userId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
         reactionType: 'Heart',
@@ -57,32 +60,32 @@ export class MockDataStorage {
     },
   ];
 
-  static updatePostReactionDtoList: {
-    postId: string;
+  static updatePostCommentReactionDtoList: {
+    commentId: string;
     userId: string;
-    data: UpdatePostReactionDto;
+    data: UpdatePostCommentReactionDto;
   }[] = [
     {
-      postId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
+      commentId: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       data: { reactionType: 'Crying' },
     },
     {
-      postId: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
+      commentId: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       data: { reactionType: 'Heart' },
     },
   ];
 
-  static removePostReactionDtoList: PostReactionEntity[] = [
+  static removePostCommentReactionDtoList: PostCommentReactionEntity[] = [
     {
-      postId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
+      commentId: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
       userId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
       reactionType: 'Dislike',
       datetime: new Date(),
     },
     {
-      postId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
+      commentId: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
       userId: '86362221-935b-4b15-a8cb-00be736f1795',
       reactionType: 'Laugh',
       datetime: new Date(),
@@ -93,7 +96,7 @@ export class MockDataStorage {
     return MockDataStorage.#data;
   }
 
-  static setItems(data: PostReactionEntity[]) {
+  static setItems(data: PostCommentReactionEntity[]) {
     MockDataStorage.#data = [...data];
   }
 
@@ -102,11 +105,11 @@ export class MockDataStorage {
   }
 }
 
-export const mockPostReactionService = {
-  findAllForPost: jest
+export const mockPostCommentReactionService = {
+  findAllForComment: jest
     .fn()
-    .mockImplementation((postId: string) =>
-      Promise.resolve(MockDataStorage.items().filter(item => item.postId === postId)),
+    .mockImplementation((commentId: string) =>
+      Promise.resolve(MockDataStorage.items().filter(item => item.commentId === commentId)),
     ),
   findAllForUser: jest
     .fn()
@@ -116,22 +119,25 @@ export const mockPostReactionService = {
   create: jest
     .fn()
     .mockImplementation(
-      (postId: string, dto: CreatePostReactionDto): Promise<PostReactionEntity> => {
-        const post = MockDataStorage.items().find(item => item.postId === postId);
+      (
+        commentId: string,
+        dto: CreatePostCommentReactionDto,
+      ): Promise<PostCommentReactionEntity> => {
+        const post = MockDataStorage.items().find(item => item.commentId === commentId);
 
         if (!post) {
-          throw new Error('Post with this id does not exist!');
+          throw new Error('Post comment with this id does not exist!');
         }
 
         const exists = MockDataStorage.items().find(
-          item => item.userId === dto.userId && item.postId === postId,
+          item => item.userId === dto.userId && item.commentId === commentId,
         );
 
         if (exists) {
-          throw new Error('Post reaction with these postId and userId already exists!');
+          throw new Error('Post comment reaction with these commentId and userId already exists!');
         }
 
-        const created = { ...dto, postId, datetime: new Date() };
+        const created = { ...dto, commentId, datetime: new Date() };
         MockDataStorage.items().push(created);
 
         return Promise.resolve(created);
@@ -140,13 +146,17 @@ export const mockPostReactionService = {
   update: jest
     .fn()
     .mockImplementation(
-      (postId: string, userId: string, dto: UpdatePostReactionDto): Promise<PostReactionEntity> => {
+      (
+        commentId: string,
+        userId: string,
+        dto: UpdatePostCommentReactionDto,
+      ): Promise<PostCommentReactionEntity> => {
         let exists = MockDataStorage.items().find(
-          item => item.postId === postId && item.userId === userId,
+          item => item.commentId === commentId && item.userId === userId,
         );
 
         if (!exists) {
-          throw new Error('Post reaction with these postId and userId does not exist!');
+          throw new Error('Post comment reaction with these commentId and userId does not exist!');
         }
 
         const updated = {
@@ -156,7 +166,7 @@ export const mockPostReactionService = {
 
         MockDataStorage.setItems(
           MockDataStorage.items().map(item =>
-            item.postId === postId && item.userId === userId ? updated : item,
+            item.commentId === commentId && item.userId === userId ? updated : item,
           ),
         );
 
@@ -165,54 +175,56 @@ export const mockPostReactionService = {
     ),
   remove: jest
     .fn()
-    .mockImplementation((postId: string, userId: string): Promise<PostReactionEntity> => {
+    .mockImplementation((commentId: string, userId: string): Promise<PostCommentReactionEntity> => {
       const dto = MockDataStorage.items().find(
-        item => item.postId === postId && item.userId === userId,
+        item => item.commentId === commentId && item.userId === userId,
       );
 
       if (!dto) {
-        throw new Error('Post reaction with these postId and userId does not exist!');
+        throw new Error('Post comment reaction with these commentId and userId does not exist!');
       }
 
       MockDataStorage.setItems(
-        MockDataStorage.items().filter(item => item.postId !== postId || item.userId !== userId),
+        MockDataStorage.items().filter(
+          item => item.commentId !== commentId || item.userId !== userId,
+        ),
       );
 
       return Promise.resolve(dto);
     }),
 };
 
-export const mockPostReactionRepository = {
-  postReaction: {
+export const mockPostCommentReactionRepository = {
+  postCommentReaction: {
     findMany: jest
       .fn()
-      .mockImplementation((data: { where: { postId: string } }) =>
+      .mockImplementation((data: { where: { commentId: string } }) =>
         data
-          ? MockDataStorage.items().filter(item => item.postId === data.where.postId)
+          ? MockDataStorage.items().filter(item => item.commentId === data.where.commentId)
           : MockDataStorage.items(),
       ),
     create: jest
       .fn()
       .mockImplementation(
         (dto: {
-          data: CreatePostReactionDto & { postId: string };
-        }): Promise<PostReactionEntity> => {
-          const post = MockDataStorage.items().find(item => item.postId === dto.data.postId);
+          data: CreatePostCommentReactionDto & { commentId: string };
+        }): Promise<PostCommentReactionEntity> => {
+          const post = MockDataStorage.items().find(item => item.commentId === dto.data.commentId);
 
           if (!post) {
-            throw new PrismaClientKnownRequestError('Post with this id does not exist!', {
+            throw new PrismaClientKnownRequestError('Post comment with this id does not exist!', {
               code: 'P2001',
               clientVersion: '',
             });
           }
 
           const exists = MockDataStorage.items().find(
-            item => item.postId === dto.data.postId && item.userId === dto.data.userId,
+            item => item.commentId === dto.data.commentId && item.userId === dto.data.userId,
           );
 
           if (exists) {
             throw new PrismaClientKnownRequestError(
-              'Post reaction with these postId and userId already exists!',
+              'Post comment reaction with these commentId and userId already exists!',
               {
                 code: 'P2001',
                 clientVersion: '',
@@ -230,18 +242,18 @@ export const mockPostReactionRepository = {
       .fn()
       .mockImplementation(
         (dto: {
-          where: { userId_postId: { userId: string; postId: string } };
-          data: UpdatePostReactionDto;
-        }): Promise<PostReactionEntity> => {
+          where: { commentId_userId: { userId: string; commentId: string } };
+          data: UpdatePostCommentReactionDto;
+        }): Promise<PostCommentReactionEntity> => {
           const exists = MockDataStorage.items().find(
             item =>
-              item.postId === dto.where.userId_postId.postId &&
-              item.userId === dto.where.userId_postId.userId,
+              item.commentId === dto.where.commentId_userId.commentId &&
+              item.userId === dto.where.commentId_userId.userId,
           );
 
           if (!exists) {
             throw new PrismaClientKnownRequestError(
-              'Post reaction with these postId and userId does not exist!',
+              'Post comment reaction with these commentId and userId does not exist!',
               {
                 code: 'P2001',
                 clientVersion: '',
@@ -256,8 +268,8 @@ export const mockPostReactionRepository = {
 
           MockDataStorage.setItems(
             MockDataStorage.items().map(item =>
-              item.postId === dto.where.userId_postId.postId &&
-              item.userId === dto.where.userId_postId.userId
+              item.commentId === dto.where.commentId_userId.commentId &&
+              item.userId === dto.where.commentId_userId.userId
                 ? updated
                 : item,
             ),
@@ -270,17 +282,17 @@ export const mockPostReactionRepository = {
       .fn()
       .mockImplementation(
         (data: {
-          where: { userId_postId: { userId: string; postId: string } };
-        }): Promise<PostReactionEntity> => {
+          where: { commentId_userId: { userId: string; commentId: string } };
+        }): Promise<PostCommentReactionEntity> => {
           const dto = MockDataStorage.items().find(
             item =>
-              item.postId === data.where.userId_postId.postId &&
-              item.userId === data.where.userId_postId.userId,
+              item.commentId === data.where.commentId_userId.commentId &&
+              item.userId === data.where.commentId_userId.userId,
           );
 
           if (!dto) {
             throw new PrismaClientKnownRequestError(
-              'Post reaction with these postId and userId does not exist!',
+              'Post comment reaction with these commentId and userId does not exist!',
               {
                 code: 'P2001',
                 clientVersion: '',
@@ -291,8 +303,8 @@ export const mockPostReactionRepository = {
           MockDataStorage.setItems(
             MockDataStorage.items().filter(
               item =>
-                item.postId !== data.where.userId_postId.postId ||
-                item.userId !== data.where.userId_postId.userId,
+                item.commentId !== data.where.commentId_userId.commentId ||
+                item.userId !== data.where.commentId_userId.userId,
             ),
           );
 
@@ -300,12 +312,12 @@ export const mockPostReactionRepository = {
         },
       ),
   },
-  post: {
+  postComment: {
     findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
-      const dto = MockDataStorage.items().find(item => item.postId === data.where.id);
+      const dto = MockDataStorage.items().find(item => item.commentId === data.where.id);
 
       if (!dto) {
-        throw new PrismaClientKnownRequestError('Post with this id does not exist!', {
+        throw new PrismaClientKnownRequestError('Post comment with this id does not exist!', {
           code: 'P2001',
           clientVersion: '',
         });
@@ -328,5 +340,7 @@ export const mockPostReactionRepository = {
       return Promise.resolve(dto);
     }),
   },
-  $transaction: jest.fn().mockImplementation(callback => callback(mockPostReactionRepository)),
+  $transaction: jest
+    .fn()
+    .mockImplementation(callback => callback(mockPostCommentReactionRepository)),
 };

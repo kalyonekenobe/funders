@@ -34,7 +34,7 @@ export class PostCommentReactionController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/reactions')
-  findAllPostReactions(@Param('id') id: string) {
+  findAllPostCommentReactions(@Param('id') id: string) {
     return this.postCommentReactionService.findAllForComment(id);
   }
 
