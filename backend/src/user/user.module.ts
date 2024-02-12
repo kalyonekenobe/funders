@@ -13,6 +13,7 @@ import { PostModule } from 'src/post/post.module';
 import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
 import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
 import { PostCommentModule } from 'src/post-comment/post-comment.module';
+import { PostCommentReactionModule } from 'src/post-comment-reaction/post-comment-reaction.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PostCommentModule } from 'src/post-comment/post-comment.module';
     FollowingModule,
     PostReactionModule,
     PostCommentModule,
+    PostCommentReactionModule,
     PostModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',
