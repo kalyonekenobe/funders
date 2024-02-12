@@ -171,9 +171,9 @@ export const mockPostCommentService = {
           removedAt: null,
         };
 
-        MockDataStorage.items().push(created);
+        MockDataStorage.items().push(created as any);
 
-        return Promise.resolve(created);
+        return Promise.resolve(created as any);
       },
     ),
   update: jest
