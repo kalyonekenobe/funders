@@ -28,12 +28,12 @@ describe('PostCommentAttachmentController (e2e)', () => {
     await app.init();
   });
 
-  it('/post-comment-attachments/:id (GET) --> 200 OK', () => {
+  it('/comment-attachments/:id (GET) --> 200 OK', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/post-comment-attachments/${MockDataStorage.items()[0].id}`)
+      .get(`/comment-attachments/${MockDataStorage.items()[0].id}`)
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -42,12 +42,12 @@ describe('PostCommentAttachmentController (e2e)', () => {
       });
   });
 
-  it('/post-comment-attachments/:id (GET) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
+  it('/comment-attachments/:id (GET) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .get(`/post-comment-attachments/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .get(`/comment-attachments/${MockDataStorage.items()[0].id}_not_existing_id`)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -55,12 +55,12 @@ describe('PostCommentAttachmentController (e2e)', () => {
       });
   });
 
-  it('/post-comment-attachments/:id (PUT) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
+  it('/comment-attachments/:id (PUT) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
-      .put(`/post-comment-attachments/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .put(`/comment-attachments/${MockDataStorage.items()[0].id}_not_existing_id`)
       .send(MockDataStorage.updatePostCommentAttachmentDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -69,13 +69,13 @@ describe('PostCommentAttachmentController (e2e)', () => {
       });
   });
 
-  it('/post-comment-attachments/:id (DELETE) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
+  it('/comment-attachments/:id (DELETE) --> 404 NOT FOUND | Post comment attachment with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(
-        `/post-comment-attachments/${MockDataStorage.removePostCommentAttachmentDtoList[0].id}_not_existing_id`,
+        `/comment-attachments/${MockDataStorage.removePostCommentAttachmentDtoList[0].id}_not_existing_id`,
       )
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
