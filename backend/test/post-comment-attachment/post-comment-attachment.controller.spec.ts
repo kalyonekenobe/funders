@@ -1,30 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockDataStorage, mockPostAttachmentService } from './post-attachment.mock';
-import { PostAttachmentController } from 'src/post-attachment/post-attachment.controller';
-import { PostAttachmentService } from 'src/post-attachment/post-attachment.service';
+import { MockDataStorage, mockPostCommentAttachmentService } from './post-comment-attachment.mock';
+import { PostCommentAttachmentController } from 'src/post-comment-attachment/post-comment-attachment.controller';
+import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
 
-describe('PostAttachmentController', () => {
-  let controller: PostAttachmentController;
+describe('PostCommentAttachmentService', () => {
+  let controller: PostCommentAttachmentController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [PostAttachmentController],
+      controllers: [PostCommentAttachmentController],
       providers: [
         {
-          provide: PostAttachmentService,
-          useValue: mockPostAttachmentService,
+          provide: PostCommentAttachmentService,
+          useValue: mockPostCommentAttachmentService,
         },
       ],
     }).compile();
 
-    controller = module.get<PostAttachmentController>(PostAttachmentController);
+    controller = module.get<PostCommentAttachmentController>(PostCommentAttachmentController);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should find post attachments list by post attachment id', async () => {
+  it('should find post comment attachments list by post comment attachment id', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -35,10 +35,10 @@ describe('PostAttachmentController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.findById).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.findById).toHaveBeenCalled();
   });
 
-  it('should not find post attachment with provided id because it does not exist', () => {
+  it('should not find post comment attachment with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -47,16 +47,23 @@ describe('PostAttachmentController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.findById).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.findById).toHaveBeenCalled();
   });
 
-  it('should update a list of existing post attachments by provided ids', async () => {
+  it('should update a list of existing post comment attachments by provided ids', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
-    for (const item of MockDataStorage.updatePostAttachmentDtoList) {
-      const received = await controller.update({ file: [] }, item.id, item.data);
+    for (const item of MockDataStorage.updatePostCommentAttachmentDtoList) {
+      const received = await controller.update(
+        {
+          file: item.data.file,
+          resourceType: item.data.resourceType,
+        } as any,
+        item.id,
+        item.data,
+      );
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -75,44 +82,44 @@ describe('PostAttachmentController', () => {
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.update).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.update).toHaveBeenCalled();
   });
 
-  it('should not update a post attachment with provided id because it does not exist', () => {
+  it('should not update a post comment attachment with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
     expect(() =>
-      controller.update({ file: [] }, '', {
-        ...MockDataStorage.updatePostAttachmentDtoList[0].data,
+      controller.update({} as any, '', {
+        ...MockDataStorage.updatePostCommentAttachmentDtoList[0].data,
       }),
     ).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.update).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.update).toHaveBeenCalled();
   });
 
-  it('should remove a list of existing post attachments by provided ids', async () => {
+  it('should remove a list of existing post comment attachments by provided ids', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    for (const item of MockDataStorage.removePostAttachmentDtoList) {
+    for (const item of MockDataStorage.removePostCommentAttachmentDtoList) {
       const received = await controller.remove(item.id);
       expect(received).toEqual(item);
     }
 
     expect(MockDataStorage.items()).toEqual(
       initialItems.filter(item => {
-        return !MockDataStorage.removePostAttachmentDtoList.find(x => x.id === item.id);
+        return !MockDataStorage.removePostCommentAttachmentDtoList.find(x => x.id === item.id);
       }),
     );
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.remove).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a post attachment with provided id because it does not exist', () => {
+  it('should not remove a post comment attachment with provided id because it does not exist', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
@@ -120,6 +127,6 @@ describe('PostAttachmentController', () => {
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
-    expect(mockPostAttachmentService.remove).toHaveBeenCalled();
+    expect(mockPostCommentAttachmentService.remove).toHaveBeenCalled();
   });
 });
