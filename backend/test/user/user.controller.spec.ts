@@ -17,10 +17,15 @@ import {
   MockDataStorage as PostCommentMockDataStorage,
   mockPostCommentService,
 } from 'test/post-comment/post-comment.mock';
+import {
+  MockDataStorage as PostCommentReactionMockDataStorage,
+  mockPostCommentReactionService,
+} from 'test/post-comment-reaction/post-comment-reaction.mock';
 import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 import { PostService } from 'src/post/post.service';
 import { PostReactionService } from 'src/post-reaction/post-reaction.service';
 import { PostCommentService } from 'src/post-comment/post-comment.service';
+import { PostCommentReactionService } from 'src/post-comment-reaction/post-comment-reaction.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -48,6 +53,10 @@ describe('UserController', () => {
         {
           provide: PostCommentService,
           useValue: mockPostCommentService,
+        },
+        {
+          provide: PostCommentReactionService,
+          useValue: mockPostCommentReactionService,
         },
       ],
     }).compile();
@@ -172,6 +181,26 @@ describe('UserController', () => {
 
     PostReactionMockDataStorage.setDefaultItems();
     expect(mockPostReactionService.findAllForUser).toHaveBeenCalled();
+  });
+
+  it('should find all existing users post comment reactions for user with specified id', async () => {
+    PostCommentReactionMockDataStorage.setDefaultItems();
+
+    const initialItems = [...PostCommentReactionMockDataStorage.items()];
+    expect(
+      await controller.findAllUserPostCommentReactions(
+        PostCommentReactionMockDataStorage.items()[0].userId,
+      ),
+    ).toEqual(
+      PostCommentReactionMockDataStorage.items().filter(
+        item => item.userId === PostCommentReactionMockDataStorage.items()[0].userId,
+      ),
+    );
+
+    expect(PostCommentReactionMockDataStorage.items()).toEqual(initialItems);
+
+    PostCommentReactionMockDataStorage.setDefaultItems();
+    expect(mockPostCommentReactionService.findAllForUser).toHaveBeenCalled();
   });
 
   it('should find all existing users post comments for user with specified id', async () => {

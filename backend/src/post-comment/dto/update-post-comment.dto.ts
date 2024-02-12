@@ -9,14 +9,16 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { PostCommentEntity } from '../entities/post-comment.entity';
+import { CreatePostCommentAttachmentDto } from 'src/post-comment-attachment/dto/create-post-comment-attachment.dto';
 
-export class UpdatePostCommentDto
-  implements
-    Omit<
-      Partial<PostCommentEntity>,
-      'id' | 'postId' | 'authorId' | 'parentCommentId' | 'createdAt' | 'updatedAt'
-    >
-{
+type UpdatePostComment = Omit<
+  Partial<PostCommentEntity>,
+  'id' | 'postId' | 'authorId' | 'parentCommentId' | 'createdAt' | 'updatedAt' | 'attachments'
+> & {
+  attachments?: Omit<CreatePostCommentAttachmentDto, 'commentId'>[];
+};
+
+export class UpdatePostCommentDto implements UpdatePostComment {
   @ApiProperty({
     description: 'The content of the post comment',
     examples: ['The content of the post comment', 'Hello, world!', 'The first comment'],
@@ -41,5 +43,6 @@ export class UpdatePostCommentDto
   @ValidateIf((_, value) => value)
   removedAt?: Date | null;
 
-  attachments?: any[];
+  @ApiProperty({ description: 'The nested array of attachments of post comment' })
+  attachments?: Omit<CreatePostCommentAttachmentDto, 'postId'>[];
 }

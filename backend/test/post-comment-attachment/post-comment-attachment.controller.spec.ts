@@ -3,7 +3,7 @@ import { MockDataStorage, mockPostCommentAttachmentService } from './post-commen
 import { PostCommentAttachmentController } from 'src/post-comment-attachment/post-comment-attachment.controller';
 import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
 
-describe('PostCommentAttachmentService', () => {
+describe('PostCommentAttachmentController', () => {
   let controller: PostCommentAttachmentController;
 
   beforeEach(async () => {

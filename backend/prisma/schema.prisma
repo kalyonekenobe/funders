@@ -222,7 +222,7 @@ model PostCommentReaction {
   commentId    String
   userId       String
   reactionType String
-  datetime     DateTime @default(now())
+  datetime     DateTime @default(now()) @updatedAt
 
   comment          PostComment      @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)

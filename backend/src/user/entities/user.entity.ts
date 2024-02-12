@@ -15,6 +15,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { FollowingEntity } from 'src/following/entities/following.entity';
+import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
 import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
 import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
@@ -205,6 +206,6 @@ export class UserEntity implements User {
   @ApiProperty({ description: 'The nested array of comments of this user' })
   comments?: PostCommentEntity[];
 
-  // @ApiProperty({ description: 'The nested array of comment reactions of this user' })
-  // commentReactions?: PostCommentReactionEntity[];
+  @ApiProperty({ description: 'The nested array of comment reactions of this user' })
+  commentReactions?: PostCommentReactionEntity[];
 }

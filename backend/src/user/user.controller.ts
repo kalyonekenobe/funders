@@ -35,6 +35,8 @@ import { PostReactionService } from 'src/post-reaction/post-reaction.service';
 import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
 import { PostCommentService } from 'src/post-comment/post-comment.service';
 import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
+import { PostCommentReactionService } from 'src/post-comment-reaction/post-comment-reaction.service';
+import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -45,6 +47,7 @@ export class UserController {
     private readonly postService: PostService,
     private readonly postReactionService: PostReactionService,
     private readonly postCommentService: PostCommentService,
+    private readonly postCommentReactionService: PostCommentReactionService,
   ) {}
 
   @ApiCreatedResponse({
@@ -140,6 +143,26 @@ export class UserController {
   @Get(':id/post-reactions')
   findAllUserPostReactions(@Param('id') userId: string) {
     return this.postReactionService.findAllForUser(userId);
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's post comment reactions",
+    type: [PostCommentReactionEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of post comment reactions',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/comment-reactions')
+  findAllUserPostCommentReactions(@Param('id') userId: string) {
+    return this.postCommentReactionService.findAllForUser(userId);
   }
 
   @ApiOkResponse({

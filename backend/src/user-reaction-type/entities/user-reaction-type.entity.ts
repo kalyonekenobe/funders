@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserReactionType } from '@prisma/client';
 import { IsDefined, IsNotEmpty, IsString, Matches, MaxLength } from 'class-validator';
+import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
+import { PostEntity } from 'src/post/entities/post.entity';
 
 export class UserReactionTypeEntity implements UserReactionType {
   @ApiProperty({
@@ -18,12 +20,10 @@ export class UserReactionTypeEntity implements UserReactionType {
   @ApiProperty({
     description: 'The nested array of posts which have this reaction',
   })
-  //posts?: PostEntity[];
-  posts?: any[];
+  posts?: PostEntity[];
 
   @ApiProperty({
     description: 'The nested array of posts comments which have this reaction',
   })
-  //posts?: PostCommentEntity[];
-  postsComments?: any[];
+  comments?: PostCommentEntity[];
 }
