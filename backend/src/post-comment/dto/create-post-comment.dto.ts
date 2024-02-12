@@ -1,19 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDate,
-  IsDefined,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-  Matches,
-  MaxDate,
-  ValidateIf,
-} from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, IsUUID, Matches, ValidateIf } from 'class-validator';
 import { PostCommentEntity } from '../entities/post-comment.entity';
+import { CreatePostCommentAttachmentDto } from 'src/post-comment-attachment/dto/create-post-comment-attachment.dto';
 
-export class CreatePostCommentDto
-  implements Omit<PostCommentEntity, 'id' | 'postId' | 'createdAt' | 'updatedAt' | 'removedAt'>
-{
+type CreatePostAttachment = Omit<
+  PostCommentEntity,
+  'id' | 'postId' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments'
+> & {
+  attachments?: Omit<CreatePostCommentAttachmentDto, 'commentId'>[];
+};
+
+export class CreatePostCommentDto implements CreatePostAttachment {
   @ApiProperty({
     description: "Post comment author's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],
@@ -49,5 +46,6 @@ export class CreatePostCommentDto
   @IsDefined()
   content: string;
 
-  attachments?: any[];
+  @ApiProperty({ description: 'The nested array of attachments of post comment' })
+  attachments?: Omit<CreatePostCommentAttachmentDto, 'commentId'>[];
 }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PostComment } from '@prisma/client';
 import { IsDate, IsDefined, IsNotEmpty, IsString, IsUUID, Matches, MaxDate } from 'class-validator';
+import { PostCommentAttachmentEntity } from 'src/post-comment-attachment/entities/post-comment-attachment.entity';
 import { PostEntity } from 'src/post/entities/post.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 
@@ -105,7 +106,9 @@ export class PostCommentEntity implements PostComment {
   @ApiProperty({ description: 'The nested array of replies of post comment' })
   replies?: PostCommentEntity[];
 
+  // @ApiProperty({ description: 'The nested array of reactions of post comment' })
   // reactions?: PostCommentReactionEntity[];
 
-  attachments?: any[];
+  @ApiProperty({ description: 'The nested array of attachments of post comment' })
+  attachments?: PostCommentAttachmentEntity[];
 }
