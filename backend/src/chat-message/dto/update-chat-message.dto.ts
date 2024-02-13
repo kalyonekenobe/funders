@@ -9,14 +9,16 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { ChatMessageEntity } from '../entities/chat-message.entity';
+import { CreateChatMessageAttachmentDto } from 'src/chat-message-attachment/dto/create-chat-message-attachment.dto';
 
-export class UpdateChatMessageDto
-  implements
-    Omit<
-      Partial<ChatMessageEntity>,
-      'id' | 'chatId' | 'authorId' | 'replyTo' | 'createdAt' | 'updatedAt'
-    >
-{
+type UpdateChatMessage = Omit<
+  Partial<ChatMessageEntity>,
+  'id' | 'chatId' | 'authorId' | 'replyTo' | 'createdAt' | 'updatedAt' | 'attachments'
+> & {
+  attachments?: Omit<CreateChatMessageAttachmentDto, 'messageId'>[];
+};
+
+export class UpdateChatMessageDto implements UpdateChatMessage {
   @ApiProperty({
     description: 'The text of the chat message',
     examples: ['Hi', 'Hello, world!', 'The first message'],
@@ -49,5 +51,5 @@ export class UpdateChatMessageDto
   removedAt?: Date | null;
 
   @ApiProperty({ description: 'The nested array of attachments of this chat message' })
-  attachments?: any[];
+  attachments?: Omit<CreateChatMessageAttachmentDto, 'messageId'>[];
 }

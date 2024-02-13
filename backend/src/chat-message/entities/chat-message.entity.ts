@@ -11,6 +11,7 @@ import {
   MaxDate,
   ValidateIf,
 } from 'class-validator';
+import { ChatMessageAttachmentEntity } from 'src/chat-message-attachment/entities/chat-message-attachment.entity';
 import { ChatEntity } from 'src/chat/entities/chat.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
@@ -125,5 +126,5 @@ export class ChatMessageEntity implements ChatMessage {
   replies?: ChatMessageEntity[];
 
   @ApiProperty({ description: 'The nested array of attachments of this chat message' })
-  attachments?: any[];
+  attachments?: ChatMessageAttachmentEntity[];
 }

@@ -1,11 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsNotEmpty, IsString, IsUUID, Matches, ValidateIf } from 'class-validator';
 import { ChatMessageEntity } from '../entities/chat-message.entity';
+import { CreateChatMessageAttachmentDto } from 'src/chat-message-attachment/dto/create-chat-message-attachment.dto';
 
-export class CreateChatMessageDto
-  implements
-    Omit<ChatMessageEntity, 'id' | 'chatId' | 'isPinned' | 'createdAt' | 'updatedAt' | 'removedAt'>
-{
+type CreateChatMessage = Omit<
+  ChatMessageEntity,
+  'id' | 'chatId' | 'isPinned' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments'
+> & {
+  attachments?: Omit<CreateChatMessageAttachmentDto, 'messageId'>[];
+};
+
+export class CreateChatMessageDto implements CreateChatMessage {
   @ApiProperty({
     description: "Author's uuid",
     examples: ['b7af9cd4-5533-4737-862b-78bce985c987', '989d32c2-abd4-43d3-a420-ee175ae16b98'],
@@ -42,5 +47,5 @@ export class CreateChatMessageDto
   text: string;
 
   @ApiProperty({ description: 'The nested array of attachments of this chat message' })
-  attachments?: any[];
+  attachments?: Omit<CreateChatMessageAttachmentDto, 'messageId'>[];
 }
