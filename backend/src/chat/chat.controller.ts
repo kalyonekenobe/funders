@@ -12,11 +12,15 @@ import { ChatService } from './chat.service';
 import { ChatEntity } from './entities/chat.entity';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { ChatMessageService } from 'src/chat-message/chat-message.service';
 
 @ApiTags('Chats')
 @Controller('chats')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly chatMessageService: ChatMessageService,
+  ) {}
 
   @ApiCreatedResponse({
     description: 'Chat was successfully created.',
