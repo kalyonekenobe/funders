@@ -62,9 +62,9 @@ export const mockChatService = {
       throw new Error('Chat with this id already exists!');
     }
 
-    MockDataStorage.items().push({ id: '', ...dto });
+    MockDataStorage.items().push({ id: '', name: dto.name });
 
-    return Promise.resolve({ id: '', ...dto });
+    return Promise.resolve({ id: '', name: dto.name });
   }),
   update: jest.fn().mockImplementation((id: string, dto: UpdateChatDto): Promise<ChatEntity> => {
     let exists = MockDataStorage.items().find(item => item.id === id);
@@ -122,9 +122,9 @@ export const mockChatRepository = {
         });
       }
 
-      MockDataStorage.items().push({ id: '', ...dto.data });
+      MockDataStorage.items().push({ id: '', name: dto.data.name });
 
-      return Promise.resolve({ id: '', ...dto.data });
+      return Promise.resolve({ id: '', name: dto.data.name });
     }),
     update: jest
       .fn()
