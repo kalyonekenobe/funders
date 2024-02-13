@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockChatService } from './chat.mock';
+import {
+  MockDataStorage as ChatMessageMockDataStorage,
+  mockChatMessageService,
+} from '../chat-message/chat-message.mock';
 import { ChatController } from 'src/chat/chat.controller';
 import { ChatService } from 'src/chat/chat.service';
+import { ChatMessageService } from 'src/chat-message/chat-message.service';
 
 describe('ChatController', () => {
   let controller: ChatController;
@@ -13,6 +18,10 @@ describe('ChatController', () => {
         {
           provide: ChatService,
           useValue: mockChatService,
+        },
+        {
+          provide: ChatMessageService,
+          useValue: mockChatMessageService,
         },
       ],
     }).compile();
@@ -66,6 +75,20 @@ describe('ChatController', () => {
 
     MockDataStorage.setDefaultItems();
     expect(mockChatService.findAll).toHaveBeenCalled();
+  });
+
+  it('should find all existing messages of the chat with specified id', async () => {
+    ChatMessageMockDataStorage.setDefaultItems();
+
+    const initialItems = [...ChatMessageMockDataStorage.items()];
+    expect(
+      await controller.findAllChatMessages(ChatMessageMockDataStorage.items()[0].chatId),
+    ).toEqual(
+      initialItems.filter(item => item.chatId === ChatMessageMockDataStorage.items()[0].chatId),
+    );
+
+    ChatMessageMockDataStorage.setDefaultItems();
+    expect(mockChatMessageService.findAllForChat).toHaveBeenCalled();
   });
 
   it('should find chats list by chat id', async () => {

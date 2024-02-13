@@ -1,46 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
-import { CreatePostCommentDto } from './dto/create-post-comment.dto';
-import { PostCommentRequestBodyFiles } from './types/post-comment.types';
-import { PostCommentEntity } from './entities/post-comment.entity';
+import { ChatMessageEntity } from './entities/chat-message.entity';
+import { CreateChatMessageDto } from './dto/create-chat-message.dto';
+import { ChatMessageRequestBodyFiles } from './types/chat-message.types';
+import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import {
   ICloudinaryLikeResource,
   IPrepareMultipleResourcesForDelete,
   IPrepareMultipleResourcesForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
-import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
-import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
+import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 
 @Injectable()
-export class PostCommentService {
+export class ChatMessageService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAllForPost(postId: string): Promise<PostCommentEntity[]> {
+  async findAllForChat(chatId: string): Promise<ChatMessageEntity[]> {
     return this.prismaService.$transaction(async tx => {
-      await tx.post.findUniqueOrThrow({ where: { id: postId } });
-      return tx.postComment.findMany({ where: { postId }, include: { replies: true } });
+      await tx.chat.findUniqueOrThrow({ where: { id: chatId } });
+      return tx.chatMessage.findMany({ where: { chatId }, include: { replies: true } });
     });
   }
 
-  async findAllForUser(authorId: string): Promise<PostCommentEntity[]> {
-    return this.prismaService.$transaction(async tx => {
-      await tx.user.findUniqueOrThrow({ where: { id: authorId } });
-      return tx.postComment.findMany({ where: { authorId }, include: { replies: true } });
-    });
-  }
-
-  async findById(id: string): Promise<PostCommentEntity> {
-    return this.prismaService.postComment.findUniqueOrThrow({ where: { id } });
+  async findById(id: string): Promise<ChatMessageEntity> {
+    return this.prismaService.chatMessage.findUniqueOrThrow({ where: { id } });
   }
 
   async create(
-    postId: string,
-    data: CreatePostCommentDto,
-    files?: PostCommentRequestBodyFiles,
-  ): Promise<PostCommentEntity> {
+    chatId: string,
+    data: CreateChatMessageDto,
+    files?: ChatMessageRequestBodyFiles,
+  ): Promise<ChatMessageEntity> {
     const uploadResources: Express.Multer.File[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
 
@@ -49,7 +42,7 @@ export class PostCommentService {
 
     if (uploadResources.length > 0) {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
-        mapping: { attachments: 'post_comment_attachments' },
+        mapping: { attachments: 'chat_message_attachments' },
       });
     }
 
@@ -65,11 +58,11 @@ export class PostCommentService {
         })) ?? []
       : [];
 
-    return this.prismaService.postComment
+    return this.prismaService.chatMessage
       .create({
         data: {
           ...data,
-          postId,
+          chatId,
           attachments: {
             createMany: {
               data: attachments,
@@ -86,10 +79,10 @@ export class PostCommentService {
 
   async update(
     id: string,
-    data: UpdatePostCommentDto,
-    files?: PostCommentRequestBodyFiles,
-  ): Promise<PostCommentEntity> {
-    const postComment = await this.prismaService.postComment.findUniqueOrThrow({
+    data: UpdateChatMessageDto,
+    files?: ChatMessageRequestBodyFiles,
+  ): Promise<ChatMessageEntity> {
+    const chatMessage = await this.prismaService.chatMessage.findUniqueOrThrow({
       where: { id },
       select: { attachments: true },
     });
@@ -105,7 +98,7 @@ export class PostCommentService {
 
     if (uploadResources.length > 0) {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
-        mapping: { attachments: 'post_comment_attachments' },
+        mapping: { attachments: 'chat_message_attachments' },
       });
     }
 
@@ -123,10 +116,10 @@ export class PostCommentService {
 
     if (
       ((files?.attachments && files.attachments.length > 0) || files?.attachments !== undefined) &&
-      postComment.attachments.length > 0
+      chatMessage.attachments.length > 0
     ) {
       deleteResources.push(
-        ...postComment.attachments.map(({ file, resourceType }) => ({
+        ...chatMessage.attachments.map(({ file, resourceType }) => ({
           publicId: file,
           resourceType,
         })),
@@ -139,7 +132,7 @@ export class PostCommentService {
       destroyer = this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
     }
 
-    return this.prismaService.postComment
+    return this.prismaService.chatMessage
       .update({
         where: { id },
         data: {
@@ -160,8 +153,8 @@ export class PostCommentService {
       });
   }
 
-  async remove(id: string): Promise<PostCommentEntity> {
-    return this.prismaService.postComment
+  async remove(id: string): Promise<ChatMessageEntity> {
+    return this.prismaService.chatMessage
       .delete({ where: { id }, include: { attachments: true } })
       .then(response => {
         const deleteResources: ICloudinaryLikeResource[] = [];

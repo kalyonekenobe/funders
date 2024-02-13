@@ -9,6 +9,7 @@ import {
   MaxLength,
   ValidateIf,
 } from 'class-validator';
+import { ChatMessageEntity } from 'src/chat-message/entities/chat-message.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 
 export class ChatEntity implements Chat {
@@ -43,5 +44,5 @@ export class ChatEntity implements Chat {
   @ApiProperty({
     description: 'The nested array of messages which have this chat',
   })
-  messages?: any[];
+  messages?: ChatMessageEntity[];
 }
