@@ -16,16 +16,22 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 import { ChatMessageEntity } from './entities/chat-message.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { ChatMessageRequestBodyFiles } from './types/chat-message.types';
 import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
+import { ChatMessageAttachmentService } from 'src/chat-message-attachment/chat-message-attachment.service';
 
+@ApiTags('Chat messages')
 @Controller('messages')
 export class ChatMessageController {
-  constructor(private readonly chatMessageService: ChatMessageService) {}
+  constructor(
+    private readonly chatMessageService: ChatMessageService,
+    private readonly chatMessageAttachmentService: ChatMessageAttachmentService,
+  ) {}
 
   @ApiOkResponse({
     description: 'The chat message with requested id',
