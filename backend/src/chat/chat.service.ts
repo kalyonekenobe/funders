@@ -17,8 +17,11 @@ export class ChatService {
   }
 
   async create(data: CreateChatDto): Promise<Chat> {
+    const chat = structuredClone(data);
+    delete chat.users;
+
     return this.prismaService.chat.create({
-      data: { ...data, chatsOnUsers: { createMany: { data: data.users ?? [] } } },
+      data: { ...chat, chatsOnUsers: { createMany: { data: data.users ?? [] } } },
     });
   }
 

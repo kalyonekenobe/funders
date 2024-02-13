@@ -14,6 +14,7 @@ import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
 import { PostReactionModule } from 'src/post-reaction/post-reaction.module';
 import { PostCommentModule } from 'src/post-comment/post-comment.module';
 import { PostCommentReactionModule } from 'src/post-comment-reaction/post-comment-reaction.module';
+import { ChatsOnUsersModule } from 'src/chats-on-users/chats-on-users.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PostCommentReactionModule } from 'src/post-comment-reaction/post-commen
     PostCommentModule,
     PostCommentReactionModule,
     PostModule,
+    ChatsOnUsersModule,
     PasswordModule.forRoot(
       process.env.USER_PASSWORD_SALT_PREFIX ?? '',
       process.env.USER_PASSWORD_SALT_SUFFIX ?? '',
