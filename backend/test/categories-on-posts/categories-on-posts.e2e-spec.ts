@@ -8,7 +8,7 @@ import ValidationPipes from 'src/core/config/validation-pipes';
 import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 
-describe('FollowingController (e2e)', () => {
+describe('CategoriesOnPostsController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {

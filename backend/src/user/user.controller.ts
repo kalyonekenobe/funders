@@ -37,6 +37,8 @@ import { PostCommentService } from 'src/post-comment/post-comment.service';
 import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 import { PostCommentReactionService } from 'src/post-comment-reaction/post-comment-reaction.service';
 import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
+import { ChatsOnUsersService } from 'src/chats-on-users/chats-on-users.service';
+import { ChatEntity } from 'src/chat/entities/chat.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -48,6 +50,7 @@ export class UserController {
     private readonly postReactionService: PostReactionService,
     private readonly postCommentService: PostCommentService,
     private readonly postCommentReactionService: PostCommentReactionService,
+    private readonly chatsOnUsersService: ChatsOnUsersService,
   ) {}
 
   @ApiCreatedResponse({
@@ -163,6 +166,26 @@ export class UserController {
   @Get(':id/comment-reactions')
   findAllUserPostCommentReactions(@Param('id') userId: string) {
     return this.postCommentReactionService.findAllForUser(userId);
+  }
+
+  @ApiOkResponse({
+    description: "The list of user's chats",
+    type: [ChatEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The user with the requested id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The id of the user to get his list of chats',
+    schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
+  })
+  @Get(':id/chats')
+  findAllUserChats(@Param('id') userId: string) {
+    return this.chatsOnUsersService.findAllChatsForUser(userId);
   }
 
   @ApiOkResponse({

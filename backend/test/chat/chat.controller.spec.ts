@@ -32,7 +32,7 @@ describe('ChatController', () => {
       const received = await controller.create(item);
       const expected = { ...item, id: received.id };
       expect(received).toEqual(expected);
-      initialItems.push(expected);
+      initialItems.push(expected as any);
     }
 
     expect(MockDataStorage.items()).toEqual(initialItems);
@@ -46,7 +46,7 @@ describe('ChatController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     expect(() => {
-      controller.create(MockDataStorage.items()[0]);
+      controller.create(MockDataStorage.items()[0] as any);
 
       // Simulating validation error
       MockDataStorage.items().pop();

@@ -118,15 +118,18 @@ model ChatMessage {
   id        String    @id @default(uuid())
   chatId    String
   authorId  String
+  replyTo   String?
   text      String
   isPinned  Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   removedAt DateTime?
 
-  chat        Chat                    @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  author      User                    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  attachments ChatMessageAttachment[]
+  chat          Chat                    @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author        User                    @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parentMessage ChatMessage?            @relation("ParentMessage", fields: [replyTo], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  replies       ChatMessage[]           @relation("ParentMessage")
+  attachments   ChatMessageAttachment[]
 }
 
 model ChatsOnUsers {
