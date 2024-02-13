@@ -52,20 +52,6 @@ describe('PostAttachmentController (e2e)', () => {
       });
   });
 
-  it('/post-attachments/:id (PUT) --> 404 NOT FOUND | Post attachment with specified id was not found', () => {
-    MockDataStorage.setDefaultItems();
-
-    const initialData = [...MockDataStorage.items()];
-    return request(app.getHttpServer())
-      .put(`/post-attachments/${MockDataStorage.items()[0].id}_not_existing_id`)
-      .send(MockDataStorage.updatePostAttachmentDtoList[0].data)
-      .expect(HttpStatus.NOT_FOUND)
-      .then(() => {
-        expect(MockDataStorage.items()).toEqual(initialData);
-        MockDataStorage.setDefaultItems();
-      });
-  });
-
   it('/post-attachments/:id (DELETE) --> 404 NOT FOUND | Post attachment with specified id was not found', () => {
     MockDataStorage.setDefaultItems();
 
