@@ -51,6 +51,10 @@ export class ExceptionUtils {
           message = `Invalid input data: ${exception.meta?.target}`;
           status = HttpStatus.CONFLICT;
           break;
+        case 'C2000':
+          message = exception.message;
+          status = HttpStatus.CONFLICT;
+          break;
       }
 
       caught = true;

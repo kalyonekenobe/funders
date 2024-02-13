@@ -24,6 +24,7 @@ import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.deco
 import { ChatMessageRequestBodyFiles } from './types/chat-message.types';
 import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { ChatMessageAttachmentService } from 'src/chat-message-attachment/chat-message-attachment.service';
+import { ChatMessageAttachmentEntity } from 'src/chat-message-attachment/entities/chat-message-attachment.entity';
 
 @ApiTags('Chat messages')
 @Controller('messages')
@@ -53,25 +54,25 @@ export class ChatMessageController {
     return this.chatMessageService.findById(id);
   }
 
-  // @ApiOkResponse({
-  //   description: 'The list of Chat message attachments',
-  //   type: [PostCommentAttachmentEntity],
-  // })
-  // @ApiNotFoundResponse({
-  //   description: 'The Chat message with specified id was not found.',
-  // })
-  // @ApiInternalServerErrorResponse({
-  //   description: 'Internal server error was occured.',
-  // })
-  // @ApiParam({
-  //   name: 'id',
-  //   description: 'The uuid of the Chat message to be found',
-  //   schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
-  // })
-  // @Get(':id/attachments')
-  // findAllPostCommentAttachments(@Param('id') id: string) {
-  //   return this.postCommentAttachmentService.findAllForComment(id);
-  // }
+  @ApiOkResponse({
+    description: 'The list of chat message attachments',
+    type: [ChatMessageAttachmentEntity],
+  })
+  @ApiNotFoundResponse({
+    description: 'The chat message with specified id was not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'The uuid of the chat message to be found',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @Get(':id/attachments')
+  findAllChatMessageAttachments(@Param('id') id: string) {
+    return this.chatMessageAttachmentService.findAllForChatMessage(id);
+  }
 
   @ApiOkResponse({
     description: 'Chat message was successfully updated.',
