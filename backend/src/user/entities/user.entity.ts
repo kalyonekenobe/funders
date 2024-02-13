@@ -14,6 +14,7 @@ import {
   MaxLength,
   ValidateIf,
 } from 'class-validator';
+import { ChatMessageEntity } from 'src/chat-message/entities/chat-message.entity';
 import { ChatEntity } from 'src/chat/entities/chat.entity';
 import { FollowingEntity } from 'src/following/entities/following.entity';
 import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
@@ -192,8 +193,8 @@ export class UserEntity implements User {
   @ApiProperty({ description: 'The nested array of chats of this user' })
   chats?: ChatEntity[];
 
-  // @ApiProperty({ description: 'The nested array of messages of this user' })
-  // messages: ChatMessageEntity[];
+  @ApiProperty({ description: 'The nested array of messages of this user' })
+  messages: ChatMessageEntity[];
 
   @ApiProperty({ description: 'The nested array of posts of this user' })
   posts?: PostEntity[];
