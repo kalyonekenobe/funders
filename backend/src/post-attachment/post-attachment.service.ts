@@ -65,6 +65,13 @@ export class PostAttachmentService {
       };
     }
 
+    if (!file && data.file !== undefined) {
+      throw new PrismaClientKnownRequestError('The file was not provided!', {
+        code: 'C2000',
+        clientVersion: '',
+      });
+    }
+
     return this.prismaService.postAttachment
       .update({
         data,

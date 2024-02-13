@@ -89,7 +89,7 @@ export const mockPostAttachmentService = {
     const dto = MockDataStorage.items().find(item => item.id === id);
 
     if (!dto) {
-      throw new Error('Post attachment with this name does not exist!');
+      throw new Error('Post attachment with this id does not exist!');
     }
 
     MockDataStorage.setItems(MockDataStorage.items().filter(item => item.id !== id));

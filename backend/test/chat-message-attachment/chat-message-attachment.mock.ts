@@ -1,73 +1,73 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CreatePostCommentAttachmentDto } from 'src/post-comment-attachment/dto/create-post-comment-attachment.dto';
-import { UpdatePostCommentAttachmentDto } from 'src/post-comment-attachment/dto/update-post-comment-attachment.dto';
-import { PostCommentAttachmentEntity } from 'src/post-comment-attachment/entities/post-comment-attachment.entity';
+import { CreateChatMessageAttachmentDto } from 'src/chat-message-attachment/dto/create-chat-message-attachment.dto';
+import { UpdateChatMessageAttachmentDto } from 'src/chat-message-attachment/dto/update-chat-message-attachment.dto';
+import { ChatMessageAttachmentEntity } from 'src/chat-message-attachment/entities/chat-message-attachment.entity';
 
 // Mock data storage
 export class MockDataStorage {
-  static #data: PostCommentAttachmentEntity[] = [];
-  static #defaultData: PostCommentAttachmentEntity[] = [
+  static #data: ChatMessageAttachmentEntity[] = [];
+  static #defaultData: ChatMessageAttachmentEntity[] = [
     {
       id: '1',
-      file: 'post_comment_attachments/1.jpg',
+      file: 'chat_message_attachments/1.jpg',
       filename: null,
       resourceType: 'image',
-      commentId: '1',
+      messageId: '1',
     },
     {
       id: '2',
-      file: 'post_comment_attachments/2.txt',
+      file: 'chat_message_attachments/2.txt',
       filename: 'Document',
       resourceType: 'raw',
-      commentId: '1',
+      messageId: '1',
     },
     {
       id: '3',
-      file: 'post_comment_attachments/3.mp4',
+      file: 'chat_message_attachments/3.mp4',
       filename: null,
       resourceType: 'video',
-      commentId: '2',
+      messageId: '2',
     },
   ];
 
-  static createPostCommentAttachmentDtoList: CreatePostCommentAttachmentDto[] = [
+  static createChatMessageAttachmentDtoList: CreateChatMessageAttachmentDto[] = [
     {
-      file: 'post_comment_attachments/4.png',
+      file: 'chat_message_attachments/4.png',
       filename: null,
       resourceType: 'image',
-      commentId: '1',
+      messageId: '1',
     },
-    { file: 'post_comment_attachments/5.txt', filename: null, resourceType: 'raw', commentId: '1' },
+    { file: 'chat_message_attachments/5.txt', filename: null, resourceType: 'raw', messageId: '1' },
   ];
 
-  static updatePostCommentAttachmentDtoList: {
+  static updateChatMessageAttachmentDtoList: {
     id: string;
-    data: UpdatePostCommentAttachmentDto;
+    data: UpdateChatMessageAttachmentDto;
   }[] = [
     {
       id: '1',
-      data: { file: 'post_comment_attachments/4.png', filename: null, resourceType: 'image' },
+      data: { file: 'chat_message_attachments/4.png', filename: null, resourceType: 'image' },
     },
     {
       id: '3',
-      data: { file: 'post_comment_attachments/5.txt', filename: null, resourceType: 'raw' },
+      data: { file: 'chat_message_attachments/5.txt', filename: null, resourceType: 'raw' },
     },
   ];
 
-  static removePostCommentAttachmentDtoList: PostCommentAttachmentEntity[] = [
+  static removeChatMessageAttachmentDtoList: ChatMessageAttachmentEntity[] = [
     {
       id: '1',
-      file: 'post_comment_attachments/1.jpg',
+      file: 'chat_message_attachments/1.jpg',
       filename: null,
       resourceType: 'image',
-      commentId: '1',
+      messageId: '1',
     },
     {
       id: '3',
-      file: 'post_comment_attachments/3.mp4',
+      file: 'chat_message_attachments/3.mp4',
       filename: null,
       resourceType: 'video',
-      commentId: '2',
+      messageId: '2',
     },
   ];
 
@@ -75,7 +75,7 @@ export class MockDataStorage {
     return MockDataStorage.#data;
   }
 
-  static setItems(data: PostCommentAttachmentEntity[]) {
+  static setItems(data: ChatMessageAttachmentEntity[]) {
     MockDataStorage.#data = [...data];
   }
 
@@ -84,12 +84,21 @@ export class MockDataStorage {
   }
 }
 
-export const mockPostCommentAttachmentService = {
+export const mockChatMessageAttachmentService = {
+  findAllForChatMessage: jest.fn().mockImplementation((messageId: string) => {
+    const message = MockDataStorage.items().find(item => item.messageId === messageId);
+
+    if (!message) {
+      throw new Error('Chat message with specified id does not exist!');
+    }
+
+    return MockDataStorage.items().filter(item => item.messageId === messageId);
+  }),
   findById: jest.fn().mockImplementation((id: string) => {
     const dto = MockDataStorage.items().find(item => item.id === id);
 
     if (!dto) {
-      throw new Error('Post comment attachment with this id does not exist!');
+      throw new Error('Chat message attachment with this id does not exist!');
     }
 
     return Promise.resolve(dto);
@@ -99,13 +108,13 @@ export const mockPostCommentAttachmentService = {
     .mockImplementation(
       (
         id: string,
-        dto: UpdatePostCommentAttachmentDto,
+        dto: UpdateChatMessageAttachmentDto,
         file: Express.Multer.File,
-      ): Promise<PostCommentAttachmentEntity> => {
+      ): Promise<ChatMessageAttachmentEntity> => {
         let exists = MockDataStorage.items().find(item => item.id === id);
 
         if (!exists) {
-          throw new Error('Post comment attachment with this id does not exist!');
+          throw new Error('Chat message attachment with this id does not exist!');
         }
 
         const updated = {
@@ -120,11 +129,11 @@ export const mockPostCommentAttachmentService = {
         return Promise.resolve(updated);
       },
     ),
-  remove: jest.fn().mockImplementation((id: string): Promise<PostCommentAttachmentEntity> => {
+  remove: jest.fn().mockImplementation((id: string): Promise<ChatMessageAttachmentEntity> => {
     const dto = MockDataStorage.items().find(item => item.id === id);
 
     if (!dto) {
-      throw new Error('Post comment attachment with this id does not exist!');
+      throw new Error('Chat message attachment with this id does not exist!');
     }
 
     MockDataStorage.setItems(MockDataStorage.items().filter(item => item.id !== id));
@@ -133,21 +142,21 @@ export const mockPostCommentAttachmentService = {
   }),
 };
 
-export const mockPostCommentAttachmentRepository = {
-  postCommentAttachment: {
+export const mockChatMessageAttachmentRepository = {
+  chatMessageAttachment: {
     findMany: jest
       .fn()
-      .mockImplementation((data?: { where: { commentId: string } }) =>
+      .mockImplementation((data?: { where: { messageId: string } }) =>
         !data
           ? MockDataStorage.items()
-          : MockDataStorage.items().filter(item => item.commentId === data.where.commentId),
+          : MockDataStorage.items().filter(item => item.messageId === data.where.messageId),
       ),
     findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
       const dto = MockDataStorage.items().find(item => item.id === data.where.id);
 
       if (!dto) {
         throw new PrismaClientKnownRequestError(
-          'Post comment attachment with this id does not exist!',
+          'Chat message attachment with this id does not exist!',
           {
             code: 'P2001',
             clientVersion: '',
@@ -157,7 +166,7 @@ export const mockPostCommentAttachmentRepository = {
 
       return Promise.resolve(dto);
     }),
-    createMany: jest.fn().mockImplementation((data: { data: CreatePostCommentAttachmentDto[] }) => {
+    createMany: jest.fn().mockImplementation((data: { data: CreateChatMessageAttachmentDto[] }) => {
       const created = data.data.map(item => ({ ...item, id: '' }));
       MockDataStorage.items().push(...created);
     }),
@@ -166,13 +175,13 @@ export const mockPostCommentAttachmentRepository = {
       .mockImplementation(
         (dto: {
           where: { id: string };
-          data: UpdatePostCommentAttachmentDto;
-        }): Promise<PostCommentAttachmentEntity> => {
+          data: UpdateChatMessageAttachmentDto;
+        }): Promise<ChatMessageAttachmentEntity> => {
           let exists = MockDataStorage.items().find(item => item.id === dto.where.id);
 
           if (!exists) {
             throw new PrismaClientKnownRequestError(
-              'Post comment attachment with this id does not exist!',
+              'Chat message attachment with this id does not exist!',
               {
                 code: 'P2001',
                 clientVersion: '',
@@ -195,12 +204,12 @@ export const mockPostCommentAttachmentRepository = {
     delete: jest
       .fn()
       .mockImplementation(
-        (data: { where: { id: string } }): Promise<PostCommentAttachmentEntity> => {
+        (data: { where: { id: string } }): Promise<ChatMessageAttachmentEntity> => {
           const dto = MockDataStorage.items().find(item => item.id === data.where.id);
 
           if (!dto) {
             throw new PrismaClientKnownRequestError(
-              'Post comment attachment with this id does not exist!',
+              'Chat message attachment with this id does not exist!',
               {
                 code: 'P2001',
                 clientVersion: '',
@@ -215,18 +224,18 @@ export const mockPostCommentAttachmentRepository = {
           return Promise.resolve(dto);
         },
       ),
-    deleteMany: jest.fn().mockImplementation((data: { where: { commentId: string } }) => {
+    deleteMany: jest.fn().mockImplementation((data: { where: { messageId: string } }) => {
       MockDataStorage.setItems(
-        MockDataStorage.items().filter(item => item.commentId !== data.where.commentId),
+        MockDataStorage.items().filter(item => item.messageId !== data.where.messageId),
       );
     }),
   },
-  postComment: {
+  chatMessage: {
     findUniqueOrThrow: jest.fn().mockImplementation((data: { where: { id: string } }) => {
       const dto = MockDataStorage.items().find(item => item.id === data.where.id);
 
       if (!dto) {
-        throw new PrismaClientKnownRequestError('Post comment with this id does not exist!', {
+        throw new PrismaClientKnownRequestError('Chat message with this id does not exist!', {
           code: 'P2001',
           clientVersion: '',
         });
@@ -237,5 +246,5 @@ export const mockPostCommentAttachmentRepository = {
   },
   $transaction: jest
     .fn()
-    .mockImplementation(callback => callback(mockPostCommentAttachmentRepository)),
+    .mockImplementation(callback => callback(mockChatMessageAttachmentRepository)),
 };

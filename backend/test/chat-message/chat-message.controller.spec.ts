@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockChatMessageService } from './chat-message.mock';
+import {
+  MockDataStorage as ChatMessageAttachmentMockDataStorage,
+  mockChatMessageAttachmentService,
+} from '../chat-message-attachment/chat-message-attachment.mock';
 import { ChatMessageService } from 'src/chat-message/chat-message.service';
 import { ChatMessageController } from 'src/chat-message/chat-message.controller';
+import { ChatMessageAttachmentService } from 'src/chat-message-attachment/chat-message-attachment.service';
 
 describe('ChatMessageService', () => {
   let controller: ChatMessageController;
@@ -13,6 +18,10 @@ describe('ChatMessageService', () => {
         {
           provide: ChatMessageService,
           useValue: mockChatMessageService,
+        },
+        {
+          provide: ChatMessageAttachmentService,
+          useValue: mockChatMessageAttachmentService,
         },
       ],
     }).compile();
@@ -36,6 +45,26 @@ describe('ChatMessageService', () => {
 
     MockDataStorage.setDefaultItems();
     expect(mockChatMessageService.findById).toHaveBeenCalled();
+  });
+
+  it('should find all chat message attachments by chat message id', async () => {
+    ChatMessageAttachmentMockDataStorage.setDefaultItems();
+
+    const initialItems = [...ChatMessageAttachmentMockDataStorage.items()];
+    expect(
+      await controller.findAllChatMessageAttachments(
+        ChatMessageAttachmentMockDataStorage.items()[0].messageId,
+      ),
+    ).toEqual(
+      initialItems.filter(
+        item => item.messageId === ChatMessageAttachmentMockDataStorage.items()[0].messageId,
+      ),
+    );
+
+    expect(ChatMessageAttachmentMockDataStorage.items()).toEqual(initialItems);
+
+    ChatMessageAttachmentMockDataStorage.setDefaultItems();
+    expect(mockChatMessageAttachmentService.findAllForChatMessage).toHaveBeenCalled();
   });
 
   it('should not find chat message with provided id because it does not exist', () => {
