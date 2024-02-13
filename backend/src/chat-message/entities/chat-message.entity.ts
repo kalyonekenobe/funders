@@ -124,6 +124,6 @@ export class ChatMessageEntity implements ChatMessage {
   @ApiProperty({ description: 'The nested array of replies of this chat message' })
   replies?: ChatMessageEntity[];
 
-  // @ApiProperty({ description: 'The nested array of attachments of this chat message'})
-  // attachments?: ChatMessageAttachmentEntity[];
+  @ApiProperty({ description: 'The nested array of attachments of this chat message' })
+  attachments?: any[];
 }

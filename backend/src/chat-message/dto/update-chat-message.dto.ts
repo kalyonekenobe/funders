@@ -35,7 +35,7 @@ export class UpdateChatMessageDto
   })
   @IsBoolean()
   @ValidateIf((_, value) => value)
-  isPinned: boolean;
+  isPinned?: boolean;
 
   @ApiProperty({
     description: 'The date and time the chat message was removed',
