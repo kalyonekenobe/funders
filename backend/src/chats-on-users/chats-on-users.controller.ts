@@ -38,7 +38,7 @@ export class ChatsOnUsersController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Post()
-  createPostCategories(
+  create(
     @Param('chatId') chatId: string,
     @Body()
     createChatsOnUsersDto: CreateChatsOnUsersDto,
@@ -62,8 +62,33 @@ export class ChatsOnUsersController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get()
-  findAllPostCategories(@Param('chatId') chatId: string) {
+  findAllUsersForChat(@Param('chatId') chatId: string) {
     return this.chatsOnUsersService.findAllUsersForChat(chatId);
+  }
+
+  @ApiOkResponse({
+    description: 'The chats on users entity',
+    type: ChatsOnUsersEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'Cannot find chat with the specified id.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @ApiParam({
+    name: 'chatId',
+    description: 'The uuid of the chat to find the user',
+    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'The uuid of the user to find the user in chat',
+    schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
+  })
+  @Get(':userId')
+  findById(@Param('chatId') chatId: string, @Param('userId') userId: string) {
+    return this.chatsOnUsersService.findById(chatId, userId);
   }
 
   @ApiOkResponse({
@@ -87,10 +112,10 @@ export class ChatsOnUsersController {
   @ApiParam({
     name: 'userId',
     description: 'The uuid of the user to update the user in chat',
-    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+    schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
   })
   @Put(':userId')
-  updatePostCategories(
+  update(
     @Param('chatId') chatId: string,
     @Param('userId') userId: string,
     @Body()
@@ -117,10 +142,10 @@ export class ChatsOnUsersController {
   @ApiParam({
     name: 'userId',
     description: 'The id of the user to delete the user in chat',
-    schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
+    schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
   })
   @Delete(':userId')
-  removePostCategories(@Param('chatId') chatId: string, @Param('userId') userId: string) {
+  remove(@Param('chatId') chatId: string, @Param('userId') userId: string) {
     return this.chatsOnUsersService.remove(chatId, userId);
   }
 }

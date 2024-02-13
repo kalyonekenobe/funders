@@ -21,11 +21,16 @@ import {
   MockDataStorage as PostCommentReactionMockDataStorage,
   mockPostCommentReactionService,
 } from 'test/post-comment-reaction/post-comment-reaction.mock';
+import {
+  MockDataStorage as ChatsOnUsersMockDataStorage,
+  mockChatsOnUsersService,
+} from 'test/chats-on-users/chats-on-users.mock';
 import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 import { PostService } from 'src/post/post.service';
 import { PostReactionService } from 'src/post-reaction/post-reaction.service';
 import { PostCommentService } from 'src/post-comment/post-comment.service';
 import { PostCommentReactionService } from 'src/post-comment-reaction/post-comment-reaction.service';
+import { ChatsOnUsersService } from 'src/chats-on-users/chats-on-users.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -57,6 +62,10 @@ describe('UserController', () => {
         {
           provide: PostCommentReactionService,
           useValue: mockPostCommentReactionService,
+        },
+        {
+          provide: ChatsOnUsersService,
+          useValue: mockChatsOnUsersService,
         },
       ],
     }).compile();
@@ -219,6 +228,24 @@ describe('UserController', () => {
 
     PostCommentMockDataStorage.setDefaultItems();
     expect(mockPostCommentService.findAllForUser).toHaveBeenCalled();
+  });
+
+  it('should find all existing user chats for user with specified id', async () => {
+    ChatsOnUsersMockDataStorage.setDefaultItems();
+
+    const initialItems = [...ChatsOnUsersMockDataStorage.items()];
+    expect(
+      await controller.findAllUserChats(ChatsOnUsersMockDataStorage.items()[0].userId),
+    ).toEqual(
+      ChatsOnUsersMockDataStorage.items().filter(
+        item => item.userId === ChatsOnUsersMockDataStorage.items()[0].userId,
+      ),
+    );
+
+    expect(ChatsOnUsersMockDataStorage.items()).toEqual(initialItems);
+
+    ChatsOnUsersMockDataStorage.setDefaultItems();
+    expect(mockChatsOnUsersService.findAllChatsForUser).toHaveBeenCalled();
   });
 
   it('should find all existing user posts for user with specified id', async () => {
