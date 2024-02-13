@@ -181,7 +181,7 @@ export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   chats?: ChatEntity[];
 
   @ApiProperty({ description: 'The nested array of messages of this user' })
-  messages: ChatMessageEntity[];
+  messages?: ChatMessageEntity[];
 
   @ApiProperty({ description: 'The nested array of posts of this user' })
   posts?: PostEntity[];

@@ -194,7 +194,7 @@ export class UserEntity implements User {
   chats?: ChatEntity[];
 
   @ApiProperty({ description: 'The nested array of messages of this user' })
-  messages: ChatMessageEntity[];
+  messages?: ChatMessageEntity[];
 
   @ApiProperty({ description: 'The nested array of posts of this user' })
   posts?: PostEntity[];

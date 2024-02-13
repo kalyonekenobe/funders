@@ -95,6 +95,7 @@ export class PostService {
     const deleteResources: ICloudinaryLikeResource[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
     let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
+    let deleteAttachmentsOptions = {};
 
     if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
     if (files?.attachments && files.attachments.length > 0)
@@ -134,6 +135,7 @@ export class PostService {
 
     if (deleteResources.length > 0) {
       destroyer = this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
+      deleteAttachmentsOptions = { deleteMany: {} };
     }
 
     return this.prismaService.post
@@ -143,7 +145,7 @@ export class PostService {
           ...data,
           image: image?.publicId ?? null,
           attachments: {
-            deleteMany: {},
+            ...deleteAttachmentsOptions,
             createMany: {
               data: attachments,
               skipDuplicates: false,

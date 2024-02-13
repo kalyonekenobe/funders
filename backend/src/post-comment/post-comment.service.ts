@@ -98,6 +98,7 @@ export class PostCommentService {
     const deleteResources: ICloudinaryLikeResource[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
     let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
+    let deleteAttachmentsOptions = {};
 
     if (files?.attachments && files.attachments.length > 0)
       uploadResources.push(...files.attachments);
@@ -130,6 +131,8 @@ export class PostCommentService {
           resourceType,
         })),
       );
+
+      deleteAttachmentsOptions = { deleteMany: {} };
     }
 
     if (deleteResources.length > 0) {
@@ -142,7 +145,7 @@ export class PostCommentService {
         data: {
           ...data,
           attachments: {
-            deleteMany: {},
+            ...deleteAttachmentsOptions,
             createMany: {
               data: attachments,
               skipDuplicates: false,

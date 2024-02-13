@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { ChatMessageEntity } from '../entities/chat-message.entity';
 
-export class CreateChatMessageDto
+export class UpdateChatMessageDto
   implements
     Omit<
       Partial<ChatMessageEntity>,
