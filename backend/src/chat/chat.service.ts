@@ -17,7 +17,9 @@ export class ChatService {
   }
 
   async create(data: CreateChatDto): Promise<Chat> {
-    return this.prismaService.chat.create({ data });
+    return this.prismaService.chat.create({
+      data: { ...data, chatsOnUsers: { createMany: { data: data.users ?? [] } } },
+    });
   }
 
   async update(id: string, data: UpdateChatDto): Promise<Chat> {

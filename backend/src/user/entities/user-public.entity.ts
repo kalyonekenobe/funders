@@ -23,6 +23,7 @@ import { PostEntity } from 'src/post/entities/post.entity';
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { FollowingEntity } from 'src/following/entities/following.entity';
 import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
+import { ChatEntity } from 'src/chat/entities/chat.entity';
 
 export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   @ApiProperty({
@@ -175,8 +176,8 @@ export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   @ApiProperty({ description: 'The nested array of bans of this user' })
   bans?: UsersBanListRecordEntity[];
 
-  // @ApiProperty({ description: 'The nested array of chats of this user' })
-  // chats?: ChatEntity[];
+  @ApiProperty({ description: 'The nested array of chats of this user' })
+  chats?: ChatEntity[];
 
   // @ApiProperty({ description: 'The nested array of messages of this user' })
   // messages: ChatMessageEntity[];
