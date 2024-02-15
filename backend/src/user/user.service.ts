@@ -11,6 +11,7 @@ import {
   IPrepareSingleResourceForDelete,
   IPrepareSingleResourceForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
+import { PaymentService } from 'src/core/payment/payment.service';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
     private readonly prismaService: PrismaService,
     private readonly passwordService: PasswordService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   async findAll(): Promise<UserPublicEntity[]> {
@@ -47,18 +49,28 @@ export class UserService {
       });
     }
 
+    const stripeCustomer = await this.paymentService.createCustomer({
+      name: `${data.firstName} ${data.lastName}`,
+      email: data.email,
+    });
+
     return this.prismaService.user
       .create({
         data: {
           ...data,
           avatar: uploader?.resource.publicId ?? null,
           password: await this.passwordService.hash(data.password),
+          stripeCustomerId: stripeCustomer.id,
         },
         select: exclude('User', ['password']),
       })
       .then(response => {
         if (uploader) uploader.upload();
         return response;
+      })
+      .catch(error => {
+        this.paymentService.deleteCustomer(stripeCustomer.id);
+        throw error;
       });
   }
 
@@ -89,6 +101,10 @@ export class UserService {
       });
     }
 
+    this.paymentService.updateCustomer(user.stripeCustomerId, {
+      name: `${data.firstName ?? user.firstName} ${data.lastName ?? user.lastName}`,
+    });
+
     return this.prismaService.user
       .update({
         data: { ...data, avatar: uploader?.resource.publicId ?? null },
@@ -99,10 +115,16 @@ export class UserService {
         if (uploader) uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
+      })
+      .catch(error => {
+        this.paymentService.updateCustomer(user.stripeCustomerId, {
+          name: `${user.firstName} ${user.lastName} `,
+        });
+        throw error;
       });
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<UserPublicEntity> {
     return this.prismaService.user
       .delete({ where: { id }, select: exclude('User', ['password']) })
       .then(response => {
@@ -114,6 +136,9 @@ export class UserService {
 
           destroyer.delete();
         }
+
+        this.paymentService.deleteCustomer(response.stripeCustomerId);
+
         return response;
       });
   }
