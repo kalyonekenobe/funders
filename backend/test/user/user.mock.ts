@@ -26,6 +26,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
     {
@@ -40,6 +41,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
     {
@@ -54,6 +56,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
     {
@@ -68,6 +71,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
     {
@@ -82,6 +86,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
   ];
@@ -129,6 +134,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
     {
@@ -143,6 +149,7 @@ export class MockDataStorage {
       bio: null,
       avatar: null,
       refreshToken: null,
+      stripeCustomerId: 'cus_NffrFeUfNV2Hib',
       registeredAt: new Date(),
     },
   ];

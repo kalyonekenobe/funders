@@ -5,6 +5,8 @@ import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { PasswordModule } from 'src/core/password/password.module';
 import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
+import { PaymentModule } from 'src/core/payment/payment.module';
+import { PaymentService } from 'src/core/payment/payment.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -17,6 +19,7 @@ describe('UserService', () => {
           process.env.USER_PASSWORD_SALT_PREFIX ?? '',
           process.env.USER_PASSWORD_SALT_SUFFIX ?? '',
         ),
+        PaymentModule,
         CloudinaryModule,
       ],
       providers: [
@@ -24,6 +27,19 @@ describe('UserService', () => {
         {
           provide: PrismaService,
           useValue: mockUserRepository,
+        },
+        {
+          provide: PaymentService,
+          useValue: {
+            createCustomer: jest.fn().mockImplementation(() => Promise.resolve({ id: '' })),
+            updateCustomer: jest.fn().mockImplementation(() => {}),
+            deleteCustomer: jest.fn().mockImplementation(() => {}),
+            charge: jest.fn().mockImplementation(() => {}),
+            getCustomerCards: jest.fn().mockImplementation(() => []),
+            addCustomerCard: jest.fn().mockImplementation(() => {}),
+            deleteCustomerCard: jest.fn().mockImplementation(() => {}),
+            getCustomerPaymentIntents: jest.fn().mockImplementation(() => []),
+          },
         },
       ],
     }).compile();

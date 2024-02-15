@@ -1,6 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
+const { Stripe } = require('stripe');
 
 const prisma = new PrismaClient();
+const stripe = new Stripe(process.env.STRIPE_API_KEY, {
+  apiVersion: '2023-10-16',
+});
 
 module.exports = {
   async up() {
@@ -52,10 +56,30 @@ module.exports = {
       },
     ];
 
-    await prisma.user.createMany({ data });
+    const response = await Promise.all(
+      data.map(item =>
+        stripe.customers
+          .create({
+            name: `${item.firstName} ${item.lastName}`,
+            email: item.email,
+          })
+          .then(response => ({ data: item, stripeCustomerId: response.id })),
+      ),
+    );
+    await prisma.user.createMany({
+      data: response.map(item => ({ ...item.data, stripeCustomerId: item.stripeCustomerId })),
+    });
   },
 
   async down() {
+    const users = await prisma.user.findMany();
+    users.forEach(user => {
+      try {
+        stripe.customers.del(user.stripeCustomerId);
+      } catch (error) {
+        console.log(error);
+      }
+    });
     await prisma.user.deleteMany();
   },
 };

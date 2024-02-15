@@ -12,6 +12,7 @@ import ValidationPipes from 'src/core/config/validation-pipes';
 import { MockDataStorage as PostMockDataStorage, mockPostRepository } from 'test/post/post.mock';
 import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
+import { PaymentService } from 'src/core/payment/payment.service';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -37,6 +38,17 @@ describe('UserController (e2e)', () => {
           mockUsersBanListRecordRepository,
         ),
       )
+      .overrideProvider(PaymentService)
+      .useValue({
+        createCustomer: jest.fn().mockImplementation(() => Promise.resolve({ id: '' })),
+        updateCustomer: jest.fn().mockImplementation(() => {}),
+        deleteCustomer: jest.fn().mockImplementation(() => {}),
+        charge: jest.fn().mockImplementation(() => {}),
+        getCustomerCards: jest.fn().mockImplementation(() => []),
+        addCustomerCard: jest.fn().mockImplementation(() => {}),
+        deleteCustomerCard: jest.fn().mockImplementation(() => {}),
+        getCustomerPaymentIntents: jest.fn().mockImplementation(() => []),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();

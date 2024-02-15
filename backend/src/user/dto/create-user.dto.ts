@@ -13,7 +13,11 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto
-  implements Omit<User, 'id' | 'phone' | 'bio' | 'avatar' | 'refreshToken' | 'registeredAt'>
+  implements
+    Omit<
+      User,
+      'id' | 'phone' | 'bio' | 'avatar' | 'refreshToken' | 'stripeCustomerId' | 'registeredAt'
+    >
 {
   @ApiProperty({
     description: "User's registration method",

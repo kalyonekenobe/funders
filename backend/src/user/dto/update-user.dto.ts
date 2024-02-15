@@ -12,7 +12,11 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto
-  implements Omit<Partial<User>, 'id' | 'registrationMethod' | 'email' | 'registeredAt'>
+  implements
+    Omit<
+      Partial<User>,
+      'id' | 'registrationMethod' | 'email' | 'stripeCustomerId' | 'registeredAt'
+    >
 {
   @ApiProperty({
     description: "User's role",
