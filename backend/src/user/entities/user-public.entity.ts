@@ -152,6 +152,17 @@ export class UserPublicEntity implements Omit<UserEntity, 'password'> {
   refreshToken: string | null;
 
   @ApiProperty({
+    description: 'Stripe customer id of this user',
+    examples: ['cus_NffrFeUfNV2Hib', 'cus_FJANdAJafEQdIq'],
+    default: 'cus_NffrFeUfNV2Hib',
+  })
+  @MaxLength(255)
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
+  stripeCustomerId: string;
+
+  @ApiProperty({
     description: "User's registration date and time",
     examples: [new Date('2024-01-03'), new Date('2023-11-02'), new Date('2023-06-30')],
     default: new Date('2024-01-03'),

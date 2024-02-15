@@ -46,6 +46,7 @@ model User {
   bio                String?
   avatar             String?  @db.VarChar(255)
   refreshToken       String?
+  stripeCustomerId   String   @default("cus_undefined_id") @db.VarChar(255)
   registeredAt       DateTime @default(now())
 
   userRole               UserRole               @relation(fields: [role], references: [name], onDelete: NoAction, onUpdate: Cascade)

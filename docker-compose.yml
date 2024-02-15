@@ -8,6 +8,7 @@ services:
     env_file: ./.env.dev
     environment:
       POSTGRES_URL: ${POSTGRES_URL}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
       USER_PASSWORD_SALT_PREFIX: ${USER_PASSWORD_SALT_PREFIX}
       USER_PASSWORD_SALT_SUFFIX: ${USER_PASSWORD_SALT_SUFFIX}
     ports:
