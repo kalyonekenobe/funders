@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { PasswordModule } from 'src/core/password/password.module';
 import { CloudinaryModule } from 'src/core/cloudinary/cloudinary.module';
+import { PaymentModule } from 'src/core/payment/payment.module';
 
 describe('UserService', () => {
   let service: UserService;
@@ -17,6 +18,7 @@ describe('UserService', () => {
           process.env.USER_PASSWORD_SALT_PREFIX ?? '',
           process.env.USER_PASSWORD_SALT_SUFFIX ?? '',
         ),
+        PaymentModule,
         CloudinaryModule,
       ],
       providers: [
