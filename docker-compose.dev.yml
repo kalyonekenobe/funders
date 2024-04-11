@@ -5,6 +5,9 @@ services:
     build:
       context: ./backend
       dockerfile: ./Dockerfile.dev
+    container_name: funders-backend
+    networks:
+      - funders-network
     env_file: ./.env.dev
     environment:
       POSTGRES_URL: ${POSTGRES_URL}
@@ -12,7 +15,7 @@ services:
       USER_PASSWORD_SALT_PREFIX: ${USER_PASSWORD_SALT_PREFIX}
       USER_PASSWORD_SALT_SUFFIX: ${USER_PASSWORD_SALT_SUFFIX}
     ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
+      - ${BACKEND_EXTERNAL_PORT}:8000
     volumes:
       - ./backend/src:/app/src
       - ./backend/test:/app/test
@@ -23,20 +26,37 @@ services:
     build:
       context: ./frontend
       dockerfile: ./Dockerfile.dev
+    container_name: funders-frontend
+    networks:
+      - funders-network
     env_file: ./.env.dev
     ports:
-      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+      - ${FRONTEND_EXTERNAL_PORT}:3000
     volumes:
       - ./frontend/app:/app/app
     depends_on:
       - backend
 
   database:
-    image: postgres:14.2-alpine
-    restart: on-failure
+    image: postgres:latest
+    container_name: funders-database
+    networks:
+      - funders-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - ${DB_PORT}:5432
+      - ${DATABASE_PORT}:5432
+    expose:
+      - ${DATABASE_PORT}
+    volumes:
+      - funders-database-data:/var/lib/postgresql/data
+    restart: on-failure
+
+networks:
+  funders-network:
+    driver: bridge
+
+volumes:
+  funders-database-data:

@@ -1,10 +1,13 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "funders-frontend",
+  "version": "1.0.0",
+  "description": "The frontend of the Funders application",
+  "author": "Oleksandr Igumnov",
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "dev": "CHOKIDAR_USEPOLLING=true next dev",
-    "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_PORT next dev",
+    "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_EXTERNAL_PORT next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

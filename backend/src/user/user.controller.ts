@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -39,6 +40,7 @@ import { PostCommentReactionService } from 'src/post-comment-reaction/post-comme
 import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
 import { ChatsOnUsersService } from 'src/chats-on-users/chats-on-users.service';
 import { ChatEntity } from 'src/chat/entities/chat.entity';
+import { LocalAuthenticationGuard } from 'src/core/authentication/guards/local-authentication.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -208,6 +210,7 @@ export class UserController {
     return this.postCommentService.findAllForUser(userId);
   }
 
+  @UseGuards(new LocalAuthenticationGuard())
   @ApiOkResponse({
     description: 'The list of users',
     type: [UserPublicEntity],
