@@ -8,6 +8,12 @@ import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import { PostDonationModule } from 'src/post-donation/post-donation.module';
 import { PostModule } from 'src/post/post.module';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { MockAuthGuard } from 'test/core/auth/mock-auth-guard';
+import { JwtStrategy } from 'src/core/auth/strategies/jwt.strategy';
+import { MockAuthStrategy } from 'test/core/auth/mock-auth-strategy';
+import * as cookieParser from 'cookie-parser';
+import { accessToken } from 'test/core/auth/mock-auth';
 
 describe('PostDonationController (e2e)', () => {
   let app: INestApplication;
@@ -15,6 +21,16 @@ describe('PostDonationController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PostDonationModule, PostModule],
+      providers: [
+        {
+          provide: JwtAuthGuard,
+          useValue: MockAuthGuard,
+        },
+        {
+          provide: JwtStrategy,
+          useClass: MockAuthStrategy,
+        },
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockPostDonationRepository)
@@ -23,6 +39,7 @@ describe('PostDonationController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
     app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
+    app.use(cookieParser());
     await app.init();
   });
 
@@ -32,6 +49,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}/donations`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -52,6 +71,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}_not_existing_id/donations`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -65,6 +86,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/post-donations/${MockDataStorage.items()[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -79,6 +102,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/post-donations/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -92,6 +117,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostDonationDtoList[0].postId}/donations`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createPostDonationDtoList[0].data)
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -116,6 +143,8 @@ describe('PostDonationController (e2e)', () => {
       .post(
         `/posts/${MockDataStorage.createPostDonationDtoList[0].postId}_not_existing_id/donations`,
       )
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createPostDonationDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -130,6 +159,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostDonationDtoList[0].postId}/donations`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -144,6 +175,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/post-donations/${MockDataStorage.updatePostDonationDtoList[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostDonationDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -173,6 +206,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/post-donations/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostDonationDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -187,6 +222,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/post-donations/${MockDataStorage.removePostDonationDtoList[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -208,6 +245,8 @@ describe('PostDonationController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/post-donations/${MockDataStorage.removePostDonationDtoList[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

@@ -105,12 +105,12 @@ describe('ChatController', () => {
     expect(mockChatService.findById).toHaveBeenCalled();
   });
 
-  it('should not find chat with provided id because it does not exist', () => {
+  it('should not find chat with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findById('')).toThrow();
+    await expect(() => controller.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -138,11 +138,11 @@ describe('ChatController', () => {
     expect(mockChatService.update).toHaveBeenCalled();
   });
 
-  it('should not update a chat by provided id because it does not exist', () => {
+  it('should not update a chat by provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.update('', { name: '' })).toThrow();
+    await expect(controller.update('', { name: '' })).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -167,11 +167,11 @@ describe('ChatController', () => {
     expect(mockChatService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a chat by provided id because it does not exist', () => {
+  it('should not remove a chat by provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    await expect(controller.remove('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

@@ -94,17 +94,17 @@ describe('UserController', () => {
     expect(mockUserService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new user because it already exists', () => {
+  it('should not create a new user because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(
       controller.create({}, {
         ...MockDataStorage.items()[0],
         email: 'johndoe@gmail.com',
         password: '123',
       } as CreateUserDto),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -278,12 +278,12 @@ describe('UserController', () => {
     expect(mockUserService.findById).toHaveBeenCalled();
   });
 
-  it('should not find user with provided id because it does not exist', () => {
+  it('should not find user with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findById('')).toThrow();
+    await expect(controller.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -296,7 +296,12 @@ describe('UserController', () => {
     const initialItems = [...MockDataStorage.items()];
     const updatedItems: any[] = [];
     for (const item of MockDataStorage.updateUserDtoList) {
-      const received = await controller.update({}, item.id, item.data);
+      const received = await controller.update(
+        {},
+        { user: { id: item.id } } as any,
+        item.id,
+        item.data,
+      );
       const expected = Object.assign(
         {},
         initialItems.find(x => x.id === item.id),
@@ -318,13 +323,15 @@ describe('UserController', () => {
     expect(mockUserService.update).toHaveBeenCalled();
   });
 
-  it('should not update a user with provided id because it does not exist', () => {
+  it('should not update a user with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
-      controller.update({}, '', { ...MockDataStorage.updateUserDtoList[0].data }),
-    ).toThrow();
+    await expect(() =>
+      controller.update({}, { user: { id: '' } } as any, '', {
+        ...MockDataStorage.updateUserDtoList[0].data,
+      }),
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -336,7 +343,7 @@ describe('UserController', () => {
 
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.removeUserDtoList) {
-      expect(await controller.remove(item.id)).toEqual({
+      expect(await controller.remove({ user: { id: item.id } } as any, item.id)).toEqual({
         ...item,
         registeredAt: expect.any(Date),
       });
@@ -356,7 +363,7 @@ describe('UserController', () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    expect(() => controller.remove({ user: { id: '' } } as any, '')).toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

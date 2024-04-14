@@ -41,11 +41,11 @@ describe('ChatRoleController', () => {
     expect(mockChatRoleService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new chat role because it already exists', () => {
+  it('should not create a new chat role because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.create(MockDataStorage.items()[0])).toThrow();
+    await expect(() => controller.create(MockDataStorage.items()[0])).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -82,11 +82,11 @@ describe('ChatRoleController', () => {
     expect(mockChatRoleService.update).toHaveBeenCalled();
   });
 
-  it('should not update a chat role by provided name because it does not exist', () => {
+  it('should not update a chat role by provided name because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.update('', { name: '' })).toThrow();
+    await expect(() => controller.update('', { name: '' })).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -111,11 +111,11 @@ describe('ChatRoleController', () => {
     expect(mockChatRoleService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a chat role by provided name because it does not exist', () => {
+  it('should not remove a chat role by provided name because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    await expect(() => controller.remove('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

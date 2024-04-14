@@ -41,16 +41,16 @@ describe('PostCommentReactionController', () => {
     expect(mockPostCommentReactionService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new post comment reaction because it already exists', () => {
+  it('should not create a new post comment reaction because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.create(MockDataStorage.items()[0].commentId, {
         userId: MockDataStorage.items()[0].userId,
         reactionType: MockDataStorage.items()[0].reactionType,
       }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -101,13 +101,13 @@ describe('PostCommentReactionController', () => {
     expect(mockPostCommentReactionService.update).toHaveBeenCalled();
   });
 
-  it('should not update a post comment reaction with provided id because it does not exist', () => {
+  it('should not update a post comment reaction with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.update('', '', { ...MockDataStorage.updatePostCommentReactionDtoList[0].data }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -135,11 +135,11 @@ describe('PostCommentReactionController', () => {
     expect(mockPostCommentReactionService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a post comment reaction with provided id because it does not exist', () => {
+  it('should not remove a post comment reaction with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('', '')).toThrow();
+    await expect(() => controller.remove('', '')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
