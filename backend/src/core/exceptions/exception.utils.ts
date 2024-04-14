@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   PrismaClientInitializationError,
   PrismaClientKnownRequestError,
@@ -6,12 +11,21 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
+import { AuthException } from './auth.exception';
 
 export class ExceptionUtils {
   static convertToHttpException(exception: unknown): HttpException {
     console.log(exception);
     if (exception instanceof HttpException) {
       return exception;
+    }
+
+    if (exception instanceof AuthException) {
+      return new UnauthorizedException({
+        message: exception.message,
+        error: exception.message,
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
     }
 
     const prismaHttpException = ExceptionUtils.convertToHttpExceptionIfPrismaException(exception);
