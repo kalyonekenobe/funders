@@ -14,14 +14,19 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiConflictResponse,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PostAttachmentEntity } from './entities/post-attachment.entity';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Post attachments')
 @Controller('post-attachments')
@@ -44,13 +49,20 @@ export class PostAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.postAttachmentService.findById(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POSTS })
   @ApiOkResponse({
     description: 'Post attachment was successfully updated.',
     type: PostAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post attachment with the requested id was not found.',
@@ -69,7 +81,7 @@ export class PostAttachmentController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -85,9 +97,16 @@ export class PostAttachmentController {
     return this.postAttachmentService.update(id, updatePostAttachmentDto, files?.file?.[0]);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POSTS })
   @ApiOkResponse({
     description: 'Post attachment was successfully removed.',
     type: PostAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post attachment with the requested id was not found.',
@@ -101,7 +120,7 @@ export class PostAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.postAttachmentService.remove(id);
   }
 }

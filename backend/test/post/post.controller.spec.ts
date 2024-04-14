@@ -59,17 +59,20 @@ describe('PostController', () => {
     expect(mockPostService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new post because it already exists', () => {
+  it('should not create a new post because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => {
-      controller.create({}, MockDataStorage.createPostDtoList[0]);
+    await expect(
+      () =>
+        new Promise((resolve, rejects) => {
+          controller.create({}, MockDataStorage.createPostDtoList[0]);
 
-      // Simulating validation error
-      MockDataStorage.items().pop();
-      throw new Error('Validation error');
-    }).toThrow();
+          // Simulating validation error
+          MockDataStorage.items().pop();
+          throw new Error('Validation error');
+        }),
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -93,13 +96,13 @@ describe('PostController', () => {
     expect(mockPostCommentService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new post comment because post with specified id was not found', () => {
+  it('should not create a new post comment because post with specified id was not found', async () => {
     PostCommentMockDataStorage.setDefaultItems();
 
     const initialItems = [...PostCommentMockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.createComment({}, '', PostCommentMockDataStorage.createPostCommentDtoList[0].data),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(PostCommentMockDataStorage.items()).toEqual(initialItems);
 
     PostCommentMockDataStorage.setDefaultItems();
@@ -148,12 +151,12 @@ describe('PostController', () => {
     expect(mockPostService.findById).toHaveBeenCalled();
   });
 
-  it('should not find post with provided id because it does not exist', () => {
+  it('should not find post with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findById('')).toThrow();
+    await expect(() => controller.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -188,13 +191,13 @@ describe('PostController', () => {
     expect(mockPostService.update).toHaveBeenCalled();
   });
 
-  it('should not update a post with provided id because it does not exist', () => {
+  it('should not update a post with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.update({}, '', { ...MockDataStorage.updatePostDtoList[0].data }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -225,11 +228,11 @@ describe('PostController', () => {
     expect(mockPostService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a post with provided id because it does not exist', () => {
+  it('should not remove a post with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    await expect(() => controller.remove('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

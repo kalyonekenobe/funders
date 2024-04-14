@@ -11,11 +11,13 @@ import {
 import {
   ApiConflictResponse,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PostCommentService } from './post-comment.service';
 import { PostCommentEntity } from './entities/post-comment.entity';
@@ -25,6 +27,9 @@ import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.deco
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PostCommentAttachmentService } from 'src/post-comment-attachment/post-comment-attachment.service';
 import { PostCommentAttachmentEntity } from 'src/post-comment-attachment/entities/post-comment-attachment.entity';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Post comments')
 @Controller('comments')
@@ -50,7 +55,7 @@ export class PostCommentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.postCommentService.findById(id);
   }
 
@@ -70,13 +75,20 @@ export class PostCommentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/attachments')
-  findAllPostCommentAttachments(@Param('id') id: string) {
+  async findAllPostCommentAttachments(@Param('id') id: string) {
     return this.postCommentAttachmentService.findAllForComment(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })
   @ApiOkResponse({
     description: 'Post comment was successfully updated.',
     type: PostCommentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post comment with the requested id was not found.',
@@ -95,7 +107,7 @@ export class PostCommentController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -111,9 +123,16 @@ export class PostCommentController {
     return this.postCommentService.update(id, updatePostCommentDto, files);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })
   @ApiOkResponse({
     description: 'Post comment was successfully removed.',
     type: PostCommentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post comment with the requested id was not found.',
@@ -127,7 +146,7 @@ export class PostCommentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.postCommentService.remove(id);
   }
 }

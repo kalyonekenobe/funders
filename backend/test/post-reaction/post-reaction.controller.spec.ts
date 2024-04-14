@@ -41,16 +41,16 @@ describe('PostReactionController', () => {
     expect(mockPostReactionService.create).toHaveBeenCalled();
   });
 
-  it('should not create a new post reaction because it already exists', () => {
+  it('should not create a new post reaction because it already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.create(MockDataStorage.items()[0].postId, {
         userId: MockDataStorage.items()[0].userId,
         reactionType: MockDataStorage.items()[0].reactionType,
       }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -99,13 +99,13 @@ describe('PostReactionController', () => {
     expect(mockPostReactionService.update).toHaveBeenCalled();
   });
 
-  it('should not update a post reaction with provided id because it does not exist', () => {
+  it('should not update a post reaction with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.update('', '', { ...MockDataStorage.updatePostReactionDtoList[0].data }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -133,11 +133,11 @@ describe('PostReactionController', () => {
     expect(mockPostReactionService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a post reaction with provided id because it does not exist', () => {
+  it('should not remove a post reaction with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('', '')).toThrow();
+    await expect(() => controller.remove('', '')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

@@ -13,6 +13,12 @@ import { MockDataStorage as PostMockDataStorage, mockPostRepository } from 'test
 import { AllExceptionFilter } from 'src/core/exceptions/exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import { PaymentService } from 'src/core/payment/payment.service';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { MockAuthGuard } from 'test/core/auth/mock-auth-guard';
+import { JwtStrategy } from 'src/core/auth/strategies/jwt.strategy';
+import { MockAuthStrategy } from 'test/core/auth/mock-auth-strategy';
+import * as cookieParser from 'cookie-parser';
+import { accessToken } from 'test/core/auth/mock-auth';
 
 // To allow parsing BigInt to JSON
 (BigInt.prototype as any).toJSON = function () {
@@ -25,6 +31,16 @@ describe('UserController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UserModule],
+      providers: [
+        {
+          provide: JwtAuthGuard,
+          useValue: MockAuthGuard,
+        },
+        {
+          provide: JwtStrategy,
+          useClass: MockAuthStrategy,
+        },
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(
@@ -54,6 +70,7 @@ describe('UserController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
     app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
+    app.use(cookieParser());
     await app.init();
   });
 
@@ -63,6 +80,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get('/users')
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -77,6 +96,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -91,6 +112,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -104,6 +127,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...BanMockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/users/${BanMockDataStorage.items()[1].userId}/bans`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -124,6 +149,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...PostMockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/users/${PostMockDataStorage.items()[0].authorId}/posts`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -144,6 +171,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...BanMockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/users/${BanMockDataStorage.createUsersBanListRecordDtoList[0].userId}/bans`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...BanMockDataStorage.createUsersBanListRecordDtoList[0], userId: undefined })
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -166,6 +195,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...BanMockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/users/${BanMockDataStorage.items()[0].id}/bans`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...BanMockDataStorage.items()[0], asfasf: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -180,6 +211,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post('/users')
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createUserDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -202,6 +235,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post('/users')
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -216,6 +251,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/users/${MockDataStorage.updateUserDtoList[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -245,6 +282,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/users/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -259,6 +298,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/users/${MockDataStorage.removeUserDtoList[1].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -280,6 +321,8 @@ describe('UserController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/users/${MockDataStorage.removeUserDtoList[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

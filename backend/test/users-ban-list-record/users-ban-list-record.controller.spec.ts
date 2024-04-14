@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockDataStorage, mockUsersBanListRecordService } from './users-ban-list-record.mock';
 import { UsersBanListRecordController } from 'src/users-ban-list-record/users-ban-list-record.controller';
 import { UsersBanListRecordService } from 'src/users-ban-list-record/users-ban-list-record.service';
-import { CreateUsersBanListRecordDto } from 'src/users-ban-list-record/dto/create-users-ban-list-record.dto';
 
 describe('UsersBanListRecordController', () => {
   let controller: UsersBanListRecordController;
@@ -49,12 +48,12 @@ describe('UsersBanListRecordController', () => {
     expect(mockUsersBanListRecordService.findById).toHaveBeenCalled();
   });
 
-  it('should not find users ban list record with provided id because it does not exist', () => {
+  it('should not find users ban list record with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findById('')).toThrow();
+    await expect(() => controller.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -89,13 +88,13 @@ describe('UsersBanListRecordController', () => {
     expect(mockUsersBanListRecordService.update).toHaveBeenCalled();
   });
 
-  it('should not update a users ban list record with provided id because it does not exist', () => {
+  it('should not update a users ban list record with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.update('', { ...MockDataStorage.updateUsersBanListRecordDtoList[0].data }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -123,11 +122,11 @@ describe('UsersBanListRecordController', () => {
     expect(mockUsersBanListRecordService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a users ban list record with provided id because it does not exist', () => {
+  it('should not remove a users ban list record with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    await expect(() => controller.remove('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

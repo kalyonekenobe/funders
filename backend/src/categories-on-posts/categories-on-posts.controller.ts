@@ -2,24 +2,36 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CategoriesOnPostsService } from './categories-on-posts.service';
 import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
 import ValidationPipes from 'src/core/config/validation-pipes';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Posts')
 @Controller('posts/:id/categories')
 export class CategoriesOnPostsController {
   constructor(private readonly categoriesOnPostsService: CategoriesOnPostsService) {}
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_CATEGORIES })
   @ApiCreatedResponse({
     description: 'The list of categories was successfully added to the post.',
     type: [PostCategoryEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
@@ -36,7 +48,7 @@ export class CategoriesOnPostsController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Post()
-  createPostCategories(
+  async createPostCategories(
     @Param('id') postId: string,
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],
@@ -60,13 +72,20 @@ export class CategoriesOnPostsController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get()
-  findAllPostCategories(@Param('id') postId: string) {
+  async findAllPostCategories(@Param('id') postId: string) {
     return this.categoriesOnPostsService.findAllPostCategories(postId);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_CATEGORIES })
   @ApiOkResponse({
     description: 'The list of categories of the post was successfully updated.',
     type: [PostCategoryEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
@@ -83,7 +102,7 @@ export class CategoriesOnPostsController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Put()
-  updatePostCategories(
+  async updatePostCategories(
     @Param('id') postId: string,
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],
@@ -91,9 +110,16 @@ export class CategoriesOnPostsController {
     return this.categoriesOnPostsService.updatePostCategories(postId, postCategoriesList);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_CATEGORIES })
   @ApiOkResponse({
     description: 'The list of categories of the post was successfully removed.',
     type: [PostCategoryEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
@@ -107,7 +133,7 @@ export class CategoriesOnPostsController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete()
-  removePostCategories(
+  async removePostCategories(
     @Param('id') postId: string,
     @Body(ValidationPipes.parseArrayPipe(PostCategoryEntity))
     postCategoriesList: PostCategoryEntity[],

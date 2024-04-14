@@ -42,15 +42,15 @@ describe('CategoriesOnPostsController', () => {
     expect(mockCategoriesOnPostsService.createPostCategories).toHaveBeenCalled();
   });
 
-  it('should not create a list of categories for specified post some category already exists', () => {
+  it('should not create a list of categories for specified post some category already exists', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.createPostCategories(MockDataStorage.items()[0].postId, [
         { name: MockDataStorage.items()[0].category },
       ]),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -113,11 +113,11 @@ describe('CategoriesOnPostsController', () => {
     expect(mockCategoriesOnPostsService.removePostCategories).toHaveBeenCalled();
   });
 
-  it('should not remove existing categories for specified post because some category does not exist for this post', () => {
+  it('should not remove existing categories for specified post because some category does not exist for this post', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.removePostCategories('', [{ name: '' }])).toThrow();
+    await expect(() => controller.removePostCategories('', [{ name: '' }])).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

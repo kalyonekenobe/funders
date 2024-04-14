@@ -38,12 +38,12 @@ describe('ChatMessageAttachmentService', () => {
     expect(mockChatMessageAttachmentService.findById).toHaveBeenCalled();
   });
 
-  it('should not find chat message attachment with provided id because it does not exist', () => {
+  it('should not find chat message attachment with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
 
-    expect(() => controller.findById('')).toThrow();
+    await expect(() => controller.findById('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -85,15 +85,15 @@ describe('ChatMessageAttachmentService', () => {
     expect(mockChatMessageAttachmentService.update).toHaveBeenCalled();
   });
 
-  it('should not update a chat message attachment with provided id because it does not exist', () => {
+  it('should not update a chat message attachment with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() =>
+    await expect(() =>
       controller.update({} as any, '', {
         ...MockDataStorage.updateChatMessageAttachmentDtoList[0].data,
       }),
-    ).toThrow();
+    ).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();
@@ -119,11 +119,11 @@ describe('ChatMessageAttachmentService', () => {
     expect(mockChatMessageAttachmentService.remove).toHaveBeenCalled();
   });
 
-  it('should not remove a chat message attachment with provided id because it does not exist', () => {
+  it('should not remove a chat message attachment with provided id because it does not exist', async () => {
     MockDataStorage.setDefaultItems();
 
     const initialItems = [...MockDataStorage.items()];
-    expect(() => controller.remove('')).toThrow();
+    await expect(() => controller.remove('')).rejects.toThrow();
     expect(MockDataStorage.items()).toEqual(initialItems);
 
     MockDataStorage.setDefaultItems();

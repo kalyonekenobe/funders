@@ -40,6 +40,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+*.local
+!Dockerfile.local
 
 # TypeScript v1 declaration files
 typings/
@@ -72,6 +74,7 @@ typings/
 .env
 .env.dev
 .env.test
+.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

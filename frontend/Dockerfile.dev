@@ -7,5 +7,5 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3001
+EXPOSE 300
 CMD npm run dev:docker

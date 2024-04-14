@@ -12,11 +12,13 @@ import { ChatMessageService } from './chat-message.service';
 import {
   ApiConflictResponse,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ChatMessageEntity } from './entities/chat-message.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -25,6 +27,9 @@ import { ChatMessageRequestBodyFiles } from './types/chat-message.types';
 import { UpdateChatMessageDto } from './dto/update-chat-message.dto';
 import { ChatMessageAttachmentService } from 'src/chat-message-attachment/chat-message-attachment.service';
 import { ChatMessageAttachmentEntity } from 'src/chat-message-attachment/entities/chat-message-attachment.entity';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Chat messages')
 @Controller('messages')
@@ -34,9 +39,16 @@ export class ChatMessageController {
     private readonly chatMessageAttachmentService: ChatMessageAttachmentService,
   ) {}
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'The chat message with requested id',
     type: ChatMessageEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message with the requested id was not found.',
@@ -50,13 +62,20 @@ export class ChatMessageController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.chatMessageService.findById(id);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'The list of chat message attachments',
     type: [ChatMessageAttachmentEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message with specified id was not found.',
@@ -70,13 +89,20 @@ export class ChatMessageController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/attachments')
-  findAllChatMessageAttachments(@Param('id') id: string) {
+  async findAllChatMessageAttachments(@Param('id') id: string) {
     return this.chatMessageAttachmentService.findAllForChatMessage(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_CHAT_MESSAGES })
   @ApiOkResponse({
     description: 'Chat message was successfully updated.',
     type: ChatMessageEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message with the requested id was not found.',
@@ -95,7 +121,7 @@ export class ChatMessageController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -111,9 +137,16 @@ export class ChatMessageController {
     return this.chatMessageService.update(id, updateChatMessageDto, files);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_CHAT_MESSAGES })
   @ApiOkResponse({
     description: 'Chat message was successfully removed.',
     type: ChatMessageEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message with the requested id was not found.',
@@ -127,7 +160,7 @@ export class ChatMessageController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.chatMessageService.remove(id);
   }
 }

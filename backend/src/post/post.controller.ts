@@ -13,11 +13,13 @@ import {
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { PostEntity } from './entities/post.entity';
@@ -36,6 +38,9 @@ import { PostCommentService } from 'src/post-comment/post-comment.service';
 import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 import { PostCommentRequestBodyFiles } from 'src/post-comment/types/post-comment.types';
 import { CreatePostCommentDto } from 'src/post-comment/dto/create-post-comment.dto';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -47,9 +52,16 @@ export class PostController {
     private readonly postCommentService: PostCommentService,
   ) {}
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POSTS })
   @ApiCreatedResponse({
     description: 'Post was successfully created.',
     type: PostEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiConflictResponse({
     description: 'Cannot create post. Invalid data was provided.',
@@ -60,7 +72,7 @@ export class PostController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   @Post()
-  create(
+  async create(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -81,15 +93,22 @@ export class PostController {
     return this.postService.create(createPostDto, files);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })
   @ApiCreatedResponse({
-    description: 'Post was successfully created.',
+    description: 'Post comment was successfully created.',
     type: PostEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
   })
   @ApiConflictResponse({
-    description: 'Cannot create post. Invalid data was provided.',
+    description: 'Cannot create post comment. Invalid data was provided.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
@@ -102,7 +121,7 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Post(':id/comments')
-  createComment(
+  async createComment(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -137,7 +156,10 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Post(':id/donations')
-  createDonation(@Param('id') id: string, @Body() createPostDonationDto: CreatePostDonationDto) {
+  async createDonation(
+    @Param('id') id: string,
+    @Body() createPostDonationDto: CreatePostDonationDto,
+  ) {
     return this.postDonationService.create(id, createPostDonationDto);
   }
 
@@ -149,7 +171,7 @@ export class PostController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  findAll() {
+  async findAll() {
     return this.postService.findAll();
   }
 
@@ -169,7 +191,7 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.postService.findById(id);
   }
 
@@ -189,7 +211,7 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/attachments')
-  findAllPostAttachments(@Param('id') id: string) {
+  async findAllPostAttachments(@Param('id') id: string) {
     return this.postAttachmentService.findAllForPost(id);
   }
 
@@ -209,7 +231,7 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/donations')
-  findAllPostDonations(@Param('id') id: string) {
+  async findAllPostDonations(@Param('id') id: string) {
     return this.postDonationService.findAllForPost(id);
   }
 
@@ -229,13 +251,20 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/comments')
-  findAllPostComments(@Param('id') id: string) {
+  async findAllPostComments(@Param('id') id: string) {
     return this.postCommentService.findAllForPost(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POSTS })
   @ApiOkResponse({
     description: 'Post was successfully updated.',
     type: PostEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
@@ -254,7 +283,7 @@ export class PostController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'attachments' }, { name: 'image', maxCount: 1 }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -276,9 +305,16 @@ export class PostController {
     return this.postService.update(id, updatePostDto, files);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POSTS })
   @ApiOkResponse({
     description: 'Post was successfully removed.',
     type: PostEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post with the requested id was not found.',
@@ -292,7 +328,7 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.postService.remove(id);
   }
 }

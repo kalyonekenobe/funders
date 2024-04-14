@@ -1,36 +1,55 @@
 import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
 import {
   ApiConflictResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UsersBanListRecordEntity } from './entities/users-ban-list-record.entity';
 import { UpdateUsersBanListRecordDto } from './dto/update-users-ban-list-record.dto';
 import { UsersBanListRecordService } from './users-ban-list-record.service';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Bans')
 @Controller('bans')
 export class UsersBanListRecordController {
   constructor(private readonly usersBanListRecordService: UsersBanListRecordService) {}
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'The list of users ban list records',
     type: [UsersBanListRecordEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error was occured.',
   })
   @Get()
-  findAll() {
+  async findAll() {
     return this.usersBanListRecordService.findAll();
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'The users ban list record with requested id',
     type: UsersBanListRecordEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The users ban list record with the requested id was not found.',
@@ -44,13 +63,20 @@ export class UsersBanListRecordController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.usersBanListRecordService.findById(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_USER_BANS })
   @ApiOkResponse({
     description: 'Users ban list record was successfully updated.',
     type: UsersBanListRecordEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The users ban list record with the requested id was not found.',
@@ -67,16 +93,23 @@ export class UsersBanListRecordController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateUsersBanListRecordDto: UpdateUsersBanListRecordDto,
   ) {
     return this.usersBanListRecordService.update(id, updateUsersBanListRecordDto);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_USER_BANS })
   @ApiOkResponse({
     description: 'Users ban list record was successfully removed.',
     type: UsersBanListRecordEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The users ban list record with the requested id was not found.',
@@ -90,7 +123,7 @@ export class UsersBanListRecordController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.usersBanListRecordService.remove(id);
   }
 }

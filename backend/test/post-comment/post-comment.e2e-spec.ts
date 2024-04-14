@@ -11,6 +11,12 @@ import { PostModule } from 'src/post/post.module';
 import { mockPostRepository } from 'test/post/post.mock';
 import { UserModule } from 'src/user/user.module';
 import { mockUserRepository } from 'test/user/user.mock';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { MockAuthGuard } from 'test/core/auth/mock-auth-guard';
+import { JwtStrategy } from 'src/core/auth/strategies/jwt.strategy';
+import { MockAuthStrategy } from 'test/core/auth/mock-auth-strategy';
+import * as cookieParser from 'cookie-parser';
+import { accessToken } from 'test/core/auth/mock-auth';
 
 describe('PostCommentController (e2e)', () => {
   let app: INestApplication;
@@ -18,6 +24,16 @@ describe('PostCommentController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [PostCommentModule, PostModule, UserModule],
+      providers: [
+        {
+          provide: JwtAuthGuard,
+          useValue: MockAuthGuard,
+        },
+        {
+          provide: JwtStrategy,
+          useClass: MockAuthStrategy,
+        },
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue({
@@ -30,6 +46,7 @@ describe('PostCommentController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(ValidationPipes.validationPipe);
     app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
+    app.use(cookieParser());
     await app.init();
   });
 
@@ -39,6 +56,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[4].postId}/comments`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -59,6 +78,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[4].authorId}/comments`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -79,6 +100,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/comments/${MockDataStorage.items()[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -93,6 +116,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .get(`/comments/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -106,6 +131,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostCommentDtoList[0].postId}/comments`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({
         authorId: MockDataStorage.createPostCommentDtoList[0].data.authorId,
         parentCommentId: MockDataStorage.createPostCommentDtoList[0].data.parentCommentId,
@@ -136,6 +163,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.items()[0]}/comments`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -150,6 +179,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/comments/${MockDataStorage.updatePostCommentDtoList[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostCommentDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -179,6 +210,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .put(`/comments/${MockDataStorage.items()[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostCommentDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -193,6 +226,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/comments/${MockDataStorage.removePostCommentDtoList[0].id}`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -216,6 +251,8 @@ describe('PostCommentController (e2e)', () => {
     const initialData = [...MockDataStorage.items()];
     return request(app.getHttpServer())
       .delete(`/comments/${MockDataStorage.removePostCommentDtoList[0].id}_not_existing_id`)
+      .set('authorization', `Bearer ${accessToken}`)
+      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
