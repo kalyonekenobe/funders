@@ -12,6 +12,7 @@ import {
   IPrepareSingleResourceForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
 import { PaymentService } from 'src/core/payment/payment.service';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UserService {
@@ -29,14 +30,21 @@ export class UserService {
   async findById(id: string): Promise<UserPublicEntity> {
     return this.prismaService.user.findUniqueOrThrow({
       where: { id },
-      select: exclude('User', ['password']),
+      select: { ...exclude('User', ['password']), userRole: true },
     });
   }
 
   async findByEmail(email: string): Promise<UserPublicEntity> {
     return this.prismaService.user.findUniqueOrThrow({
       where: { email },
-      select: exclude('User', ['password']),
+      select: { ...exclude('User', ['password']), userRole: true },
+    });
+  }
+
+  async findOne(where: FindUserDto): Promise<UserPublicEntity> {
+    return this.prismaService.user.findFirstOrThrow({
+      where,
+      select: { ...exclude('User', ['password']), userRole: true },
     });
   }
 

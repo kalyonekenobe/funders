@@ -2,25 +2,46 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserRoleService } from './user-role.service';
 import { UserRoleEntity } from './entities/user-role.entity';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('User roles')
 @Controller('user-roles')
 export class UserRoleController {
   constructor(private readonly userRoleService: UserRoleService) {}
 
+  @Auth(JwtAuthGuard, {
+    permissions:
+      Permissions.MANAGE_POST_COMMENTS |
+      Permissions.MANAGE_CHATS |
+      Permissions.MANAGE_CHAT_MESSAGES |
+      Permissions.MANAGE_POSTS |
+      Permissions.MANAGE_POST_CATEGORIES |
+      Permissions.MANAGE_USERS |
+      Permissions.MANAGE_USER_BANS,
+  })
   @ApiCreatedResponse({
     description: 'User role was successfully created.',
     type: UserRoleEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiConflictResponse({
     description: 'Cannot create user role. Invalid data was provided.',
@@ -29,7 +50,7 @@ export class UserRoleController {
     description: 'Internal server error was occured.',
   })
   @Post()
-  create(@Body() createUserRoleDto: CreateUserRoleDto) {
+  async create(@Body() createUserRoleDto: CreateUserRoleDto) {
     return this.userRoleService.create(createUserRoleDto);
   }
 
@@ -41,13 +62,29 @@ export class UserRoleController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  findAll() {
+  async findAll() {
     return this.userRoleService.findAll();
   }
 
+  @Auth(JwtAuthGuard, {
+    permissions:
+      Permissions.MANAGE_POST_COMMENTS |
+      Permissions.MANAGE_CHATS |
+      Permissions.MANAGE_CHAT_MESSAGES |
+      Permissions.MANAGE_POSTS |
+      Permissions.MANAGE_POST_CATEGORIES |
+      Permissions.MANAGE_USERS |
+      Permissions.MANAGE_USER_BANS,
+  })
   @ApiOkResponse({
     description: 'User role was successfully updated.',
     type: UserRoleEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user role with the requested name was not found.',
@@ -64,13 +101,29 @@ export class UserRoleController {
     schema: { example: 'Administrator' },
   })
   @Put(':name')
-  update(@Param('name') name: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
+  async update(@Param('name') name: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
     return this.userRoleService.update(name, updateUserRoleDto);
   }
 
+  @Auth(JwtAuthGuard, {
+    permissions:
+      Permissions.MANAGE_POST_COMMENTS |
+      Permissions.MANAGE_CHATS |
+      Permissions.MANAGE_CHAT_MESSAGES |
+      Permissions.MANAGE_POSTS |
+      Permissions.MANAGE_POST_CATEGORIES |
+      Permissions.MANAGE_USERS |
+      Permissions.MANAGE_USER_BANS,
+  })
   @ApiOkResponse({
     description: 'User role was successfully removed.',
     type: UserRoleEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user role with the requested name was not found.',
@@ -84,7 +137,7 @@ export class UserRoleController {
     schema: { example: 'Administrator' },
   })
   @Delete(':name')
-  remove(@Param('name') name: string) {
+  async remove(@Param('name') name: string) {
     return this.userRoleService.remove(name);
   }
 }

@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "CHOKIDAR_USEPOLLING=true next dev",
-    "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_EXTERNAL_PORT next dev",
+    "dev:docker": "CHOKIDAR_USEPOLLING=true PORT=$FRONTEND_INTERNAL_PORT next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -11,26 +11,38 @@ import {
 import {
   ApiConflictResponse,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ChatMessageAttachmentService } from './chat-message-attachment.service';
 import { ChatMessageAttachmentEntity } from './entities/chat-message-attachment.entity';
 import { UpdateChatMessageAttachmentDto } from './dto/update-chat-message-attachment.dto';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Chat message attachments')
 @Controller('message-attachments')
 export class ChatMessageAttachmentController {
   constructor(private readonly chatMessageAttachmentService: ChatMessageAttachmentService) {}
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'The chat message attachment with requested id',
     type: ChatMessageAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message attachment with the requested id was not found.',
@@ -44,13 +56,20 @@ export class ChatMessageAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.chatMessageAttachmentService.findById(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_CHAT_MESSAGES })
   @ApiOkResponse({
     description: 'Chat message attachment was successfully updated.',
     type: ChatMessageAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message attachment with the requested id was not found.',
@@ -69,7 +88,7 @@ export class ChatMessageAttachmentController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -89,9 +108,16 @@ export class ChatMessageAttachmentController {
     );
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_CHAT_MESSAGES })
   @ApiOkResponse({
     description: 'Chat message attachment was successfully removed.',
     type: ChatMessageAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The chat message attachment with the requested id was not found.',
@@ -105,7 +131,7 @@ export class ChatMessageAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.chatMessageAttachmentService.remove(id);
   }
 }

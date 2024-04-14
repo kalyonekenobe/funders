@@ -2,24 +2,35 @@ import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { FollowingService } from './following.service';
 import { FollowingEntity } from './entities/following.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
 export class FollowingController {
   constructor(private readonly followingService: FollowingService) {}
 
+  @Auth(JwtAuthGuard)
   @ApiCreatedResponse({
     description: 'Following was successfully created.',
     type: FollowingEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The following with the requested userId and followerId was not found.',
@@ -41,7 +52,7 @@ export class FollowingController {
     schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
   })
   @Post(':userId/followers/:followerId')
-  create(@Param('userId') userId: string, @Param('followerId') followerId: string) {
+  async create(@Param('userId') userId: string, @Param('followerId') followerId: string) {
     return this.followingService.create({ userId, followerId });
   }
 
@@ -61,7 +72,7 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/followings')
-  findAllUserFollowings(@Param('id') id: string) {
+  async findAllUserFollowings(@Param('id') id: string) {
     return this.followingService.findAllUserFollowings(id);
   }
 
@@ -81,13 +92,20 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/followers')
-  findAllUserFollowers(@Param('id') id: string) {
+  async findAllUserFollowers(@Param('id') id: string) {
     return this.followingService.findAllUserFollowers(id);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'Following was successfully removed.',
     type: FollowingEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The following with the requested userId and followerId was not found.',
@@ -106,7 +124,7 @@ export class FollowingController {
     schema: { example: 'b7af9cd4-5533-4737-862b-78bce985c987' },
   })
   @Delete(':userId/followers/:followerId')
-  remove(@Param('userId') userId: string, @Param('followerId') followerId: string) {
+  async remove(@Param('userId') userId: string, @Param('followerId') followerId: string) {
     return this.followingService.remove(userId, followerId);
   }
 }

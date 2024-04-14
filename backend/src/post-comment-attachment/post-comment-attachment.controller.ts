@@ -11,17 +11,22 @@ import {
 import {
   ApiConflictResponse,
   ApiConsumes,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { PostCommentAttachmentService } from './post-comment-attachment.service';
 import { PostCommentAttachmentEntity } from './entities/post-comment-attachment.entity';
 import { UpdatePostCommentAttachmentDto } from './dto/update-post-comment-attachment.dto';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Permissions } from 'src/user/types/user.types';
 
 @ApiTags('Post comment attachments')
 @Controller('comment-attachments')
@@ -44,13 +49,20 @@ export class PostCommentAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.postCommentAttachmentService.findById(id);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })
   @ApiOkResponse({
     description: 'Post comment attachment was successfully updated.',
     type: PostCommentAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post comment attachment with the requested id was not found.',
@@ -69,7 +81,7 @@ export class PostCommentAttachmentController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'file', maxCount: 1 }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -89,9 +101,16 @@ export class PostCommentAttachmentController {
     );
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })
   @ApiOkResponse({
     description: 'Post comment attachment was successfully removed.',
     type: PostCommentAttachmentEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The post comment attachment with the requested id was not found.',
@@ -105,7 +124,7 @@ export class PostCommentAttachmentController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.postCommentAttachmentService.remove(id);
   }
 }

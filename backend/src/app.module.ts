@@ -3,10 +3,10 @@ import { LoggingMiddleware } from './core/logging/logging.middleware';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { PostModule } from './post/post.module';
-import { AuthenticationModule } from './core/authentication/authentication.module';
+import { AuthModule } from './core/auth/auth.module';
 
 @Module({
-  imports: [UserModule, PostModule, ChatModule, AuthenticationModule],
+  imports: [UserModule, PostModule, ChatModule, AuthModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

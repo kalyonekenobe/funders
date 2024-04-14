@@ -2,23 +2,27 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
+  Req,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserPublicEntity } from './entities/user-public.entity';
@@ -29,7 +33,7 @@ import { CreateUsersBanListRecordRequestBodyDto } from 'src/users-ban-list-recor
 import { UsersBanListRecordEntity } from 'src/users-ban-list-record/entities/users-ban-list-record.entity';
 import { PostService } from 'src/post/post.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { UserRequestBodyFiles } from './types/user.types';
+import { Permissions, UserRequestBodyFiles } from './types/user.types';
 import { UploadRestrictions } from 'src/core/decorators/upload-restrictions.decorator';
 import { UploadResourceTypes } from 'src/core/constants/constants';
 import { PostReactionService } from 'src/post-reaction/post-reaction.service';
@@ -40,7 +44,10 @@ import { PostCommentReactionService } from 'src/post-comment-reaction/post-comme
 import { PostCommentReactionEntity } from 'src/post-comment-reaction/entities/post-comment-reaction.entity';
 import { ChatsOnUsersService } from 'src/chats-on-users/chats-on-users.service';
 import { ChatEntity } from 'src/chat/entities/chat.entity';
-import { LocalAuthenticationGuard } from 'src/core/authentication/guards/local-authentication.guard';
+import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { Auth } from 'src/core/decorators/auth.decorator';
+import { Request } from 'express';
+import { PostEntity } from 'src/post/entities/post.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -55,9 +62,16 @@ export class UserController {
     private readonly chatsOnUsersService: ChatsOnUsersService,
   ) {}
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_USERS })
   @ApiCreatedResponse({
     description: 'User was successfully created.',
     type: UserPublicEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiConflictResponse({
     description: 'Cannot create user. Invalid data was provided.',
@@ -68,7 +82,7 @@ export class UserController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @Post()
-  create(
+  async create(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -84,9 +98,16 @@ export class UserController {
     return this.userService.create(createUserDto, files);
   }
 
+  @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_USER_BANS })
   @ApiCreatedResponse({
     description: 'Users ban list record was successfully created.',
     type: UsersBanListRecordEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiConflictResponse({
     description: 'Cannot create users ban list record. Invalid data was provided.',
@@ -100,7 +121,7 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Post(':id/bans')
-  createUsersBanListRecord(
+  async createUsersBanListRecord(
     @Param('id') userId: string,
     @Body() createUsersBanListRecordRequestBodyDto: CreateUsersBanListRecordRequestBodyDto,
   ) {
@@ -110,9 +131,16 @@ export class UserController {
     });
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: "The list of user's ban list records",
     type: [UsersBanListRecordEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -126,13 +154,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/bans')
-  findAllUserBans(@Param('id') userId: string) {
+  async findAllUserBans(@Param('id') userId: string) {
     return this.usersBanListRecordService.findAllUserBans(userId);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: "The list of user's post reactions",
     type: [PostReactionEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -146,13 +181,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/post-reactions')
-  findAllUserPostReactions(@Param('id') userId: string) {
+  async findAllUserPostReactions(@Param('id') userId: string) {
     return this.postReactionService.findAllForUser(userId);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: "The list of user's post comment reactions",
     type: [PostCommentReactionEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -166,13 +208,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/comment-reactions')
-  findAllUserPostCommentReactions(@Param('id') userId: string) {
+  async findAllUserPostCommentReactions(@Param('id') userId: string) {
     return this.postCommentReactionService.findAllForUser(userId);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: "The list of user's chats",
     type: [ChatEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -186,13 +235,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/chats')
-  findAllUserChats(@Param('id') userId: string) {
+  async findAllUserChats(@Param('id') userId: string) {
     return this.chatsOnUsersService.findAllChatsForUser(userId);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: "The list of user's post comments",
     type: [PostCommentEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -206,11 +262,10 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/comments')
-  findAllUserComments(@Param('id') userId: string) {
+  async findAllUserComments(@Param('id') userId: string) {
     return this.postCommentService.findAllForUser(userId);
   }
 
-  @UseGuards(new LocalAuthenticationGuard())
   @ApiOkResponse({
     description: 'The list of users',
     type: [UserPublicEntity],
@@ -219,7 +274,7 @@ export class UserController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  findAll() {
+  async findAll() {
     return this.userService.findAll();
   }
 
@@ -239,13 +294,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id')
-  findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string) {
     return this.userService.findById(id);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
-    description: 'The user with requested id',
-    type: UserPublicEntity,
+    description: 'The list of posts of the user with requested id',
+    type: [PostEntity],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -259,13 +321,20 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/posts')
-  findAllUserPosts(@Param('id') id: string) {
+  async findAllUserPosts(@Param('id') id: string) {
     return this.postService.findAllUserPosts(id);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'User was successfully updated.',
     type: UserPublicEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -284,7 +353,7 @@ export class UserController {
   @ApiConsumes('application/json', 'multipart/form-data')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }]))
   @Put(':id')
-  update(
+  async update(
     @UploadedFiles()
     @UploadRestrictions([
       {
@@ -295,15 +364,37 @@ export class UserController {
       },
     ])
     files: UserRequestBodyFiles,
+    @Req() request: Request,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    const authenticatedUser = request.user as UserPublicEntity;
+
+    if (
+      id !== authenticatedUser.id &&
+      ((Number(authenticatedUser.userRole?.permissions) ?? 0) & Permissions.MANAGE_USERS) !==
+        Permissions.MANAGE_USERS
+    ) {
+      throw new ForbiddenException({
+        message: 'Forbidden',
+        error: 'The user is forbidden to perform this action.',
+        statusCode: HttpStatus.FORBIDDEN,
+      });
+    }
+
     return this.userService.update(id, updateUserDto, files);
   }
 
+  @Auth(JwtAuthGuard)
   @ApiOkResponse({
     description: 'User was successfully removed.',
     type: UserPublicEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is unauthorized.',
+  })
+  @ApiForbiddenResponse({
+    description: 'The user is forbidden to perform this action.',
   })
   @ApiNotFoundResponse({
     description: 'The user with the requested id was not found.',
@@ -317,7 +408,21 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Req() request: Request, @Param('id') id: string) {
+    const authenticatedUser = request.user as UserPublicEntity;
+
+    if (
+      id !== authenticatedUser.id &&
+      ((Number(authenticatedUser.userRole?.permissions) ?? 0) & Permissions.MANAGE_USERS) !==
+        Permissions.MANAGE_USERS
+    ) {
+      throw new ForbiddenException({
+        message: 'Forbidden',
+        error: 'The user is forbidden to perform this action.',
+        statusCode: HttpStatus.FORBIDDEN,
+      });
+    }
+
     return this.userService.remove(id);
   }
 }

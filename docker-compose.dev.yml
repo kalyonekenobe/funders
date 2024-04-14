@@ -15,7 +15,7 @@ services:
       USER_PASSWORD_SALT_PREFIX: ${USER_PASSWORD_SALT_PREFIX}
       USER_PASSWORD_SALT_SUFFIX: ${USER_PASSWORD_SALT_SUFFIX}
     ports:
-      - ${BACKEND_EXTERNAL_PORT}:8000
+      - ${BACKEND_INTERNAL_PORT}:8000
     volumes:
       - ./backend/src:/app/src
       - ./backend/test:/app/test
@@ -31,7 +31,7 @@ services:
       - funders-network
     env_file: ./.env.dev
     ports:
-      - ${FRONTEND_EXTERNAL_PORT}:3000
+      - ${FRONTEND_INTERNAL_PORT}:3000
     volumes:
       - ./frontend/app:/app/app
     depends_on:
