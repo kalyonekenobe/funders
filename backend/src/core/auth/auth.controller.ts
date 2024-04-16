@@ -160,4 +160,60 @@ export class AuthController {
       })
       .json(user);
   }
+
+  @ApiCreatedResponse({
+    description: 'User was successfully logged in with Google.',
+    type: UserPublicEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Cannot log in the user with Google.',
+  })
+  @ApiConflictResponse({
+    description: 'Cannot log in the user with Google. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @Post('/login/google')
+  async googleLogin(@Req() request: Request, @Res() response: Response) {
+    const user = await this.authService.googleLogin(request.headers.authorization ?? '');
+
+    return response
+      .status(HttpStatus.CREATED)
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+        httpOnly: true,
+      })
+      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
+        httpOnly: true,
+      })
+      .json(user);
+  }
+
+  @ApiCreatedResponse({
+    description: 'User was successfully logged in with Discord.',
+    type: UserPublicEntity,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Cannot log in the user with Discord.',
+  })
+  @ApiConflictResponse({
+    description: 'Cannot log in the user with Discord. Invalid data was provided.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error was occured.',
+  })
+  @Post('/login/discord')
+  async discordLogin(@Req() request: Request, @Res() response: Response) {
+    const user = await this.authService.discordLogin(request.headers.authorization ?? '');
+
+    return response
+      .status(HttpStatus.CREATED)
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+        httpOnly: true,
+      })
+      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
+        httpOnly: true,
+      })
+      .json(user);
+  }
 }
