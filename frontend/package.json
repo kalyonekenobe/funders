@@ -19,7 +19,8 @@
     "next": "14.0.4",
     "next-auth": "^4.24.7",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "valibot": "^0.30.0"
   },
   "devDependencies": {
     "@types/node": "^20",
