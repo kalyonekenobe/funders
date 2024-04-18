@@ -1,14 +1,18 @@
-'use client';
-
-import { signIn } from 'next-auth/react';
 import { FC } from 'react';
-import { DiscordIcon, GoogleIcon } from '../Icons/Icons';
-import { ApplicationRoutes } from '../../utils/routes.utils';
+import { ApplicationRoutes } from '../../../utils/routes.utils';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import SSOAuthenticationButtons from '../SSOAuthenticationButtons';
+import PasswordInput from '../../Controls/PasswordInput';
 
-const SignInForm: FC = () => {
+export interface SignInFormProps {}
+
+const SignInForm: FC<SignInFormProps> = () => {
+  const signInGlobalError = cookies().get('next-auth.error')?.value;
+
   return (
     <form className='flex flex-col max-w-md w-full p-3'>
+      {signInGlobalError}
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Sign in</h3>
       <div className='flex flex-col mt-5'>
         <div className='flex flex-col gap-y-3'>
@@ -21,10 +25,9 @@ const SignInForm: FC = () => {
             />
           </div>
           <div className='flex flex-col'>
-            <input
-              type='password'
+            <PasswordInput
               id='sign-in-password'
-              className='border p-3 rounded-lg text-gray-700 font-medium'
+              className='border p-3 rounded-lg text-gray-700 font-medium w-full'
               placeholder='Password'
             />
           </div>
@@ -69,22 +72,7 @@ const SignInForm: FC = () => {
           </span>
         </div>
         <div className='flex flex-col gap-y-2'>
-          <button
-            type='button'
-            className='inline-flex justify-center items-center border rounded-lg p-2.5 font-medium text-gray-500 text-center hover:bg-slate-100 transition-[0.3s_ease]'
-            onClick={() => signIn('google')}
-          >
-            <GoogleIcon className='size-5 me-3' />
-            Sign in with Google
-          </button>
-          <button
-            type='button'
-            className='inline-flex justify-center items-center border rounded-lg p-2.5 font-medium text-gray-500 text-center hover:bg-slate-100 transition-[0.3s_ease]'
-            onClick={() => signIn('discord')}
-          >
-            <DiscordIcon className='size-5 me-3' />
-            Sign in with Discord
-          </button>
+          <SSOAuthenticationButtons />
         </div>
       </div>
     </form>

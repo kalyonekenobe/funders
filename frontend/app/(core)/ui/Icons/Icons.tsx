@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
-export interface IIconProps extends React.SVGAttributes<SVGElement> {}
+export interface IconProps extends React.SVGAttributes<SVGElement> {}
 
-export const GoogleIcon: FC<IIconProps> = props => {
+export const GoogleIcon: FC<IconProps> = props => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' {...props}>
       <g clipPath='url(#a)'>
@@ -32,7 +32,7 @@ export const GoogleIcon: FC<IIconProps> = props => {
   );
 };
 
-export const DiscordIcon: FC<IIconProps> = props => {
+export const DiscordIcon: FC<IconProps> = props => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' {...props}>
       <g clipPath='url(#a)'>
@@ -46,6 +46,105 @@ export const DiscordIcon: FC<IIconProps> = props => {
           <path fill='#fff' d='M0 0h48v48H0z' />
         </clipPath>
       </defs>
+    </svg>
+  );
+};
+
+export const OpenedEyeIcon: FC<IconProps> = props => {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
+      strokeWidth={1.5}
+      stroke='currentColor'
+      {...props}
+    >
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z'
+      />
+      <path strokeLinecap='round' strokeLinejoin='round' d='M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z' />
+    </svg>
+  );
+};
+
+export const ClosedEyeIcon: FC<IconProps> = props => {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
+      strokeWidth={1.5}
+      stroke='currentColor'
+      {...props}
+    >
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88'
+      />
+    </svg>
+  );
+};
+
+export const InfoIcon: FC<IconProps> = props => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path
+        fillRule='evenodd'
+        d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
+};
+
+export const WarningIcon: FC<IconProps> = props => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path
+        fillRule='evenodd'
+        d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
+};
+
+export const ErrorIcon: FC<IconProps> = props => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path
+        fillRule='evenodd'
+        d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
+};
+
+export const SuccessIcon: FC<IconProps> = props => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path
+        fillRule='evenodd'
+        d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
+};
+
+export const CloseIcon: FC<IconProps> = props => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path
+        fillRule='evenodd'
+        d='M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z'
+        clipRule='evenodd'
+      />
     </svg>
   );
 };

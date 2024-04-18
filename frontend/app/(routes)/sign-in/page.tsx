@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { FC } from 'react';
-import SignInForm from '@/app/(core)/ui/SignInForm/SignInForm';
+import SignInForm from '@/app/(core)/ui/Auth/SignIn/SignInForm';
 import Link from 'next/link';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 

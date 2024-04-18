@@ -33,7 +33,7 @@ module.exports = {
         password: await passwordService.hash('123456'),
       },
       {
-        registrationMethod: 'Microsoft',
+        registrationMethod: 'Discord',
         role: 'Volunteer',
         firstName: 'Samantha',
         lastName: 'Jones',
