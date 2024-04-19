@@ -44,7 +44,9 @@ export class AuthService {
       const passwordIsCorrect = await this.passwordService.compare(password, user.password);
 
       if (!passwordIsCorrect) {
-        throw new AuthException('The password was provided for the requested user is incorrect.');
+        throw new AuthException(
+          'The provided credentials are invalid. Please verify your email and password and try again.',
+        );
       }
 
       const { password: _, ...result } = user;
@@ -54,7 +56,9 @@ export class AuthService {
         throw error;
       }
 
-      throw new AuthException('The user with requested credentials does not exist.');
+      throw new AuthException(
+        'The provided credentials are invalid. Please verify your email and password and try again.',
+      );
     }
   }
 

@@ -2,8 +2,6 @@ import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import DiscordProvider from 'next-auth/providers/discord';
 import axios from '@/app/(core)/utils/axios.utils';
-import { cookies } from 'next/headers';
-import { parseCookieString } from '@/app/(core)/utils/cookies.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import { HttpStatusCode } from 'axios';
@@ -24,15 +22,10 @@ export const authOptions: AuthOptions = {
     signIn: async ({ account }) => {
       if (account && Object.values<string>(AuthProviders).includes(account.provider)) {
         try {
-          const response = await axios.post(`/auth/login/${account.provider}`, null, {
+          await axios.post(`/auth/login/${account.provider}`, null, {
             headers: {
               Authorization: account?.access_token,
             },
-          });
-
-          (response.headers['set-cookie'] ?? []).forEach(cookieString => {
-            const { name, value, ...options } = parseCookieString(cookieString);
-            cookies().set(name, value, options);
           });
         } catch (error: any) {
           if (
