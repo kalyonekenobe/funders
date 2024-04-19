@@ -44,7 +44,7 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
           <ErrorIcon className='size-10 text-red-500' />
         )}
       </div>
-      <div className='flex flex-col ms-3'>
+      <div className='flex flex-col ms-3 flex-1'>
         <h3 className='font-semibold text text-gray-700 mb-0.5'>{notification.type}</h3>
         <span className='text-sm'>{notification.message}</span>
       </div>

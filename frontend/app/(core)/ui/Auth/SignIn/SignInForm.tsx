@@ -4,17 +4,16 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import SSOAuthenticationButtons from '../SSOAuthenticationButtons';
 import PasswordInput from '../../Controls/PasswordInput';
+import SignInFormGlobalError from './SignInFormGlobalError';
 
 export interface SignInFormProps {}
 
 const SignInForm: FC<SignInFormProps> = () => {
-  const signInGlobalError = cookies().get('next-auth.error')?.value;
-
   return (
     <form className='flex flex-col max-w-md w-full p-3'>
-      {signInGlobalError}
+      <SignInFormGlobalError />
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Sign in</h3>
-      <div className='flex flex-col mt-5'>
+      <div className='flex flex-col mt-10'>
         <div className='flex flex-col gap-y-3'>
           <div className='flex flex-col'>
             <input

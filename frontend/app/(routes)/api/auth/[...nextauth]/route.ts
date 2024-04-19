@@ -39,9 +39,9 @@ export const authOptions: AuthOptions = {
             error?.response?.status === HttpStatusCode.Unauthorized &&
             error?.response?.data?.message
           ) {
-            cookies().set('next-auth.error', error.response.data.message);
+            throw new Error(error.response.data.message);
           } else {
-            cookies().set('next-auth.error', 'Internal server error');
+            throw new Error('Internal server error');
           }
         }
       }

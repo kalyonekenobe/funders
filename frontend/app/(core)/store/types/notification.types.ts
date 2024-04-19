@@ -1,7 +1,7 @@
 import { NotificationType } from '../../utils/notifications.utils';
 
 export interface Notification {
-  id: number;
+  id: string;
   message: string;
   type: NotificationType;
   isActive: boolean;

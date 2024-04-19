@@ -6,6 +6,7 @@ import { NotificationAction } from '../store/actions/notification.action';
 import { Notification } from '../store/types/notification.types';
 import NotificationList from '../ui/Notification/NotificationList';
 import NotificationContext from '../contexts/NotificationContext';
+import { v4 as uuid } from 'uuid';
 
 export interface NotificationProviderProps {
   children: ReactNode | ReactNode[];
@@ -15,16 +16,17 @@ const NotificationProvider: FC<NotificationProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(notificationReducer, initialState);
 
   const createNotification = (
-    notification: Omit<Notification, 'id'>,
+    notification: Omit<Notification, 'id' | 'isActive'>,
     duration: number | undefined = 5000,
   ) => {
-    const id = state.notifications.length;
+    const id = uuid();
 
     dispatch({
       type: NotificationAction.Create,
       payload: {
         notification: {
           ...notification,
+          isActive: true,
           id,
         },
       },
