@@ -57,15 +57,18 @@ export const signUp = async (state: any, formData: FormData) => {
     formData,
   ) as any;
   try {
-    if (registrationMethod && registrationMethod !== RegistrationMethod.Default) {
+    if (!data.password) {
       data.password = '#xxxxxx0';
-      data.confirmPassword = '#xxxxxx0';
     }
 
     data.birthDate = new Date(data.birthDate);
     const user = await parse(RegisterSchema, data);
 
-    if (confirmPassword !== data.password) {
+    if (registrationMethod && registrationMethod !== RegistrationMethod.Default) {
+      delete data.password;
+    }
+
+    if (confirmPassword !== data.password && registrationMethod === RegistrationMethod.Default) {
       throw new ValiError([
         { reason: 'any', context: '', input: '', expected: '', received: '', message: '' },
       ]);
