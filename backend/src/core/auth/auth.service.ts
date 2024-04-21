@@ -92,6 +92,8 @@ export class AuthService {
 
       const { accessToken, refreshToken } = await this.generateJwtTokensPair(user);
 
+      await this.userService.update(user.id, { refreshToken });
+
       return { ...user, accessToken, refreshToken };
     } catch (error) {
       if (error instanceof AuthException) {
@@ -122,6 +124,8 @@ export class AuthService {
       }
 
       const { accessToken, refreshToken } = await this.generateJwtTokensPair(user);
+
+      await this.userService.update(user.id, { refreshToken });
 
       return { ...user, accessToken, refreshToken };
     } catch (error) {

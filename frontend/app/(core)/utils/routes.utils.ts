@@ -9,3 +9,5 @@ export enum ApplicationRoutes {
   Dashboard = '/dashboard',
   Profile = '/profile',
 }
+
+export const ProtectedRoutes: ApplicationRoutes[] = [ApplicationRoutes.Root];

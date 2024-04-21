@@ -1,13 +1,9 @@
 import axios, { HttpStatusCode } from 'axios';
-import getConfig from 'next/config';
 import { cookies } from 'next/headers';
 import { parseCookieString } from './cookies.utils';
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
-const backendUrl = serverRuntimeConfig.backendUrl || publicRuntimeConfig.backendUrl;
-
 const instance = axios.create({
-  baseURL: backendUrl,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   withCredentials: true,
 });
 
@@ -41,32 +37,31 @@ instance.interceptors.response.use(
 
     if (error.response.status === HttpStatusCode.Unauthorized && refreshToken) {
       try {
-        // Using fetch call instead of axios to avoid recursive calls in case of refresh error
-        const response = await fetch('/auth/refresh', {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_PORT}/auth/refresh`,
+          undefined,
+          { withCredentials: true },
+        );
 
         if (response.status !== HttpStatusCode.Created) {
           throw new Error('Cannot receive the new pair of access and refresh tokens');
         }
 
-        const { accessToken, refreshToken } = await response.json();
-
-        error.config.sent = true;
-
-        error.config.headers = {
-          ...error.config.headers,
-          Authorization: `Bearer ${accessToken}`,
-        };
+        const { accessToken, refreshToken } = response.data;
 
         cookies().set(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', accessToken);
         cookies().set(
           process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
           refreshToken,
         );
+
+        error.config.sent = true;
+        error.config.headers = {
+          ...error.config.headers,
+          Authorization: `Bearer ${cookies().get(
+            process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
+          )}`,
+        };
 
         return instance(error.config);
       } catch (error) {
