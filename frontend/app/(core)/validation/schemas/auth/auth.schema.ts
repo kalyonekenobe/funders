@@ -9,6 +9,7 @@ import {
   object,
   regex,
   string,
+  toCustom,
   toTrimmed,
   union,
 } from 'valibot';
@@ -51,13 +52,13 @@ export const RegisterSchema = object(
     ),
     firstName: string('Please enter a first name containing between 2 and 50 characters.', [
       toTrimmed(),
-      minLength(2),
-      maxLength(50),
+      minLength(2, 'Please enter a first name containing between 2 and 50 characters.'),
+      maxLength(50, 'Please enter a first name containing between 2 and 50 characters.'),
     ]),
-    lastName: string('Please enter a first name containing between 2 and 50 characters.', [
+    lastName: string('Please enter a last name containing between 2 and 50 characters.', [
       toTrimmed(),
-      minLength(2),
-      maxLength(50),
+      minLength(2, 'Please enter a last name containing between 2 and 50 characters.'),
+      maxLength(50, 'Please enter a last name containing between 2 and 50 characters.'),
     ]),
     birthDate: union([
       date('The user must be at least 14 years old.', [

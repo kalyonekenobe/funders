@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UploadedFiles,
   UseInterceptors,
@@ -48,6 +49,7 @@ import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { Request } from 'express';
 import { PostEntity } from 'src/post/entities/post.entity';
+import { FindUserDto } from './dto/find-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -274,8 +276,8 @@ export class UserController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() query: FindUserDto) {
+    return this.userService.findAll(query);
   }
 
   @ApiOkResponse({

@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext } from 'react';
 import { Notification } from '../store/types/notification.types';
 

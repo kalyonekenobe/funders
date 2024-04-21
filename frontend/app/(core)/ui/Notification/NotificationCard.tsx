@@ -29,7 +29,7 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
   }, [notification]);
 
   return (
-    <div className={`flex bg-white rounded-xl shadow-xl w-full px-3 py-2 ${styles}`}>
+    <div className={`flex bg-white rounded-xl shadow-xl w-full px-3 py-2 min-h-[75px] ${styles}`}>
       <div className='flex items-center justify-center'>
         {notification.type === NotificationType.Success && (
           <SuccessIcon className='size-10 text-emerald-500' />

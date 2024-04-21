@@ -5,43 +5,27 @@ import { ApplicationRoutes } from '../../../utils/routes.utils';
 import Link from 'next/link';
 import SSOAuthenticationButtons from '../SSOAuthenticationButtons';
 import PasswordInput from '../../Controls/PasswordInput';
-import { signIn } from '@/app/(core)/actions/auth.actions';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { authWithSSOIfAuthTokenExist, signIn } from '@/app/(core)/actions/auth.actions';
+import { useRouter } from 'next/navigation';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
+import { HttpStatusCode } from 'axios';
 
 export interface SignInFormProps {}
 export interface SignInFormState {
+  isLoaded: boolean;
   errors: any;
 }
 
 const initialState: SignInFormState = {
+  isLoaded: false,
   errors: {},
 };
 
 const SignInForm: FC<SignInFormProps> = () => {
-  const [state, setState] = useState(initialState);
-  const [formError, setFormError] = useState<string | null>(null);
   const { createNotification } = useNotification();
-  const params = useSearchParams();
+  const [state, setState] = useState(initialState);
   const router = useRouter();
-
-  useEffect(() => {
-    if (params.get('error')) {
-      setFormError(params.get('error'));
-      router.push(ApplicationRoutes.SignIn);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    if (formError) {
-      createNotification({
-        type: NotificationType.Error,
-        message: formError,
-      });
-      setFormError(null);
-    }
-  }, [formError]);
 
   const submit = async (formData: FormData) => {
     const response = await signIn(state, formData);
@@ -55,14 +39,53 @@ const SignInForm: FC<SignInFormProps> = () => {
     }
 
     if (!response.errors.global && !response.errors.nested) {
+      createNotification({
+        type: NotificationType.Success,
+        message: 'The user was successfully authorized',
+      });
       router.push(ApplicationRoutes.Root);
     }
   };
 
+  useEffect(() => {
+    setState({ ...state, isLoaded: true });
+  }, []);
+
+  useEffect(() => {
+    if (state.isLoaded) {
+      const request = async () => {
+        const response = await authWithSSOIfAuthTokenExist();
+
+        if (response.notify) {
+          const type =
+            response.status === HttpStatusCode.Created
+              ? NotificationType.Success
+              : NotificationType.Error;
+          const message =
+            response.status === HttpStatusCode.Created
+              ? response.data.message || 'The user was successfully authorized'
+              : response.data.error || 'Cannot authorize the user due to the server error';
+
+          createNotification({ type, message });
+        }
+
+        if (response.status === HttpStatusCode.TemporaryRedirect) {
+          router.push(response.data.redirectUrl || ApplicationRoutes.SignIn);
+        }
+
+        if (response.status === HttpStatusCode.Created) {
+          router.push(ApplicationRoutes.Root);
+        }
+      };
+
+      request().catch(console.error);
+    }
+  }, [state.isLoaded]);
+
   return (
     <form className='flex flex-col max-w-md w-full p-3' action={submit}>
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Sign in</h3>
-      <div className='flex flex-col mt-10'>
+      <div className='flex flex-col mt-5'>
         <div className='flex flex-col gap-y-3'>
           <div className='flex flex-col'>
             <input
@@ -162,7 +185,7 @@ const SignInForm: FC<SignInFormProps> = () => {
           </span>
         </div>
         <div className='flex flex-col gap-y-2'>
-          <SSOAuthenticationButtons />
+          <SSOAuthenticationButtons type='sign-in' />
         </div>
       </div>
     </form>

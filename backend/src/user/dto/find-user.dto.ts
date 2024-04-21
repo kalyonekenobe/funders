@@ -2,9 +2,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDate,
-  IsDefined,
   IsEmail,
-  IsNotEmpty,
   IsPhoneNumber,
   IsString,
   IsUUID,
@@ -22,8 +20,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
     default: '989d32c2-abd4-43d3-a420-ee175ae16b98',
   })
   @IsUUID()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   id?: string;
 
   @ApiProperty({
@@ -34,8 +31,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
   @IsString()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   registrationMethod?: string;
 
   @ApiProperty({
@@ -46,8 +42,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   @Matches(/^[a-zA-Z_0-9]+$/)
   @MaxLength(50)
   @IsString()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   role?: string;
 
   @ApiProperty({
@@ -58,8 +53,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   firstName?: string;
 
   @ApiProperty({
@@ -70,8 +64,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   @Matches(/^[\p{Letter}\p{Mark}\- ]+$/gu)
   @MaxLength(50)
   @IsString()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   lastName?: string;
 
   @ApiProperty({
@@ -82,8 +75,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   @Transform(date => new Date(date.value))
   @IsDate()
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 14)))
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   birthDate?: Date;
 
   @ApiProperty({
@@ -93,8 +85,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   })
   @MaxLength(50)
   @IsEmail()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   email?: string;
 
   @ApiProperty({
@@ -128,8 +119,7 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   })
   @MaxLength(255)
   @IsString()
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   stripeCustomerId?: string;
 
   @ApiProperty({
@@ -139,7 +129,6 @@ export class FindUserDto implements Omit<Partial<User>, 'password' | 'bio' | 'av
   })
   @IsDate()
   @MaxDate(new Date())
-  @IsNotEmpty()
-  @IsDefined()
+  @ValidateIf((_, value) => value)
   registeredAt?: Date;
 }

@@ -16,6 +16,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Auth } from '../decorators/auth.decorator';
+import { UserRegistrationMethod } from '../types/user.types';
+import { AuthException } from '../exceptions/auth.exception';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -82,6 +84,10 @@ export class AuthController {
   @Post('/login')
   async login(@Body() loginDto: LoginDto, @Res() response: Response) {
     const user = await this.authService.login(loginDto);
+
+    if (user.registrationMethod !== UserRegistrationMethod.Default) {
+      throw new AuthException('The user with provided credentials does not exist');
+    }
 
     return response
       .status(HttpStatus.CREATED)
@@ -176,7 +182,9 @@ export class AuthController {
   })
   @Post('/login/google')
   async googleLogin(@Req() request: Request, @Res() response: Response) {
-    const user = await this.authService.googleLogin(request.headers.authorization ?? '');
+    const user = await this.authService.googleLogin(
+      (request.headers.authorization ?? '').replace('Bearer ', ''),
+    );
 
     return response
       .status(HttpStatus.CREATED)
@@ -204,7 +212,9 @@ export class AuthController {
   })
   @Post('/login/discord')
   async discordLogin(@Req() request: Request, @Res() response: Response) {
-    const user = await this.authService.discordLogin(request.headers.authorization ?? '');
+    const user = await this.authService.discordLogin(
+      (request.headers.authorization ?? '').replace('Bearer ', ''),
+    );
 
     return response
       .status(HttpStatus.CREATED)

@@ -23,8 +23,11 @@ export class UserService {
     private readonly paymentService: PaymentService,
   ) {}
 
-  async findAll(): Promise<UserPublicEntity[]> {
-    return this.prismaService.user.findMany({ select: exclude('User', ['password']) });
+  async findAll(query: FindUserDto): Promise<UserPublicEntity[]> {
+    return this.prismaService.user.findMany({
+      where: query,
+      select: exclude('User', ['password']),
+    });
   }
 
   async findById(id: string): Promise<UserPublicEntity> {

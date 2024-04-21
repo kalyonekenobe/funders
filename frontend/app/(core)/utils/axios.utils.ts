@@ -1,8 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
-import { signOut } from 'next-auth/react';
 import getConfig from 'next/config';
 import { cookies } from 'next/headers';
-import { ApplicationRoutes } from './routes.utils';
 import { parseCookieString } from './cookies.utils';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
@@ -19,7 +17,7 @@ instance.interceptors.request.use(
       process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
     );
 
-    if (accessToken) {
+    if (accessToken && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
@@ -58,6 +56,7 @@ instance.interceptors.response.use(
         const { accessToken, refreshToken } = await response.json();
 
         error.config.sent = true;
+
         error.config.headers = {
           ...error.config.headers,
           Authorization: `Bearer ${accessToken}`,
@@ -73,7 +72,6 @@ instance.interceptors.response.use(
       } catch (error) {
         cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token');
         cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token');
-        signOut({ callbackUrl: ApplicationRoutes.SignIn });
       }
     }
 

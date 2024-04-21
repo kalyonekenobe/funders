@@ -6,6 +6,9 @@ const nextConfig = {
   publicRuntimeConfig: {
     backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
   },
+  experimental: {
+    serverActions: true,
+  },
 };
 
 module.exports = nextConfig;
