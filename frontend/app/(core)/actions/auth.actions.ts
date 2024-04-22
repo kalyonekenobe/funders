@@ -6,15 +6,13 @@ import axios from '@/app/(core)/utils/axios.utils';
 import { HttpStatusCode } from 'axios';
 import { AuthProviders } from '../utils/auth.utils';
 import { redirect } from 'next/navigation';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { JwtPayload, decode, sign, verify } from 'jsonwebtoken';
 import { ApplicationRoutes } from '../utils/routes.utils';
 import { capitalize } from '../utils/app.utils';
 import { User } from '../store/types/user.types';
 import { UserRole } from '../store/types/user-role.types';
 import { RegistrationMethod } from '../store/types/registration-method.types';
-import { parseCookieString } from '../utils/cookies.utils';
-import { NextResponse } from 'next/server';
 
 export const signIn = async (state: any, formData: FormData) => {
   try {

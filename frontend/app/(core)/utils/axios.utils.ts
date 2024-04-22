@@ -9,14 +9,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   async config => {
-    const accessToken = cookies().get(
-      process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
-    );
-
-    if (accessToken && !config.headers.Authorization) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-
+    config.headers.Cookie = cookies();
     return config;
   },
   async error => Promise.reject(error),
@@ -31,21 +24,18 @@ instance.interceptors.response.use(
     return response;
   },
   async error => {
-    const refreshToken = cookies().get(
-      process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
-    );
-
-    if (error.response.status === HttpStatusCode.Unauthorized && refreshToken) {
+    const originalRequest = error.config;
+    if (error.response.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_PORT}/auth/refresh`,
-          undefined,
-          { withCredentials: true },
-        );
-
-        if (response.status !== HttpStatusCode.Created) {
-          throw new Error('Cannot receive the new pair of access and refresh tokens');
-        }
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            Cookie: cookies(),
+          },
+          body: JSON.stringify({}),
+        });
 
         const { accessToken, refreshToken } = response.data;
 
@@ -55,18 +45,16 @@ instance.interceptors.response.use(
           refreshToken,
         );
 
-        error.config.sent = true;
         error.config.headers = {
           ...error.config.headers,
-          Authorization: `Bearer ${cookies().get(
-            process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
-          )}`,
+          Cookie: cookies(),
         };
 
-        return instance(error.config);
-      } catch (error) {
+        return instance(originalRequest);
+      } catch (refreshError) {
         cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token');
         cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token');
+        return Promise.reject(refreshError);
       }
     }
 

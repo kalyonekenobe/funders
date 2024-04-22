@@ -29,7 +29,7 @@
   @apply bg-neutral-300 rounded-lg bg-clip-padding;
 }
 
-input:not([type='checkbox'], [type='radio']),
+input:not([type='checkbox'], [type='radio'], .no-outline),
 select,
 textarea {
   @apply focus:outline focus:outline-transparent focus:ring-[4px] focus:ring-rose-300 transition-[0.2s_ease];

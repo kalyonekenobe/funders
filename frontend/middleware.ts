@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ApplicationRoutes, ProtectedRoutes } from './app/(core)/utils/routes.utils';
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { HttpStatusCode } from 'axios';
 import { parseCookieString } from './app/(core)/utils/cookies.utils';
 import { User } from './app/(core)/store/types/user.types';
@@ -12,46 +12,53 @@ export const middleware = async (request: NextRequest) => {
     const userExistResponse = NextResponse.next();
 
     try {
-      let response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
+      const fetchUserResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
         method: 'GET',
         credentials: 'include',
-        headers: headers(),
+        headers: {
+          Cookie: cookies().toString(),
+        },
       });
 
-      if (response.status === HttpStatusCode.Unauthorized) {
-        response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
+      if (fetchUserResponse.status === HttpStatusCode.Unauthorized) {
+        const refreshResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
           method: 'POST',
           credentials: 'include',
-          headers: headers(),
+          headers: {
+            Cookie: cookies().toString(),
+          },
+          body: JSON.stringify({}),
         });
 
-        if (response.status !== HttpStatusCode.Created) {
+        if (refreshResponse.status !== HttpStatusCode.Created) {
           throw new Error(
             'Cannot update the pair of access and refresh tokens. Invalid refresh token',
           );
         }
 
-        (response.headers.get('set-cookie')?.split(', ') ?? []).forEach(cookieString => {
+        (refreshResponse.headers.get('set-cookie')?.split(', ') ?? []).forEach(cookieString => {
           const { name, value, ...options } = parseCookieString(cookieString);
           userExistResponse.cookies.set(name, value, options);
         });
 
-        response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            Authorization: `Bearer ${
-              userExistResponse.cookies.get(
-                process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token',
-              )?.value || ''
-            }`,
-            Cookie: userExistResponse.headers.get('set-cookie') || '',
+        const newFetchUserResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`,
+          {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              Cookie: userExistResponse.headers.get('set-cookie') || '',
+            },
           },
-        });
+        );
+
+        if (newFetchUserResponse.status === HttpStatusCode.Ok) {
+          authenticatedUser = await newFetchUserResponse.json();
+        }
       }
 
-      if (response.status === HttpStatusCode.Ok) {
-        authenticatedUser = await response.json();
+      if (fetchUserResponse.status === HttpStatusCode.Ok) {
+        authenticatedUser = await fetchUserResponse.json();
       }
     } catch (error) {
       console.log(error);

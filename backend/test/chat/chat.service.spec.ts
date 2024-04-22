@@ -33,7 +33,6 @@ describe('ChatService', () => {
     const initialItems = [...MockDataStorage.items()];
     for (const item of MockDataStorage.createChatDtoList) {
       const received = await service.create(item);
-      console.log(received);
       const expected = { ...item, id: received.id };
       expect(received).toEqual(expected);
       initialItems.push(expected as any);
