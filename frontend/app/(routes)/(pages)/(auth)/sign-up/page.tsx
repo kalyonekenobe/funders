@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const SignUpPage: FC = async () => {
   return (
     <main className='flex h-screen'>
-      <section className='inline-flex flex-col p-2 md:p-10 items-center justify-center flex-1'>
+      <section className='inline-flex flex-col p-2 md:p-10 items-center justify-center flex-1 bg-white'>
         <SignUpForm />
       </section>
       <section className='hidden lg:inline-flex flex-col p-10 items-center justify-center flex-1 bg-gradient-to-br from-red-500 via-rose-600 to-red-500'>

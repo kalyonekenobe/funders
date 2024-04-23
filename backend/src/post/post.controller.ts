@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -41,6 +42,8 @@ import { CreatePostCommentDto } from 'src/post-comment/dto/create-post-comment.d
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Permissions } from 'src/user/types/user.types';
+import * as qs from 'qs';
+import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -171,8 +174,8 @@ export class PostController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  async findAll() {
-    return this.postService.findAll();
+  async findAll(@Query() query: string) {
+    return this.postService.findAll(parseObjectStringValuesToPrimitives(qs.parse(query)));
   }
 
   @ApiOkResponse({

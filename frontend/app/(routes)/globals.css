@@ -34,3 +34,7 @@ select,
 textarea {
   @apply focus:outline focus:outline-transparent focus:ring-[4px] focus:ring-rose-300 transition-[0.2s_ease];
 }
+
+body {
+  @apply bg-neutral-50;
+}

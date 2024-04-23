@@ -1,10 +1,14 @@
-import { RegistrationMethod } from './registration-method.types';
-import { UserRole } from './user-role.types';
+import { Post } from './post.types';
+import {
+  UserRegistrationMethod,
+  UserRegistrationMethodEnum,
+} from './user-registration-method.types';
+import { UserRole, UserRoleEnum } from './user-role.types';
 
 export interface User {
   id: string;
-  registrationMethod: RegistrationMethod;
-  role: UserRole;
+  registrationMethod: UserRegistrationMethodEnum;
+  role: UserRoleEnum;
   firstName: string;
   lastName: string;
   birthDate: Date;
@@ -15,4 +19,16 @@ export interface User {
   refreshToken: string | null;
   stripeCustomerId: string;
   registeredAt: Date;
+  userRegistrationMethod?: UserRegistrationMethod;
+  userRole?: UserRole;
+  followings?: any[];
+  followers?: any[];
+  bans?: any[];
+  chats?: any[];
+  messages?: any[];
+  posts?: Post[];
+  postReactions?: any[];
+  donations?: any[];
+  comments?: any[];
+  commentReactions?: any[];
 }

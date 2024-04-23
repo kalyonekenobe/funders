@@ -26,7 +26,7 @@ const SignInPage: FC = async () => {
           Create an account
         </Link>
       </section>
-      <section className='inline-flex flex-col p-2 md:p-10 items-center justify-center flex-1'>
+      <section className='inline-flex flex-col p-2 md:p-10 items-center justify-center flex-1 bg-white'>
         <SignInForm />
       </section>
     </main>

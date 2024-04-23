@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import useNotification from '@/app/(core)/hooks/notifications.hooks';
 import { NotificationType } from '@/app/(core)/utils/notifications.utils';
 import { HttpStatusCode } from 'axios';
-import { RegistrationMethod } from '@/app/(core)/store/types/registration-method.types';
+import { UserRegistrationMethodEnum } from '@/app/(core)/store/types/user-registration-method.types';
 
 export interface SignUpFormProps {}
 export interface SignUpFormState {
@@ -29,7 +29,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
   const router = useRouter();
 
   const submit = async (formData: FormData) => {
-    formData.set('registrationMethod', RegistrationMethod.Default);
+    formData.set('registrationMethod', UserRegistrationMethodEnum.Default);
     const response = await signUp(state, formData);
     setState(response);
 

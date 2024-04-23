@@ -11,8 +11,8 @@ import { JwtPayload, decode, sign, verify } from 'jsonwebtoken';
 import { ApplicationRoutes } from '../utils/routes.utils';
 import { capitalize } from '../utils/app.utils';
 import { User } from '../store/types/user.types';
-import { UserRole } from '../store/types/user-role.types';
-import { RegistrationMethod } from '../store/types/registration-method.types';
+import { UserRoleEnum } from '../store/types/user-role.types';
+import { UserRegistrationMethodEnum } from '../store/types/user-registration-method.types';
 
 export const signIn = async (state: any, formData: FormData) => {
   try {
@@ -62,11 +62,14 @@ export const signUp = async (state: any, formData: FormData) => {
     data.birthDate = new Date(data.birthDate);
     const user = await parse(RegisterSchema, data);
 
-    if (registrationMethod && registrationMethod !== RegistrationMethod.Default) {
+    if (registrationMethod && registrationMethod !== UserRegistrationMethodEnum.Default) {
       delete data.password;
     }
 
-    if (confirmPassword !== data.password && registrationMethod === RegistrationMethod.Default) {
+    if (
+      confirmPassword !== data.password &&
+      registrationMethod === UserRegistrationMethodEnum.Default
+    ) {
       throw new ValiError([
         { reason: 'any', context: '', input: '', expected: '', received: '', message: '' },
       ]);
@@ -75,7 +78,7 @@ export const signUp = async (state: any, formData: FormData) => {
     const response = await axios.post('/auth/register', {
       ...user,
       registrationMethod,
-      role: UserRole.Default,
+      role: UserRoleEnum.Default,
     });
 
     if (response.status === HttpStatusCode.Created) {

@@ -2,9 +2,9 @@
 
 import { FC } from 'react';
 import { useAuth } from '../../hooks/auth.hooks';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ApplicationRoutes } from '../../utils/routes.utils';
+import Image from 'next/image';
 
 const UserProfileLink: FC = () => {
   const { authenticatedUser } = useAuth();
@@ -19,12 +19,12 @@ const UserProfileLink: FC = () => {
           <Image
             src={
               authenticatedUser.avatar ||
-              process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_URL ||
+              process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
               '/default-profile-image.webp'
             }
             alt={`${authenticatedUser.firstName} ${authenticatedUser.lastName}'s profile image`}
-            layout='fill'
-            className=''
+            fill={true}
+            sizes='32px, 32px'
           />
         </span>
         {authenticatedUser.firstName} {authenticatedUser.lastName}
