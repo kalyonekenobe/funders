@@ -12,7 +12,8 @@ import {
   IPrepareSingleResourceForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
 import { PaymentService } from 'src/core/payment/payment.service';
-import { FindUserDto } from './dto/find-user.dto';
+import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class UserService {
@@ -23,11 +24,12 @@ export class UserService {
     private readonly paymentService: PaymentService,
   ) {}
 
-  async findAll(query: FindUserDto): Promise<UserPublicEntity[]> {
-    return this.prismaService.user.findMany({
-      where: query,
-      select: exclude('User', ['password']),
-    });
+  async findAll(options?: Prisma.UserFindManyArgs): Promise<UserPublicEntity[]> {
+    return this.prismaService.user.findMany(
+      _.merge(options, {
+        select: exclude('User', ['password']),
+      }),
+    );
   }
 
   async findById(id: string): Promise<UserPublicEntity> {
@@ -44,11 +46,12 @@ export class UserService {
     });
   }
 
-  async findOne(where: FindUserDto): Promise<UserPublicEntity> {
-    return this.prismaService.user.findFirstOrThrow({
-      where,
-      select: { ...exclude('User', ['password']), userRole: true },
-    });
+  async findOne(options?: Prisma.UserFindFirstOrThrowArgs): Promise<UserPublicEntity> {
+    return this.prismaService.user.findFirstOrThrow(
+      _.merge(options, {
+        select: { ...exclude('User', ['password']), userRole: true },
+      }),
+    );
   }
 
   async create(data: CreateUserDto, files?: UserRequestBodyFiles): Promise<UserPublicEntity> {

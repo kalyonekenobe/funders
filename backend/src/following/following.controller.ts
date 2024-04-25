@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -15,6 +15,8 @@ import { FollowingEntity } from './entities/following.entity';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
+import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
+import * as qs from 'qs';
 
 @ApiTags('Users')
 @Controller('users')
@@ -72,8 +74,13 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/followings')
-  async findAllUserFollowings(@Param('id') id: string) {
-    return this.followingService.findAllUserFollowings(id);
+  async findAllUserFollowings(@Param('id') id: string, @Query() query?: string) {
+    return this.followingService.findAllUserFollowings(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({
@@ -92,8 +99,13 @@ export class FollowingController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id/followers')
-  async findAllUserFollowers(@Param('id') id: string) {
-    return this.followingService.findAllUserFollowers(id);
+  async findAllUserFollowers(@Param('id') id: string, @Query() query?: string) {
+    return this.followingService.findAllUserFollowers(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @Auth(JwtAuthGuard)

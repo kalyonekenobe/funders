@@ -43,7 +43,7 @@ const SignInForm: FC<SignInFormProps> = () => {
         type: NotificationType.Success,
         message: 'The user was successfully authorized',
       });
-      router.push(ApplicationRoutes.Root);
+      router.push(ApplicationRoutes.Home);
     }
   };
 
@@ -74,7 +74,7 @@ const SignInForm: FC<SignInFormProps> = () => {
         }
 
         if (response.status === HttpStatusCode.Created) {
-          router.push(ApplicationRoutes.Root);
+          router.push(ApplicationRoutes.Home);
         }
       };
 

@@ -25,7 +25,7 @@ export const LoginSchema = object(
       [
         toTrimmed(),
         regex(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&\.])[A-Za-z\d@$!%*#?&\.]{8,}$/,
           'The user password must contain at least 8 characters, latin letters, numbers and special symbols.',
         ),
       ],
@@ -45,7 +45,7 @@ export const RegisterSchema = object(
       [
         toTrimmed(),
         regex(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&\.])[A-Za-z\d@$!%*#?&\.]{8,}$/,
           'The user password must contain at least 8 characters, latin letters, numbers and special symbols.',
         ),
       ],

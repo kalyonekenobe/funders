@@ -23,20 +23,20 @@ const Progress: FC<ProgressProps> = ({
   return (
     <div {...props}>
       <div className='flex flex-col'>
-        <div className='flex bg-slate-100 rounded-full overflow-hidden' style={{ height }}>
+        <div className='flex bg-rose-100 rounded overflow-hidden' style={{ height }}>
           <div
-            className='flex bg-emerald-500 rounded-full h-full items-center justify-center'
+            className='flex bg-rose-600 rounded h-full items-center relative'
             style={{ width: `${(current / goal) * 100}%` }}
           >
             {showPercentage && (
-              <span className='px-0.5 text-xs text-white absolute rounded-xl font-medium'>
+              <span className='px-0.5 text-xs text-white relative rounded mx-auto font-bold'>
                 {((current / goal) * 100).toFixed(2)}%
               </span>
             )}
           </div>
         </div>
         {showLabels && (
-          <div className='flex justify-between text-sm mt-1 font-medium text-gray-500'>
+          <div className='flex justify-between text-xs mt-1 font-medium text-gray-500'>
             <span>
               {measurePosition === 'left' ? `${measure} ${current}` : `${current} ${measure}`}
             </span>

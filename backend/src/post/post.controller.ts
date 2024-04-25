@@ -174,8 +174,12 @@ export class PostController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  async findAll(@Query() query: string) {
-    return this.postService.findAll(parseObjectStringValuesToPrimitives(qs.parse(query)));
+  async findAll(@Query() query?: string) {
+    return this.postService.findAll(
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({

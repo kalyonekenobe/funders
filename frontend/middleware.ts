@@ -7,9 +7,14 @@ import { parseCookieString } from './app/(core)/utils/cookies.utils';
 import { User } from './app/(core)/store/types/user.types';
 
 export const middleware = async (request: NextRequest) => {
+  const nextResponse = NextResponse.next({
+    headers: {
+      'x-pathname': request.nextUrl.pathname,
+    },
+  });
+
   if (ProtectedRoutes.includes(request.nextUrl.pathname as ApplicationRoutes)) {
     let authenticatedUser: User | null = null;
-    const userExistResponse = NextResponse.next();
 
     try {
       const fetchUserResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
@@ -38,7 +43,7 @@ export const middleware = async (request: NextRequest) => {
 
         (refreshResponse.headers.get('set-cookie')?.split(', ') ?? []).forEach(cookieString => {
           const { name, value, ...options } = parseCookieString(cookieString);
-          userExistResponse.cookies.set(name, value, options);
+          nextResponse.cookies.set(name, value, options);
         });
 
         const newFetchUserResponse = await fetch(
@@ -47,7 +52,7 @@ export const middleware = async (request: NextRequest) => {
             method: 'GET',
             credentials: 'include',
             headers: {
-              Cookie: userExistResponse.headers.get('set-cookie') || '',
+              Cookie: nextResponse.headers.get('set-cookie') || '',
             },
           },
         );
@@ -74,9 +79,9 @@ export const middleware = async (request: NextRequest) => {
 
       return response;
     }
-
-    return userExistResponse;
   }
+
+  return nextResponse;
 };
 
 export const config = {

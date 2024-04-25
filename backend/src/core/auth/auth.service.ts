@@ -139,7 +139,9 @@ export class AuthService {
 
   async refresh(refreshDto: RefreshDto): Promise<RefreshResponse> {
     const userWithValidRefreshToken = await this.userService.findOne({
-      refreshToken: refreshDto.refreshToken,
+      where: {
+        refreshToken: refreshDto.refreshToken,
+      },
     });
     const { accessToken, refreshToken } =
       await this.generateJwtTokensPair(userWithValidRefreshToken);

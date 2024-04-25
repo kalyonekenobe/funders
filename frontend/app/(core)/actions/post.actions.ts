@@ -1,3 +1,5 @@
+'use server';
+
 import axios from '@/app/(core)/utils/axios.utils';
 import { HttpStatusCode } from 'axios';
 import { Post } from '../store/types/post.types';

@@ -95,7 +95,7 @@ const AccountCompletionForm: FC = () => {
           type: NotificationType.Success,
           message: 'The user was successfully authorized',
         });
-        router.push(ApplicationRoutes.Root);
+        router.push(ApplicationRoutes.Home);
       }
     }
   };

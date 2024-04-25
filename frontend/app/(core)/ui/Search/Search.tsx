@@ -1,15 +1,15 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, HTMLAttributes } from 'react';
 import { SearchIcon } from '../Icons/Icons';
 
-export interface SearchProps {
+export interface SearchProps extends HTMLAttributes<HTMLDivElement> {
   onSearch?: (query: string) => void;
 }
 
-const Search: FC<SearchProps> = ({ onSearch }) => {
+const Search: FC<SearchProps> = ({ onSearch, ...props }) => {
   return (
-    <div className='flex flex-1 bg-slate-100 border rounded-full w-full'>
+    <div {...props}>
       <input
         type='text'
         placeholder='Search'

@@ -11,7 +11,6 @@ import {
   IPrepareMultipleResourcesForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
 import { Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PostService {
@@ -20,7 +19,7 @@ export class PostService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(options?: Prisma.PostFindManyArgs<DefaultArgs>): Promise<PostEntity[]> {
+  async findAll(options?: Prisma.PostFindManyArgs): Promise<PostEntity[]> {
     return this.prismaService.post.findMany(options);
   }
 

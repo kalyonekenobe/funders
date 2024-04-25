@@ -4,12 +4,28 @@ export enum ApplicationRoutes {
   SignIn = '/sign-in',
   SignUp = '/sign-up',
   AccountCompletion = '/account-completion',
-  AuthError = '/auth/error',
   Home = '/home',
   Dashboard = '/dashboard',
   Profile = '/profile',
+  Users = '/users',
   UserDetails = '/users/:id',
+  UserCreate = '/users/create',
+  UserEdit = '/users/:id/edit',
+  Posts = '/posts',
   PostDetails = '/posts/:id',
+  PostCreate = '/posts/create',
+  PostEdit = '/posts/:id/edit',
+  Chats = '/chats',
+  ChatDetails = '/chats/:id',
 }
 
-export const ProtectedRoutes: ApplicationRoutes[] = [ApplicationRoutes.Root];
+export const ProtectedRoutes: ApplicationRoutes[] = [
+  ApplicationRoutes.Home,
+  ApplicationRoutes.Profile,
+  ApplicationRoutes.PostCreate,
+  ApplicationRoutes.PostEdit,
+  ApplicationRoutes.UserCreate,
+  ApplicationRoutes.UserEdit,
+  ApplicationRoutes.Chats,
+  ApplicationRoutes.ChatDetails,
+];

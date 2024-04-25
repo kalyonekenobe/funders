@@ -36,7 +36,8 @@ export const signIn = async (state: any, formData: FormData) => {
       return {
         errors: {
           ...state,
-          global: error.response?.data?.message ?? 'Internal server error.',
+          global:
+            'The provided credentials are invalid. Please verify your email and password and try again.',
         },
       };
     }
@@ -182,7 +183,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   const { email, provider, accessToken, referer } = payload;
 
   try {
-    const response = await axios.get(`/users?email=${email}`);
+    const response = await axios.get(`/users?where[email]=${email}`);
 
     if (response.status !== HttpStatusCode.Ok) {
       throw new Error('Internal server error');

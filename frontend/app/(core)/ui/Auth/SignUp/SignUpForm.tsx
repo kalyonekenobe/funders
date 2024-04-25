@@ -45,7 +45,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
         type: NotificationType.Success,
         message: 'The user was successfully registered',
       });
-      router.push(ApplicationRoutes.Root);
+      router.push(ApplicationRoutes.Home);
     }
   };
 
@@ -76,7 +76,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
         }
 
         if (response.status === HttpStatusCode.Created) {
-          router.push(ApplicationRoutes.Root);
+          router.push(ApplicationRoutes.Home);
         }
       };
 
