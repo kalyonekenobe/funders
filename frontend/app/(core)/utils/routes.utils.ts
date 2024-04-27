@@ -21,11 +21,23 @@ export enum ApplicationRoutes {
 
 export const ProtectedRoutes: ApplicationRoutes[] = [
   ApplicationRoutes.Home,
+  ApplicationRoutes.Dashboard,
   ApplicationRoutes.Profile,
-  ApplicationRoutes.PostCreate,
-  ApplicationRoutes.PostEdit,
+  ApplicationRoutes.Users,
+  ApplicationRoutes.UserDetails,
   ApplicationRoutes.UserCreate,
   ApplicationRoutes.UserEdit,
+  ApplicationRoutes.Posts,
+  ApplicationRoutes.PostDetails,
+  ApplicationRoutes.PostCreate,
+  ApplicationRoutes.PostEdit,
   ApplicationRoutes.Chats,
   ApplicationRoutes.ChatDetails,
 ];
+
+export const RouteMatcher: { [key: string]: RegExp } = {
+  [ApplicationRoutes.Home]: /\/home/i,
+  [ApplicationRoutes.Users]: /\/users(\/(\d|(a-z)){36, 36})?/i,
+  [ApplicationRoutes.Chats]: /\/chats(\/(\d|(a-z)){36, 36})?/i,
+  [ApplicationRoutes.Profile]: /\/profile/i,
+};

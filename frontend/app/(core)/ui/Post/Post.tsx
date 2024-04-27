@@ -6,7 +6,7 @@ import { ApplicationRoutes } from '../../utils/routes.utils';
 import Link from 'next/link';
 import Progress from '../Progress/Progress';
 import PostOptionsButton from './PostOptionsButton';
-import { GearIcon, VerticalDotsIcon } from '../Icons/Icons';
+import { GearIcon } from '../Icons/Icons';
 
 export interface PostProps extends HTMLAttributes<HTMLDivElement> {
   post: PostType;

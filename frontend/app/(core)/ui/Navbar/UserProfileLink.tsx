@@ -4,8 +4,14 @@ import { ApplicationRoutes } from '../../utils/routes.utils';
 import Image from 'next/image';
 import { getAuthenticatedUser } from '../../actions/auth.actions';
 
-const UserProfileLink: FC = async () => {
+const fetchData = async () => {
   const authenticatedUser = await getAuthenticatedUser();
+
+  return { authenticatedUser };
+};
+
+const UserProfileLink: FC = async () => {
+  const { authenticatedUser } = await fetchData();
 
   return (
     authenticatedUser && (
@@ -24,6 +30,7 @@ const UserProfileLink: FC = async () => {
             fill={true}
             sizes='32px, 32px'
             className='object-cover'
+            priority={true}
           />
         </span>
         <span className='hidden sm:inline'>

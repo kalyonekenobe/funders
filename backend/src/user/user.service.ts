@@ -32,11 +32,13 @@ export class UserService {
     );
   }
 
-  async findById(id: string): Promise<UserPublicEntity> {
-    return this.prismaService.user.findUniqueOrThrow({
-      where: { id },
-      select: { ...exclude('User', ['password']), userRole: true },
-    });
+  async findById(id: string, options?: Prisma.UserFindFirstOrThrowArgs): Promise<UserPublicEntity> {
+    return this.prismaService.user.findUniqueOrThrow(
+      _.merge(options, {
+        where: { id },
+        select: { ...exclude('User', ['password']), userRole: true },
+      }),
+    );
   }
 
   async findByEmail(email: string): Promise<UserPublicEntity> {

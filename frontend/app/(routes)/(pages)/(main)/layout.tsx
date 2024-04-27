@@ -1,6 +1,7 @@
 import { ChatsIcon, FeedsIcon, ProfileIcon, UsersIcon } from '@/app/(core)/ui/Icons/Icons';
 import Navbar from '@/app/(core)/ui/Navbar/Navbar';
-import Sidebar, { SidebarLink } from '@/app/(core)/ui/Sidebar/Sidebar';
+import Sidebar from '@/app/(core)/ui/Sidebar/Sidebar';
+import { SidebarLink } from '@/app/(core)/ui/Sidebar/SidebarLink';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import { FC, ReactNode } from 'react';
 
@@ -12,42 +13,38 @@ const links: SidebarLink[] = [
   {
     content: (
       <>
-        <FeedsIcon className='size-6 stroke-2 md:me-3' />
+        <FeedsIcon className='size-5 stroke-2 md:me-3' />
         <span className='hidden md:inline'>Feeds</span>
       </>
     ),
     url: ApplicationRoutes.Home,
-    isActiveRegex: /(.*)/i,
   },
   {
     content: (
       <>
-        <UsersIcon className='size-6 stroke-2 md:me-3' />
+        <UsersIcon className='size-5 stroke-2 md:me-3' />
         <span className='hidden md:inline'>Users</span>
       </>
     ),
     url: ApplicationRoutes.Users,
-    isActiveRegex: /\/users(\/(\d|(a-z)){36, 36})?/i,
   },
   {
     content: (
       <>
-        <ChatsIcon className='size-6 stroke-2 md:me-3' />
+        <ChatsIcon className='size-5 stroke-2 md:me-3' />
         <span className='hidden md:inline'>Chats</span>
       </>
     ),
     url: ApplicationRoutes.Chats,
-    isActiveRegex: /\/chats(\/(\d|(a-z)){36, 36})?/i,
   },
   {
     content: (
       <>
-        <ProfileIcon className='size-6 stroke-2 md:me-3' />
+        <ProfileIcon className='size-5 stroke-2 md:me-3' />
         <span className='hidden md:inline'>Profile</span>
       </>
     ),
     url: ApplicationRoutes.Profile,
-    isActiveRegex: /\/profile/i,
   },
 ];
 
@@ -63,7 +60,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
               links={links}
             />
           </div>
-          <div className='flex flex-1 flex-col'>{children}</div>
+          <div className='flex flex-1 flex-col w-full'>{children}</div>
         </div>
       </section>
     </main>

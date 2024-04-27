@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from 'axios';
 import { cookies } from 'next/headers';
-import { parseCookieString } from './cookies.utils';
+import { setCookies, removeCookies } from '../actions/auth.actions';
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -10,6 +10,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   async config => {
     config.headers.Cookie = cookies();
+    config.headers['Cache-Control'] = 'no-cache';
     return config;
   },
   async error => Promise.reject(error),
@@ -17,33 +18,27 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   async response => {
-    (response.headers['set-cookie'] ?? []).forEach(cookieString => {
-      const { name, value, ...options } = parseCookieString(cookieString);
-      cookies().set(name, value, options);
-    });
+    setCookies(response.headers['set-cookie'] ?? []);
     return response;
   },
   async error => {
     const originalRequest = error.config;
     if (error.response.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
       originalRequest._retry = true;
+
       try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            Cookie: cookies(),
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true,
+            headers: {
+              Cookie: cookies().toString(),
+            },
           },
-          body: JSON.stringify({}),
-        });
-
-        const { accessToken, refreshToken } = response.data;
-
-        cookies().set(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', accessToken);
-        cookies().set(
-          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
-          refreshToken,
         );
+
+        setCookies(response.headers['set-cookie'] ?? []);
 
         error.config.headers = {
           ...error.config.headers,
@@ -52,8 +47,10 @@ instance.interceptors.response.use(
 
         return instance(originalRequest);
       } catch (refreshError) {
-        cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token');
-        cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token');
+        removeCookies([
+          process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
+          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
+        ]);
         return Promise.reject(refreshError);
       }
     }

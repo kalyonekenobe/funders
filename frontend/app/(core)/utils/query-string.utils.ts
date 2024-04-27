@@ -11,7 +11,7 @@ type QueryStringSelect<T> = {
 };
 
 type QueryStringWhere<T> = {
-  [key in keyof T]?:
+  [key in keyof T & ['in' | 'notIn' | 'gt' | 'lt']]?:
     | QueryStringWhere<T[key]>
     | number
     | string

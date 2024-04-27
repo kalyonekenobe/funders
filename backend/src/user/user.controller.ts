@@ -306,8 +306,13 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return this.userService.findById(id);
+  async findById(@Param('id') id: string, @Query() query?: string) {
+    return this.userService.findById(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @Auth(JwtAuthGuard)

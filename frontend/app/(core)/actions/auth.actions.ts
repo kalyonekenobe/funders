@@ -9,10 +9,12 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { JwtPayload, decode, sign, verify } from 'jsonwebtoken';
 import { ApplicationRoutes } from '../utils/routes.utils';
-import { capitalize } from '../utils/app.utils';
+import { applySetRequestCookies, capitalize } from '../utils/app.utils';
 import { User } from '../store/types/user.types';
 import { UserRoleEnum } from '../store/types/user-role.types';
 import { UserRegistrationMethodEnum } from '../store/types/user-registration-method.types';
+import { parseCookieString } from '../utils/cookies.utils';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const signIn = async (state: any, formData: FormData) => {
   try {
@@ -302,4 +304,71 @@ export const signOut = () => {
   cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token');
   cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token');
   return redirect(ApplicationRoutes.SignIn);
+};
+
+export const setCookies = (cookiesToUpdate: string[]) => {
+  cookiesToUpdate.forEach(cookieString => {
+    const { name, value, ...options } = parseCookieString(cookieString);
+    cookies().set(name, value, options);
+  });
+};
+
+export const removeCookies = (cookiesToRemove: string[]) => {
+  cookiesToRemove.forEach(cookie => {
+    cookies().delete(cookie);
+  });
+};
+
+export const updateSession = async (request: NextRequest, response: NextResponse) => {
+  try {
+    let authenticatedUserResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Cookie: cookies().toString(),
+        },
+      },
+    );
+
+    if (authenticatedUserResponse.status === HttpStatusCode.Unauthorized) {
+      const refreshResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Cookie: cookies().toString(),
+        },
+      });
+
+      (refreshResponse.headers.getSetCookie()?.[0]?.split(',') ?? []).forEach(cookieString => {
+        const { name, value, ...options } = parseCookieString(cookieString);
+        response.cookies.set(name, value, options);
+      });
+
+      applySetRequestCookies(request, response);
+
+      authenticatedUserResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Cookie: response.cookies.toString(),
+        },
+      });
+    }
+
+    if (authenticatedUserResponse.status === HttpStatusCode.Ok) {
+      return { authenticatedUser: await authenticatedUserResponse.json() };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { authenticatedUser: null };
 };

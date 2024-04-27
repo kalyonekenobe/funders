@@ -55,9 +55,42 @@ export const getUserFriendsAndSuggestions = async (user: User, limit: number = 1
       }
     }
   } catch (error) {
-    console.log(error);
     // console.log(error);
   }
 
   return result;
+};
+
+export const getAllUsers = async (options?: unknown): Promise<User[]> => {
+  try {
+    const query = qs.stringify(options, {
+      arrayFormat: 'comma',
+      allowDots: true,
+      commaRoundTrip: true,
+    } as any);
+    const response = await axios.get(`/users${query ? `?${query}` : ''}`);
+
+    if (response.status === HttpStatusCode.Ok) {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return [];
+};
+
+export const getUser = async (id: string, options?: unknown): Promise<User | null> => {
+  try {
+    const query = qs.stringify(options);
+    const response = await axios.get(`/users/${id}/${query ? `?${query}` : ''}`);
+
+    if (response.status === HttpStatusCode.Ok) {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return null;
 };

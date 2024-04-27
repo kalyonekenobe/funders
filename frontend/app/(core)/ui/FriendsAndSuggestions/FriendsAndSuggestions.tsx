@@ -8,11 +8,18 @@ import { ApplicationRoutes } from '../../utils/routes.utils';
 
 export interface FriendsAndSuggestionsProps extends HTMLAttributes<HTMLDivElement> {}
 
-const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props }) => {
+const fetchData = async () => {
   const authenticatedUser = await getAuthenticatedUser();
+
   const friendsAndSuggestions = authenticatedUser
     ? await getUserFriendsAndSuggestions(authenticatedUser, 5)
     : { friends: [], suggestions: [] };
+
+  return { authenticatedUser, friendsAndSuggestions };
+};
+
+const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props }) => {
+  const { friendsAndSuggestions } = await fetchData();
 
   return (
     <aside {...props}>

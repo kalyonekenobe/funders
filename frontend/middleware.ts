@@ -1,87 +1,35 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ApplicationRoutes, ProtectedRoutes } from './app/(core)/utils/routes.utils';
-import { cookies } from 'next/headers';
-import { HttpStatusCode } from 'axios';
-import { parseCookieString } from './app/(core)/utils/cookies.utils';
-import { User } from './app/(core)/store/types/user.types';
+import { updateSession } from './app/(core)/actions/auth.actions';
+import { applySetRequestCookies } from './app/(core)/utils/app.utils';
 
 export const middleware = async (request: NextRequest) => {
-  const nextResponse = NextResponse.next({
+  const response = NextResponse.next({
     headers: {
       'x-pathname': request.nextUrl.pathname,
     },
   });
 
+  const { authenticatedUser } = await updateSession(request, response);
+
   if (ProtectedRoutes.includes(request.nextUrl.pathname as ApplicationRoutes)) {
-    let authenticatedUser: User | null = null;
-
-    try {
-      const fetchUserResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Cookie: cookies().toString(),
-        },
-      });
-
-      if (fetchUserResponse.status === HttpStatusCode.Unauthorized) {
-        const refreshResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            Cookie: cookies().toString(),
-          },
-          body: JSON.stringify({}),
-        });
-
-        if (refreshResponse.status !== HttpStatusCode.Created) {
-          throw new Error(
-            'Cannot update the pair of access and refresh tokens. Invalid refresh token',
-          );
-        }
-
-        (refreshResponse.headers.get('set-cookie')?.split(', ') ?? []).forEach(cookieString => {
-          const { name, value, ...options } = parseCookieString(cookieString);
-          nextResponse.cookies.set(name, value, options);
-        });
-
-        const newFetchUserResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/user`,
-          {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-              Cookie: nextResponse.headers.get('set-cookie') || '',
-            },
-          },
-        );
-
-        if (newFetchUserResponse.status === HttpStatusCode.Ok) {
-          authenticatedUser = await newFetchUserResponse.json();
-        }
-      }
-
-      if (fetchUserResponse.status === HttpStatusCode.Ok) {
-        authenticatedUser = await fetchUserResponse.json();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
     if (!authenticatedUser) {
-      const response = NextResponse.redirect(
+      const notAuthenticatedResponse = NextResponse.redirect(
         new URL(ApplicationRoutes.SignIn, request.nextUrl.origin),
       );
-      response.cookies
-        .delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')
-        .delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token');
-
-      return response;
+      notAuthenticatedResponse.cookies.delete(
+        process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
+      );
+      notAuthenticatedResponse.cookies.delete(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
+      );
+      applySetRequestCookies(request, notAuthenticatedResponse);
+      return notAuthenticatedResponse;
     }
   }
 
-  return nextResponse;
+  return response;
 };
 
 export const config = {
