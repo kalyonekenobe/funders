@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from '@/app/(core)/actions/auth.actions';
+import { getAuthInfo } from '@/app/(core)/actions/auth.actions';
 import { getAllUsers } from '@/app/(core)/actions/user.actions';
 import { Metadata } from 'next';
 import { FC } from 'react';
@@ -10,15 +10,19 @@ export const metadata: Metadata = {
 };
 
 const fetchData = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await getAuthInfo();
 
   if (authenticatedUser) {
     const users = await getAllUsers({
-      where: { id: { notIn: [authenticatedUser.id] } },
-      select: { followers: true },
+      where: { id: { notIn: [authenticatedUser.userId] } },
+      select: {
+        followers: { include: { follower: true } },
+        followings: { include: { user: true } },
+        posts: true,
+      },
     });
 
-    return { authenticatedUser, users };
+    return { users, authenticatedUser };
   }
 
   return { authenticatedUser, users: [] };

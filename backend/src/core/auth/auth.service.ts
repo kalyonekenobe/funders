@@ -158,12 +158,18 @@ export class AuthService {
   private async generateJwtTokensPair(user: UserPublicEntity): Promise<JwtTokensPairResponse> {
     const accessToken = this.jwtService.sign({
       userId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatar: user.avatar,
       permissions: Number(user.userRole?.permissions ?? 0),
     });
 
     const refreshToken = this.jwtService.sign(
       {
         userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
         permissions: Number(user.userRole?.permissions ?? 0),
       },
       { expiresIn: process.env.JWT_REFRESH_TOKEN_DURATION },

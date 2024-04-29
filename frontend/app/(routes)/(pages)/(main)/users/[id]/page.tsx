@@ -1,3 +1,4 @@
+import { getAuthInfo } from '@/app/(core)/actions/auth.actions';
 import { getUser } from '@/app/(core)/actions/user.actions';
 import UserDetails from '@/app/(core)/ui/User/UserDetails';
 import { Metadata } from 'next';
@@ -11,9 +12,16 @@ export interface UserDetailsPageProps {
 }
 
 const fetchData = async (id: string) => {
-  const user = await getUser(id, { select: { posts: true } });
+  const user = await getUser(id, {
+    select: {
+      posts: true,
+      followers: { include: { follower: true } },
+      followings: { include: { user: true } },
+    },
+  });
+  const authenticatedUser = await getAuthInfo();
 
-  return { user };
+  return { authenticatedUser, user };
 };
 
 export const generateMetadata = async ({ params }: UserDetailsPageProps): Promise<Metadata> => {

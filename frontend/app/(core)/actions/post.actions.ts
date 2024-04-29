@@ -9,7 +9,6 @@ export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
     const query = qs.stringify(options);
     const response = await axios.get(`/posts${query ? `?${query}` : ''}`);
-    // await axios.get('/chats');
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;

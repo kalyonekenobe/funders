@@ -10,11 +10,11 @@ import { cookies } from 'next/headers';
 import { JwtPayload, decode, sign, verify } from 'jsonwebtoken';
 import { ApplicationRoutes } from '../utils/routes.utils';
 import { applySetRequestCookies, capitalize } from '../utils/app.utils';
-import { User } from '../store/types/user.types';
 import { UserRoleEnum } from '../store/types/user-role.types';
 import { UserRegistrationMethodEnum } from '../store/types/user-registration-method.types';
 import { parseCookieString } from '../utils/cookies.utils';
 import { NextRequest, NextResponse } from 'next/server';
+import { AuthInfo } from '../store/types/app.types';
 
 export const signIn = async (state: any, formData: FormData) => {
   try {
@@ -289,12 +289,14 @@ export const extractAccountCompletionMetadata = async (): Promise<{
   };
 };
 
-export const getAuthenticatedUser = async (): Promise<User | null> => {
-  try {
-    const response = await axios.get(`/auth/user`);
-    return response.data;
-  } catch (error) {
-    console.log(error);
+export const getAuthInfo = async (): Promise<AuthInfo | null> => {
+  const payload = decode(
+    cookies().get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')?.value ?? '',
+  );
+
+  if (payload && !(typeof payload === 'string')) {
+    const { userId, firstName, lastName, permissions, avatar } = payload;
+    return { userId, firstName, lastName, permissions, avatar };
   }
 
   return null;

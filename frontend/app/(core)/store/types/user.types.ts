@@ -1,3 +1,4 @@
+import { Following } from './following.types';
 import { Post } from './post.types';
 import {
   UserRegistrationMethod,
@@ -21,8 +22,8 @@ export interface User {
   registeredAt: Date;
   userRegistrationMethod?: UserRegistrationMethod;
   userRole?: UserRole;
-  followings?: any[];
-  followers?: any[];
+  followings?: Following[];
+  followers?: Following[];
   bans?: any[];
   chats?: any[];
   messages?: any[];

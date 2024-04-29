@@ -2,10 +2,10 @@ import { FC } from 'react';
 import Link from 'next/link';
 import { ApplicationRoutes } from '../../utils/routes.utils';
 import Image from 'next/image';
-import { getAuthenticatedUser } from '../../actions/auth.actions';
+import { getAuthInfo } from '../../actions/auth.actions';
 
 const fetchData = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await getAuthInfo();
 
   return { authenticatedUser };
 };
@@ -19,7 +19,7 @@ const UserProfileLink: FC = async () => {
         href={ApplicationRoutes.Profile}
         className='relative flex items-center px-5 py-3 font-semibold text-sm text-slate-500 hover:bg-slate-50 transition-[0.3s_ease]'
       >
-        <span className='relative max-h-[28px] h-full aspect-square rounded-full bg-slate-100 me-3 overflow-hidden'>
+        <span className='relative max-h-[28px] h-full aspect-square rounded bg-slate-100 me-3 overflow-hidden'>
           <Image
             src={
               authenticatedUser.avatar ||

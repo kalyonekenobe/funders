@@ -4,15 +4,17 @@ import axios from '@/app/(core)/utils/axios.utils';
 import { User } from '../store/types/user.types';
 import qs from 'qs';
 import { HttpStatusCode } from 'axios';
+import { Following } from '../store/types/following.types';
+import { getAuthInfo } from './auth.actions';
 
-export const getUserFriendsAndSuggestions = async (user: User, limit: number = 10) => {
+export const getUserFriendsAndSuggestions = async (userId: string, limit: number = 10) => {
   let result = {
     friends: [],
     suggestions: [],
   };
 
   try {
-    const followingsResponse = await axios.get(`/users/${user.id}/followings`);
+    const followingsResponse = await axios.get(`/users/${userId}/followings`);
 
     if (followingsResponse.status === HttpStatusCode.Ok) {
       const query = qs.stringify(
@@ -28,7 +30,7 @@ export const getUserFriendsAndSuggestions = async (user: User, limit: number = 1
         { arrayFormat: 'comma', allowDots: true, commaRoundTrip: true } as any,
       );
       const friendsResponse = await axios.get(
-        `/users/${user.id}/followers${query ? `?${query}` : ''}`,
+        `/users/${userId}/followers${query ? `?${query}` : ''}`,
       );
 
       if (friendsResponse.status === HttpStatusCode.Ok) {
@@ -37,7 +39,7 @@ export const getUserFriendsAndSuggestions = async (user: User, limit: number = 1
           {
             where: {
               id: {
-                notIn: [...followingsResponse.data.map((following: User) => following.id), user.id],
+                notIn: [...followingsResponse.data.map((following: User) => following.id), userId],
               },
             },
             take: limit,
@@ -55,7 +57,7 @@ export const getUserFriendsAndSuggestions = async (user: User, limit: number = 1
       }
     }
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 
   return result;
@@ -87,6 +89,42 @@ export const getUser = async (id: string, options?: unknown): Promise<User | nul
 
     if (response.status === HttpStatusCode.Ok) {
       return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return null;
+};
+
+export const followUser = async (id: string): Promise<Following | null> => {
+  try {
+    const authenticatedUser = await getAuthInfo();
+
+    if (authenticatedUser) {
+      const response = await axios.post(`/users/${id}/followers/${authenticatedUser.userId}`, {});
+
+      if (response.status === HttpStatusCode.Created) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return null;
+};
+
+export const unfollowUser = async (id: string): Promise<Following | null> => {
+  try {
+    const authenticatedUser = await getAuthInfo();
+
+    if (authenticatedUser) {
+      const response = await axios.delete(`/users/${id}/followers/${authenticatedUser.userId}`);
+
+      if (response.status === HttpStatusCode.Ok) {
+        return response.data;
+      }
     }
   } catch (error) {
     console.log(error);

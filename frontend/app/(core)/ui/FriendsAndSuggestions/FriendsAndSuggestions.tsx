@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes } from 'react';
 import { getUserFriendsAndSuggestions } from '../../actions/user.actions';
-import { getAuthenticatedUser } from '../../actions/auth.actions';
+import { getAuthInfo } from '../../actions/auth.actions';
 import { User } from '../../store/types/user.types';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -9,10 +9,10 @@ import { ApplicationRoutes } from '../../utils/routes.utils';
 export interface FriendsAndSuggestionsProps extends HTMLAttributes<HTMLDivElement> {}
 
 const fetchData = async () => {
-  const authenticatedUser = await getAuthenticatedUser();
+  const authenticatedUser = await getAuthInfo();
 
   const friendsAndSuggestions = authenticatedUser
-    ? await getUserFriendsAndSuggestions(authenticatedUser, 5)
+    ? await getUserFriendsAndSuggestions(authenticatedUser.userId, 5)
     : { friends: [], suggestions: [] };
 
   return { authenticatedUser, friendsAndSuggestions };
@@ -32,7 +32,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
               href={ApplicationRoutes.UserDetails.replace(':id', friend.id)}
               className='border rounded-xl p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
             >
-              <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded-full relative'>
+              <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
                   src={
                     friend.avatar ||
@@ -66,7 +66,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
               href={ApplicationRoutes.UserDetails.replace(':id', suggestion.id)}
               className='border rounded-xl p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
             >
-              <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded-full relative'>
+              <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
                   src={
                     suggestion.avatar ||

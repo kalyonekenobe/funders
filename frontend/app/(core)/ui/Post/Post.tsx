@@ -25,7 +25,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
               className='inline-flex'
             >
               <div className='flex items-center'>
-                <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded-full relative me-3 overflow-hidden'>
+                <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded relative me-3 overflow-hidden'>
                   <Image
                     src={
                       post.author?.avatar ||
