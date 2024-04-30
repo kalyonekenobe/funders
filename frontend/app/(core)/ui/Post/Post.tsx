@@ -1,13 +1,13 @@
 import { FC, HTMLAttributes } from 'react';
 import { Post as PostType } from '../../store/types/post.types';
 import Image from 'next/image';
-import PostButtons from './PostButtons';
 import { ApplicationRoutes } from '../../utils/routes.utils';
 import Link from 'next/link';
 import Progress from '../Progress/Progress';
 import PostOptionsButton from './PostOptionsButton';
 import { GearIcon } from '../Icons/Icons';
 import { resolveImage } from '../../utils/app.utils';
+import PostFooter from './PostFooter';
 
 export interface PostProps extends HTMLAttributes<HTMLDivElement> {
   post: PostType;
@@ -31,7 +31,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
                     src={resolveImage(post.author?.avatar, 'default-profile-image')}
                     alt={`${post.author?.firstName} ${post.author?.lastName}'s profile image`}
                     fill={true}
-                    sizes='64px, 64px'
+                    sizes='100%, 100%'
                     className='object-cover'
                   />
                 </div>
@@ -78,9 +78,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
           />
         </div>
       </div>
-      <footer className='grid grid-cols-3 border-t'>
-        <PostButtons post={post} />
-      </footer>
+      <PostFooter post={post} className='grid grid-cols-3 border-t' />
     </article>
   );
 };

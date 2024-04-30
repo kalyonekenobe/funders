@@ -24,6 +24,7 @@ export const ProtectedRoutes: ApplicationRoutes[] = [
   ApplicationRoutes.Home,
   ApplicationRoutes.Dashboard,
   ApplicationRoutes.Profile,
+  ApplicationRoutes.ProfileEdit,
   ApplicationRoutes.Users,
   ApplicationRoutes.UserDetails,
   ApplicationRoutes.UserCreate,
@@ -38,7 +39,7 @@ export const ProtectedRoutes: ApplicationRoutes[] = [
 
 export const RouteMatcher: { [key: string]: RegExp } = {
   [ApplicationRoutes.Home]: /\/home/i,
-  [ApplicationRoutes.Users]: /\/users(\/(\d|(a-z)){36, 36})?/i,
-  [ApplicationRoutes.Chats]: /\/chats(\/(\d|(a-z)){36, 36})?/i,
-  [ApplicationRoutes.Profile]: /\/profile/i,
+  [ApplicationRoutes.Users]: /\/users((\/(\d|(a-z)){36, 36})?|(\/(a-z))*)/i,
+  [ApplicationRoutes.Chats]: /\/chats((\/(\d|(a-z)){36, 36})?|(\/(a-z))*)/i,
+  [ApplicationRoutes.Profile]: /\/profile(\/(a-z))*/i,
 };

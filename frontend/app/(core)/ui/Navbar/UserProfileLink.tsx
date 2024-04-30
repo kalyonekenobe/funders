@@ -28,7 +28,7 @@ const UserProfileLink: FC = async () => {
             src={resolveImage(authenticatedUser.avatar, 'default-profile-image')}
             alt={`${authenticatedUser.firstName} ${authenticatedUser.lastName}'s profile image`}
             fill={true}
-            sizes='32px, 32px'
+            sizes='100%, 100%'
             className='object-cover'
             priority={true}
           />

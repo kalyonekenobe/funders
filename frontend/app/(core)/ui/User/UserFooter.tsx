@@ -67,7 +67,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
                   firstName={follower.follower?.firstName || ''}
                   lastName={follower.follower?.lastName || ''}
                   avatar={follower.follower?.avatar || null}
-                  className='inline-flex items-center border rounded-lg p-1 hover:bg-slate-100 transition-[0.3s_ease]'
+                  className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
               {!state.followers.length && (
@@ -102,7 +102,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
                   firstName={following.user?.firstName || ''}
                   lastName={following.user?.lastName || ''}
                   avatar={following.user?.avatar || null}
-                  className='inline-flex items-center border rounded-lg p-1 hover:bg-slate-100 transition-[0.3s_ease]'
+                  className='inline-flex items-center rounded p-1 hover:bg-slate-100 transition-[0.3s_ease]'
                 />
               ))}
               {!state.followings.length && (

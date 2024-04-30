@@ -25,7 +25,7 @@ const UserListItem: FC<UserListItemProps> = ({
         <Image
           src={resolveImage(avatar, 'default-profile-image')}
           alt={`${firstName} ${lastName}'s profile image`}
-          sizes='64px, 64px'
+          sizes='100%, 100%'
           fill={true}
           priority={true}
           className='object-cover'

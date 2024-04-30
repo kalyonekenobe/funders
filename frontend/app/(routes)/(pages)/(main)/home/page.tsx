@@ -1,8 +1,6 @@
 import { getAllPosts } from '@/app/(core)/actions/post.actions';
 import PostComponent from '@/app/(core)/ui/Post/Post';
 import { FC } from 'react';
-import { Post } from '@/app/(core)/store/types/post.types';
-import { QueryStringOptions } from '@/app/(core)/utils/query-string.utils';
 import { Metadata } from 'next';
 import FriendsAndSuggestions from '@/app/(core)/ui/FriendsAndSuggestions/FriendsAndSuggestions';
 
@@ -13,9 +11,9 @@ export const metadata: Metadata = {
 
 const fetchData = async () => {
   const posts = await getAllPosts({
-    include: { author: true, donations: true },
+    include: { author: true, donations: true, reactions: { user: true } },
     orderBy: { createdAt: 'desc' },
-  } as QueryStringOptions<Post>);
+  });
 
   return { posts };
 };

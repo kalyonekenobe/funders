@@ -145,14 +145,19 @@ export const unfollowUser = async (
 };
 
 export const udpateUser = async (state: any, formData: FormData) => {
+  let { id, confirmPassword, avatar, ...data } = Object.fromEntries(formData) as any;
   try {
-    let { id, password, confirmPassword, avatar, ...data } = Object.fromEntries(formData) as any;
-
     if (data.birthDate) data.birthDate = new Date(data.birthDate);
     if (data.phone === '') data.phone = null;
     if (data.bio === '') data.bio = null;
 
     const user = (await parse(UserUpdateSchema, data)) as any;
+
+    if (confirmPassword !== data.password) {
+      throw new ValiError([
+        { reason: 'any', context: '', input: '', expected: '', received: '', message: '' },
+      ]);
+    }
 
     if (user.phone === null) user.phone = '';
     if (user.bio === null) user.bio = '';
@@ -190,6 +195,29 @@ export const udpateUser = async (state: any, formData: FormData) => {
     }
   } catch (error: any) {
     if (error instanceof ValiError) {
+      if (confirmPassword !== data.password) {
+        error.issues = [
+          ...error.issues,
+          {
+            reason: 'any',
+            context: 'confirm_password',
+            input: confirmPassword,
+            expected: data.password,
+            received: confirmPassword,
+            message: 'Passwords are different.',
+            path: [
+              {
+                type: 'object',
+                origin: 'value',
+                input: confirmPassword,
+                key: 'confirmPassword',
+                value: confirmPassword,
+              },
+            ],
+          },
+        ].filter(issue => issue.context !== '') as any;
+      }
+
       return {
         ...state,
         errors: flatten(error),

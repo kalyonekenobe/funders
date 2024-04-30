@@ -39,8 +39,8 @@ const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
         ref={modalRef}
         className={`modal left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 relative p-4 w-full ${className}`}
       >
-        <div className='relative bg-white rounded-lg shadow'>
-          <div className='flex items-center justify-between p-4 md:p-5 border-b rounded-t'>
+        <div className='relative bg-white rounded shadow'>
+          <div className='flex items-center justify-between py-4 px-5 border-b rounded-t'>
             <h3 className='text-xl font-semibold text-gray-900'>{title}</h3>
             <button
               type='button'
@@ -68,17 +68,17 @@ const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
           <div className='space-y-4 overflow-y-auto relative max-h-[80vh] with-scrollbar'>
             {children}
           </div>
-          <div className='flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b '>
+          <div className='flex items-center py-3 px-4 border-t border-gray-200 rounded-b '>
             {acceptButton && (
               <button
                 onClick={acceptButton.action}
                 type='button'
-                className={`me-3 focus:ring-4 focus:z-10 focus:outline-none font-medium rounded-lg px-5 py-2 text-center transition-[0.3s_ease] ${
+                className={`me-3 focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] ${
                   acceptButton.variant === 'secondary'
                     ? 'border text-gray-900 bg-white border-gray-200 hover:bg-gray-100 hover:text-black-500 focus:ring-gray-100'
                     : acceptButton.variant === 'danger'
                       ? 'text-white focus:ring-red-400 bg-red-500 hover:bg-red-600'
-                      : 'text-white focus:ring-dark-300 bg-black hover:bg-zinc-700'
+                      : 'text-white focus:ring-blue-300 bg-zinc-800 hover:bg-zinc-700'
                 }`}
               >
                 {acceptButton.name}
@@ -88,7 +88,7 @@ const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
               <button
                 onClick={closeButton.action}
                 type='button'
-                className={`focus:ring-4 focus:z-10 focus:outline-none font-medium rounded-lg px-5 py-2 text-center transition-[0.3s_ease] ${
+                className={`focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] ${
                   closeButton.variant === 'primary'
                     ? 'text-white focus:ring-indigo-300 bg-black hover:bg-zinc-600'
                     : closeButton.variant === 'danger'

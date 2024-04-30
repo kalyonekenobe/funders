@@ -40,15 +40,21 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
         </div>
         <header className='grid grid-cols-1 lg:grid-cols-[1fr_100px] items-start mx-auto p-5 sm:p-10'>
           <div className='lg:order-first flex flex-col lg:flex-row items-center lg:items-start w-full'>
-            <div className='relative flex aspect-square rounded overflow-hidden w-full max-w-[128px] my-5 lg:m-0 self-start'>
-              <Image
-                src={resolveImage(user.avatar, 'default-profile-image')}
-                alt={`${user.firstName} ${user.lastName}'s profile image`}
-                sizes='256px, 256px'
-                fill={true}
-                className='object-cover'
-              />
+            <div className='flex justify-between w-full lg:max-w-[128px] lg:justify-normal items-start mb-5'>
+              <div className='relative flex aspect-square rounded overflow-hidden w-full max-w-[128px] lg:m-0 self-start'>
+                <Image
+                  src={resolveImage(user.avatar, 'default-profile-image')}
+                  alt={`${user.firstName} ${user.lastName}'s profile image`}
+                  sizes='100%, 100%'
+                  fill={true}
+                  className='object-cover'
+                />
+              </div>
+              <BackButton className='lg:hidden font-medium text-sm text-white bg-neutral-800 rounded px-5 py-1 hover:bg-neutral-700 transition-[0.3s_ease]'>
+                Back
+              </BackButton>
             </div>
+
             <div className='flex flex-col mx-5 lg:mx-10 items-start w-full'>
               <h3 className='font-bold text-2xl'>
                 {user.firstName} {user.lastName}
@@ -77,7 +83,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
               />
             </div>
           </div>
-          <div className='order-first lg:order-last flex justify-end flex-1'>
+          <div className='hidden order-first lg:order-last lg:flex justify-end flex-1'>
             <BackButton className='font-medium text-sm text-white bg-neutral-800 rounded px-5 py-1 hover:bg-neutral-700 transition-[0.3s_ease]'>
               Back
             </BackButton>

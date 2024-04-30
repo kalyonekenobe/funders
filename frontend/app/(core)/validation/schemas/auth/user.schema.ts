@@ -17,6 +17,15 @@ import {
 
 export const UserUpdateSchema = object(
   {
+    role: optional(
+      string('The user role can be only Default, Volunteer or Administrator', [
+        toTrimmed(),
+        regex(
+          /(Default|Volunteer|Administrator)/i,
+          'The user role can be only Default, Volunteer or Administrator',
+        ),
+      ]),
+    ),
     phone: nullable(
       optional(
         string(

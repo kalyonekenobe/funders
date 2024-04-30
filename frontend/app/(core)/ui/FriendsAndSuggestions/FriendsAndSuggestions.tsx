@@ -26,18 +26,18 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
     <aside {...props}>
       <div className='flex flex-col px-5'>
         <h3 className='font-bold text-xl text-gray-500 my-5'>Friends</h3>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col'>
           {friendsAndSuggestions.friends.map((friend: User) => (
             <Link
               key={friend.id}
               href={ApplicationRoutes.UserDetails.replace(':id', friend.id)}
-              className='border rounded-xl p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
+              className='rounded p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
                   src={resolveImage(friend.avatar, 'default-profile-image')}
                   alt={`${friend.firstName} ${friend.lastName}'s profile image`}
-                  sizes='64px, 64px'
+                  sizes='100%, 100%'
                   fill={true}
                 />
               </div>
@@ -56,18 +56,18 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
           View all friends -&gt;
         </Link>
         <h3 className='font-bold text-xl text-gray-500 my-5'>Suggestions</h3>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col'>
           {friendsAndSuggestions.suggestions.map((suggestion: User) => (
             <Link
               key={suggestion.id}
               href={ApplicationRoutes.UserDetails.replace(':id', suggestion.id)}
-              className='border rounded-xl p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
+              className='rounded p-2 flex items-center border-slate-100 hover:bg-slate-100 transition-[0.3s_ease]'
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
                   src={resolveImage(suggestion.avatar, 'default-profile-image')}
                   alt={`${suggestion.firstName} ${suggestion.lastName}'s profile image`}
-                  sizes='64px, 64px'
+                  sizes='100%, 100%'
                   fill={true}
                 />
               </div>

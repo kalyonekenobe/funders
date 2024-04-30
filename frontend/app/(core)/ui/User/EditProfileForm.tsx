@@ -9,6 +9,7 @@ import { ApplicationRoutes } from '../../utils/routes.utils';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { resolveImage } from '../../utils/app.utils';
+import PasswordInput from '../Controls/PasswordInput';
 
 export interface EditProfileFormProps extends FormHTMLAttributes<HTMLFormElement> {
   user: User;
@@ -24,6 +25,7 @@ export interface EditProfileFormState {
   isAvatarRemoved: boolean;
   avatar: string | null;
   isLoaded: boolean;
+  isSubmited: boolean;
   errors: any;
 }
 
@@ -32,6 +34,7 @@ const initialState: EditProfileFormState = {
   errors: {},
   isAvatarRemoved: false,
   isLoaded: false,
+  isSubmited: false,
   avatar: null,
 };
 
@@ -45,6 +48,8 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
       phone: user.phone,
       bio: user.bio,
       birthDate: user.birthDate,
+      password: undefined,
+      confirmPassword: undefined,
     } as EditProfileFormState['data'],
     avatar: user.avatar,
   });
@@ -75,10 +80,16 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
   };
 
   const submit = async (formData: FormData) => {
+    setState({ ...state, isSubmited: true });
     const response = await udpateUser(state, formData);
     setState(response);
 
+    if (response.errors.length > 0) {
+      setState({ ...state, isSubmited: false });
+    }
+
     if (response.errors.global) {
+      setState({ ...state, isSubmited: false });
       createNotification({
         type: NotificationType.Error,
         message: response.errors.global,
@@ -101,53 +112,57 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
   }, []);
 
   return (
-    state.isLoaded && (
-      <form onSubmit={handleSubmit} {...props}>
-        <div className='grid grid-cols-3 w-full gap-3'>
-          <div className='flex flex-col'>
-            <div className='relative flex w-full max-w-[128px] rounded overflow-hidden aspect-square border'>
-              <Image
-                src={
-                  state.avatar === user.avatar
-                    ? resolveImage(state.avatar, 'profile-image-placeholder')
-                    : state.avatar ||
-                      process.env.NEXT_PUBLIC_PROFILE_IMAGE_PLACEHOLDER_SRC ||
-                      '/profile-image-placeholder.webp'
-                }
-                alt={`${user.firstName} ${user.lastName}'s profile image`}
-                sizes='256px, 256px'
-                fill={true}
-                className='object-cover'
-                priority={true}
-              />
-            </div>
-            <label
-              htmlFor='profile-avatar'
-              className='text-blue-600 font-medium text-sm cursor-pointer hover:text-blue-700 mt-2 transition-[0.3s_ease]'
-            >
-              Choose avatar
-            </label>
-            <span
-              className='text-red-600 font-medium text-sm mb-1 cursor-pointer hover:text-red-700 transition-[0.3s_ease]'
-              onClick={() => setState({ ...state, avatar: null })}
-            >
-              Remove avatar
-            </span>
-            <input
-              type='file'
-              name='avatar'
-              id='profile-avatar'
-              className={`border p-3 rounded-lg text-gray-700 font-medium hidden`}
-              onChange={event =>
-                setState({
-                  ...state,
-                  avatar: event.target.files?.[0]
-                    ? URL.createObjectURL(event.target.files[0])
-                    : user.avatar,
-                })
+    <form onSubmit={handleSubmit} {...props}>
+      <div className='grid grid-cols-1 lg:grid-cols-[256px_1fr] w-full gap-3'>
+        <div className='flex flex-col pr-5 pb-5'>
+          <h3 className='my-3 font-bold text-xl text-gray-500'>Profile image</h3>
+          <div className='relative flex w-full max-w-[256px] rounded overflow-hidden aspect-square border'>
+            <Image
+              src={
+                state.avatar === user.avatar
+                  ? resolveImage(state.avatar, 'profile-image-placeholder')
+                  : state.avatar ||
+                    process.env.NEXT_PUBLIC_PROFILE_IMAGE_PLACEHOLDER_SRC ||
+                    '/profile-image-placeholder.webp'
               }
+              alt={`${user.firstName} ${user.lastName}'s profile image`}
+              sizes='100%, 100%'
+              fill={true}
+              className='object-cover'
+              priority={true}
             />
           </div>
+          <label
+            htmlFor='profile-avatar'
+            className='text-blue-600 font-medium text-sm cursor-pointer hover:text-blue-700 mt-2 transition-[0.3s_ease]'
+          >
+            Choose avatar
+          </label>
+          <span
+            className='text-red-600 font-medium text-sm mb-1 cursor-pointer hover:text-red-700 transition-[0.3s_ease]'
+            onClick={() => setState({ ...state, avatar: null })}
+          >
+            Remove avatar
+          </span>
+          <input
+            type='file'
+            name='avatar'
+            id='profile-avatar'
+            className={`border p-3 rounded-lg text-gray-700 font-medium hidden`}
+            onChange={event =>
+              setState({
+                ...state,
+                avatar: event.target.files?.[0]
+                  ? URL.createObjectURL(event.target.files[0])
+                  : user.avatar,
+              })
+            }
+          />
+        </div>
+        <div className='flex flex-col relative sm:grid sm:grid-cols-2 gap-3'>
+          <h3 className='col-span-1 sm:col-span-2 my-3 font-bold text-xl text-gray-500 w-full'>
+            General information
+          </h3>
           <div className='flex flex-col'>
             <label htmlFor='profile-first-name' className='text-gray-500 font-medium text-sm mb-1'>
               First name:
@@ -299,7 +314,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
               </span>
             ))}
           </div>
-          <div className='flex flex-col'>
+          <div className='flex flex-col col-span-2'>
             <label htmlFor='profile-bio' className='text-gray-500 font-medium text-sm mb-1'>
               Bio:
             </label>
@@ -308,7 +323,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
               id='profile-bio'
               placeholder='Share some interesting information about you'
               defaultValue={state.data.bio || undefined}
-              className={`border p-3 rounded-lg text-gray-700 font-medium ${
+              className={`border p-3 rounded-lg text-gray-700 font-medium min-h-60 whitespace-pre-wrap ${
                 state.errors.nested?.bio ? `border-red-500` : ``
               }`}
               onChange={event =>
@@ -333,10 +348,96 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ user, ...props }) => {
               </span>
             ))}
           </div>
+          <h3 className='col-span-1 sm:col-span-2 my-3 font-bold text-xl text-gray-500 w-full'>
+            Change password
+          </h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 w-full gap-3 col-span-2'>
+            <div className='flex flex-col'>
+              <label htmlFor='profile-password' className='text-gray-500 font-medium text-sm mb-1'>
+                New password:
+              </label>
+              <PasswordInput
+                name='password'
+                id='profile-password'
+                placeholder='Password'
+                defaultValue={state.data.password || undefined}
+                className={`border p-3 rounded-lg text-gray-700 font-medium w-full ${
+                  state.errors.nested?.password ? `border-red-500` : ``
+                }`}
+                onChange={event =>
+                  setState({
+                    ...state,
+                    data: {
+                      ...state.data,
+                      password: event.target.value,
+                    },
+                    errors: {
+                      ...state.errors,
+                      nested: Object.fromEntries(
+                        Object.entries(state.errors.nested ?? {}).filter(
+                          ([key, _]) => key !== 'password' && key !== 'confirmPassword',
+                        ),
+                      ),
+                    },
+                  })
+                }
+              />
+              {state.errors.nested?.password?.map((error: string, index: number) => (
+                <span key={index} className='text-red-500 text-xs font-medium mt-1 text-justify'>
+                  {error}
+                </span>
+              ))}
+            </div>
+            <div className='flex flex-col'>
+              <label
+                htmlFor='profile-confirm-password'
+                className='text-gray-500 font-medium text-sm mb-1'
+              >
+                New password:
+              </label>
+              <PasswordInput
+                name='confirmPassword'
+                id='profile-confirm-password'
+                placeholder='Confirm password'
+                defaultValue={state.data.confirmPassword || undefined}
+                className={`border p-3 rounded-lg text-gray-700 font-medium w-full ${
+                  state.errors.nested?.confirmPassword ? `border-red-500` : ``
+                }`}
+                onChange={event =>
+                  setState({
+                    ...state,
+                    data: {
+                      ...state.data,
+                      confirmPassword: event.target.value,
+                    },
+                    errors: {
+                      ...state.errors,
+                      nested: Object.fromEntries(
+                        Object.entries(state.errors.nested ?? {}).filter(
+                          ([key, _]) => key !== 'confirmPassword' && key !== 'password',
+                        ),
+                      ),
+                    },
+                  })
+                }
+              />
+              {state.errors.nested?.confirmPassword?.map((error: string, index: number) => (
+                <span key={index} className='text-red-500 text-xs font-medium mt-1 text-justify'>
+                  {error}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-        <button type='submit'>Save changes</button>
-      </form>
-    )
+      </div>
+      <button
+        type='submit'
+        disabled={!state.isLoaded || state.isSubmited}
+        className='inline-flex mt-10 items-center justify-center text-center rounded bg-rose-600 text-white font-medium px-10 py-1.5 hover:bg-rose-500 transition-[0.3s_ease] disabled:bg-rose-300'
+      >
+        Save changes
+      </button>
+    </form>
   );
 };
 

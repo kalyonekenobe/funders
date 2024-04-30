@@ -27,7 +27,7 @@ const User: FC<UserProps> = async ({ user, ...props }) => {
             <Image
               src={resolveImage(user.avatar, 'default-profile-image')}
               alt={`${user.firstName} ${user.lastName}'s profile image`}
-              sizes='256px, 256px'
+              sizes='100%, 100%'
               className='object-cover'
               fill={true}
               priority={true}

@@ -1,5 +1,6 @@
 import { getAuthInfo } from '@/app/(core)/actions/auth.actions';
 import { getUser } from '@/app/(core)/actions/user.actions';
+import BackButton from '@/app/(core)/ui/Controls/BackButton';
 import EditProfileForm from '@/app/(core)/ui/User/EditProfileForm';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -40,8 +41,13 @@ const EditProfilePage: FC = async () => {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex flex-col flex-1 bg-white rounded p-10 items-start'>
-        <h3 className='font-bold text-2xl mb-10'>Edit profile</h3>
+      <div className='flex flex-col flex-1 bg-white rounded p-5 sm:p-10 items-start'>
+        <div className='flex items-center justify-between w-full mb-5'>
+          <h3 className='font-bold text-2xl'>Edit profile</h3>
+          <BackButton className='inline-flex items-center justify-center text-center font-medium text-sm text-white bg-neutral-800 hover:bg-neutral-700 transition-[0.3s_ease] px-5 py-1.5 rounded'>
+            Back
+          </BackButton>
+        </div>
         <EditProfileForm user={user} className='w-full' />
       </div>
     </div>
