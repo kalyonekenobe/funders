@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -55,6 +64,14 @@ export class FollowingController {
   })
   @Post(':userId/followers/:followerId')
   async create(@Param('userId') userId: string, @Param('followerId') followerId: string) {
+    if (userId === followerId) {
+      throw new ConflictException({
+        message: 'The user cannot follow himself.',
+        error: 'The user cannot follow himself.',
+        statusCode: HttpStatus.CONFLICT,
+      });
+    }
+
     return this.followingService.create({ userId, followerId });
   }
 

@@ -16,3 +16,42 @@ export const applySetRequestCookies = (request: NextRequest, res: NextResponse):
     }
   });
 };
+
+export const resolveImage = (
+  source?: string | null,
+  placeholder:
+    | 'default-image-placeholder'
+    | 'default-profile-image'
+    | 'post-image-placeholder'
+    | 'profile-background-placeholder'
+    | 'profile-image-placeholder' = 'default-image-placeholder',
+) => {
+  if (source) {
+    return `${process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_PREFIX}${source}.${getFileExtension(
+      source,
+    )}`;
+  }
+
+  switch (placeholder) {
+    case 'default-image-placeholder':
+      return (
+        process.env.NEXT_PUBLIC_DEFAULT_IMAGE_PLACEHOLDER_SRC || '/default-image-placeholder.webp'
+      );
+    case 'default-profile-image':
+      return process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC || '/default-profile-image.webp';
+    case 'post-image-placeholder':
+      return process.env.NEXT_PUBLIC_POST_IMAGE_PLACEHOLDER_SRC || '/post-image-placeholder.webp';
+    case 'profile-background-placeholder':
+      return (
+        process.env.NEXT_PUBLIC_PROFILE_BACKGROUND_PLACEHOLDER_SRC ||
+        '/profile-background-placeholder.webp'
+      );
+    case 'profile-image-placeholder':
+      return (
+        process.env.NEXT_PUBLIC_PROFILE_IMAGE_PLACEHOLDER_SRC || '/profile-image-placeholder.webp'
+      );
+  }
+};
+
+export const getFileExtension = (source: string): unknown =>
+  /[.]/.exec(source) ? /[^.]+$/.exec(source) : '';

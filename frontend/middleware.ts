@@ -8,6 +8,7 @@ export const middleware = async (request: NextRequest) => {
   const response = NextResponse.next({
     headers: {
       'x-pathname': request.nextUrl.pathname,
+      'Cache-Control': 'no-cache',
     },
   });
 

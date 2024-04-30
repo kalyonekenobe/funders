@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FollowIcon, MessageIcon, UnfollowIcon } from '../Icons/Icons';
+import { EditIcon, FollowIcon, MessageIcon, UnfollowIcon } from '../Icons/Icons';
 import { FC, HTMLAttributes, useState } from 'react';
 import { Following } from '../../store/types/following.types';
 import { AuthInfo } from '../../store/types/app.types';
@@ -10,6 +10,7 @@ import ToggleFollowButton from '../Controls/ToggleFollowButton';
 import UserListItem from './UserListItem';
 import Modal from '../Modal/Modal';
 import { createPortal } from 'react-dom';
+import { ApplicationRoutes } from '../../utils/routes.utils';
 
 export interface UserDetailsProfileFooterProps extends HTMLAttributes<HTMLDivElement> {
   user: User;
@@ -136,55 +137,69 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
           </span>
         </div>
         <div className='grid grid-cols-2 gap-3 mt-3'>
-          <ToggleFollowButton
-            followClassName='inline-flex p-1 text-center justify-center items-center rounded bg-blue-500 text-white font-medium text-sm hover:ring-2 hover:ring-blue-500 hover:ring-inset hover:text-blue-500 hover:bg-transparent transition-[0.3s_ease]'
-            userId={user.id}
-            unfollowClassName='inline-flex p-1 text-center justify-center items-center rounded bg-rose-500 text-white font-medium text-sm hover:ring-2 hover:ring-rose-500 hover:ring-inset hover:text-rose-500 hover:bg-transparent transition-[0.3s_ease]'
-            followContent={
-              <>
-                <FollowIcon className='size-4 stroke-2 me-1.5' />
-                Follow
-              </>
-            }
-            unfollowContent={
-              <>
-                <UnfollowIcon className='size-4 stroke-2 me-1.5' />
-                Unfollow
-              </>
-            }
-            isFollowed={Boolean(
-              state.followers.find(
-                (follower: Following) => follower.followerId === authenticatedUser?.userId,
-              ),
-            )}
-            updateFollowers={follower =>
-              setState({
-                ...state,
-                followers: follower
-                  ? [
-                      ...state.followers,
-                      {
-                        followerId: authenticatedUser.userId,
-                        userId: user.id,
-                        follower: {
-                          ...authenticatedUser,
-                          id: authenticatedUser.userId,
-                        } as any,
-                      },
-                    ]
-                  : state.followers.filter(
-                      follower => follower.followerId !== authenticatedUser.userId,
-                    ),
-              })
-            }
-          />
-          <Link
-            href={''}
-            className='inline-flex bg-slate-100 ring-[1px] ring-inset ring-gray-300 text-slate-600 rounded px-10 py-1.5 text-center justify-center items-center font-medium text-sm hover:bg-slate-200 hover:text-slate-700 transition-[0.3s_ease]'
-          >
-            <MessageIcon className='size-4 stroke-2 me-1.5' />
-            Message
-          </Link>
+          {authenticatedUser.userId === user.id ? (
+            <>
+              <a
+                href={ApplicationRoutes.ProfileEdit}
+                className='inline-flex items-center justify-center text-center rounded bg-amber-500 font-medium text-white text-sm px-5 py-1.5 hover:bg-amber-600 transition-[0.3s_ease]'
+              >
+                <EditIcon className='size-3.5 stroke-2 me-2' />
+                Edit information
+              </a>
+            </>
+          ) : (
+            <>
+              <ToggleFollowButton
+                followClassName='inline-flex p-1 text-center justify-center items-center rounded bg-blue-500 text-white font-medium text-sm hover:ring-2 hover:ring-blue-500 hover:ring-inset hover:text-blue-500 hover:bg-transparent transition-[0.3s_ease]'
+                userId={user.id}
+                unfollowClassName='inline-flex p-1 text-center justify-center items-center rounded bg-rose-500 text-white font-medium text-sm hover:ring-2 hover:ring-rose-500 hover:ring-inset hover:text-rose-500 hover:bg-transparent transition-[0.3s_ease]'
+                followContent={
+                  <>
+                    <FollowIcon className='size-4 stroke-2 me-1.5' />
+                    Follow
+                  </>
+                }
+                unfollowContent={
+                  <>
+                    <UnfollowIcon className='size-4 stroke-2 me-1.5' />
+                    Unfollow
+                  </>
+                }
+                isFollowed={Boolean(
+                  state.followers.find(
+                    (follower: Following) => follower.followerId === authenticatedUser?.userId,
+                  ),
+                )}
+                updateFollowers={follower =>
+                  setState({
+                    ...state,
+                    followers: follower
+                      ? [
+                          ...state.followers,
+                          {
+                            followerId: authenticatedUser.userId,
+                            userId: user.id,
+                            follower: {
+                              ...authenticatedUser,
+                              id: authenticatedUser.userId,
+                            } as any,
+                          },
+                        ]
+                      : state.followers.filter(
+                          follower => follower.followerId !== authenticatedUser.userId,
+                        ),
+                  })
+                }
+              />
+              <Link
+                href={''}
+                className='inline-flex bg-slate-100 ring-[1px] ring-inset ring-gray-300 text-slate-600 rounded px-5 min-[425px]:px-10 py-1.5 text-center justify-center items-center font-medium text-sm hover:bg-slate-200 hover:text-slate-700 transition-[0.3s_ease]'
+              >
+                <MessageIcon className='size-4 stroke-2 me-1.5' />
+                Message
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </>

@@ -2,6 +2,8 @@
 
 import { ButtonHTMLAttributes, FC, ReactNode, SyntheticEvent, useState } from 'react';
 import { followUser, unfollowUser } from '../../actions/user.actions';
+import useNotification from '../../hooks/notifications.hooks';
+import { NotificationType } from '../../utils/notifications.utils';
 
 export interface ToggleFollowButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   userId: string;
@@ -25,13 +27,19 @@ const ToggleFollowButton: FC<ToggleFollowButtonProps> = ({
   ...props
 }) => {
   const [isActive, setIsActive] = useState(!isFollowed);
+  const { createNotification } = useNotification();
 
   const handleClick = async (event: SyntheticEvent) => {
     const response = isActive ? await followUser(userId) : await unfollowUser(userId);
 
-    if (response) {
+    if (!response.error) {
       updateFollowers?.(isActive);
       setIsActive(!isActive);
+    } else {
+      createNotification({
+        type: NotificationType.Error,
+        message: response.error || 'Cannot follow this user',
+      });
     }
   };
 

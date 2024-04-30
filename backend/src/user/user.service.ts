@@ -80,8 +80,8 @@ export class UserService {
         },
         select: exclude('User', ['password']),
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         return response;
       })
       .catch(error => {
@@ -103,11 +103,13 @@ export class UserService {
 
     let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
     let destroyer: IPrepareSingleResourceForDelete | undefined = undefined;
+    let avatar = user.avatar;
 
     if (files?.avatar && files.avatar.length > 0) {
       uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
         mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
       });
+      avatar = uploader?.resource.publicId ?? avatar;
     }
 
     if (((files?.avatar && files.avatar.length > 0) || data.avatar !== undefined) && user.avatar) {
@@ -115,6 +117,7 @@ export class UserService {
         publicId: user.avatar,
         resourceType: 'image',
       });
+      avatar = uploader?.resource.publicId ?? null;
     }
 
     this.paymentService.updateCustomer(user.stripeCustomerId, {
@@ -123,12 +126,12 @@ export class UserService {
 
     return this.prismaService.user
       .update({
-        data: { ...data, avatar: uploader?.resource.publicId ?? null },
+        data: { ...data, avatar },
         where: { id },
         select: exclude('User', ['password']),
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
       })

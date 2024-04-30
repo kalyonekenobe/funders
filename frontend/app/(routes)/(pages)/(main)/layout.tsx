@@ -60,7 +60,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
               links={links}
             />
           </div>
-          <div className='flex flex-1 flex-col w-full'>{children}</div>
+          <div className='flex flex-1 flex-col w-full h-full'>{children}</div>
         </div>
       </section>
     </main>

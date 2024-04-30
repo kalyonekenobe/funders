@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Progress from '../Progress/Progress';
 import PostOptionsButton from './PostOptionsButton';
 import { GearIcon } from '../Icons/Icons';
+import { resolveImage } from '../../utils/app.utils';
 
 export interface PostProps extends HTMLAttributes<HTMLDivElement> {
   post: PostType;
@@ -27,11 +28,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
               <div className='flex items-center'>
                 <div className='w-[35px] h-[35px] flex flex-1 aspect-square rounded relative me-3 overflow-hidden'>
                   <Image
-                    src={
-                      post.author?.avatar ||
-                      process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-                      '/default-profile-image.webp'
-                    }
+                    src={resolveImage(post.author?.avatar, 'default-profile-image')}
                     alt={`${post.author?.firstName} ${post.author?.lastName}'s profile image`}
                     fill={true}
                     sizes='64px, 64px'
@@ -57,11 +54,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
           </div>
           <div className='flex relative aspect-video rounded overflow-hidden'>
             <Image
-              src={
-                post.image ||
-                process.env.NEXT_PUBLIC_POST_IMAGE_PLACEHOLDER_SRC ||
-                '/post-image-placeholder.webp'
-              }
+              src={resolveImage(post.image, 'post-image-placeholder')}
               className='object-cover'
               alt={post.title}
               fill={true}

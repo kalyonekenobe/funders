@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { ApplicationRoutes } from '../../../utils/routes.utils';
 import Link from 'next/link';
 import SSOAuthenticationButtons from '../SSOAuthenticationButtons';
@@ -27,6 +27,11 @@ const SignUpForm: FC<SignUpFormProps> = () => {
   const [state, setState] = useState(initialState);
   const { createNotification } = useNotification();
   const router = useRouter();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await submit(new FormData(event.target as HTMLFormElement));
+  };
 
   const submit = async (formData: FormData) => {
     formData.set('registrationMethod', UserRegistrationMethodEnum.Default);
@@ -85,7 +90,7 @@ const SignUpForm: FC<SignUpFormProps> = () => {
   }, [state.isLoaded]);
 
   return (
-    <form className='flex flex-col max-w-xl w-full p-3' action={submit}>
+    <form className='flex flex-col max-w-xl w-full p-3' onSubmit={handleSubmit}>
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Sign up</h3>
       <div className='flex flex-col mt-5'>
         <div className='grid sm:grid-cols-2 gap-3'>

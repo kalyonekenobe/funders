@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { ApplicationRoutes } from '../../../utils/routes.utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -76,6 +76,11 @@ const AccountCompletionForm: FC = () => {
     }
   }, [metadata.isLoaded]);
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await submit(new FormData(event.target as HTMLFormElement));
+  };
+
   const submit = async (formData: FormData) => {
     if (metadata.isLoaded && metadata.email && metadata.provider) {
       formData.append('email', metadata.email);
@@ -101,7 +106,7 @@ const AccountCompletionForm: FC = () => {
   };
 
   return (
-    <form className='flex flex-col max-w-md w-full p-3' action={submit}>
+    <form className='flex flex-col max-w-md w-full p-3' onSubmit={handleSubmit}>
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Account completion</h3>
       <p className='text-gray-400 text-sm mt-5'>
         We need to know a little more information about you, so please fill in the following fields

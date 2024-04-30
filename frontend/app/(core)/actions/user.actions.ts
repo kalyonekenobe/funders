@@ -5,7 +5,12 @@ import { User } from '../store/types/user.types';
 import qs from 'qs';
 import { HttpStatusCode } from 'axios';
 import { Following } from '../store/types/following.types';
-import { getAuthInfo } from './auth.actions';
+import { getAuthInfo, setCookies } from './auth.actions';
+import { ValiError, flatten, parse } from 'valibot';
+import { LoginSchema } from '../validation/schemas/auth/auth.schema';
+import { UserUpdateSchema } from '../validation/schemas/auth/user.schema';
+import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 
 export const getUserFriendsAndSuggestions = async (userId: string, limit: number = 10) => {
   let result = {
@@ -97,7 +102,9 @@ export const getUser = async (id: string, options?: unknown): Promise<User | nul
   return null;
 };
 
-export const followUser = async (id: string): Promise<Following | null> => {
+export const followUser = async (
+  id: string,
+): Promise<{ error?: string; data: Following | null }> => {
   try {
     const authenticatedUser = await getAuthInfo();
 
@@ -105,17 +112,20 @@ export const followUser = async (id: string): Promise<Following | null> => {
       const response = await axios.post(`/users/${id}/followers/${authenticatedUser.userId}`, {});
 
       if (response.status === HttpStatusCode.Created) {
-        return response.data;
+        return { data: response.data };
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    return { error: error.response.data.message, data: null };
   }
 
-  return null;
+  return { error: 'Cannot follow this user', data: null };
 };
 
-export const unfollowUser = async (id: string): Promise<Following | null> => {
+export const unfollowUser = async (
+  id: string,
+): Promise<{ error?: string; data: Following | null }> => {
   try {
     const authenticatedUser = await getAuthInfo();
 
@@ -123,12 +133,83 @@ export const unfollowUser = async (id: string): Promise<Following | null> => {
       const response = await axios.delete(`/users/${id}/followers/${authenticatedUser.userId}`);
 
       if (response.status === HttpStatusCode.Ok) {
-        return response.data;
+        return { data: response.data };
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    return { error: error.response.data.message, data: null };
   }
 
-  return null;
+  return { error: 'Cannot unfollow this user', data: null };
+};
+
+export const udpateUser = async (state: any, formData: FormData) => {
+  try {
+    let { id, password, confirmPassword, avatar, ...data } = Object.fromEntries(formData) as any;
+
+    if (data.birthDate) data.birthDate = new Date(data.birthDate);
+    if (data.phone === '') data.phone = null;
+    if (data.bio === '') data.bio = null;
+
+    const user = (await parse(UserUpdateSchema, data)) as any;
+
+    if (user.phone === null) user.phone = '';
+    if (user.bio === null) user.bio = '';
+
+    if (avatar !== undefined) {
+      user.avatar = avatar === '' ? null : avatar;
+    }
+
+    const userFormData = new FormData();
+    Object.entries(user).forEach(([key, value]: [string, unknown]) => {
+      userFormData.set(key, !value ? '' : (value as string | Blob));
+    });
+
+    const response = await axios.put(`/users/${id}`, userFormData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    const refreshResponse = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+      {},
+      {
+        withCredentials: true,
+        headers: {
+          Cookie: cookies().toString(),
+        },
+      },
+    );
+
+    setCookies(refreshResponse.headers['set-cookie'] ?? []);
+
+    if (response.status === HttpStatusCode.Ok) {
+      return { ...state, errors: {} };
+    }
+  } catch (error: any) {
+    if (error instanceof ValiError) {
+      return {
+        ...state,
+        errors: flatten(error),
+      };
+    }
+
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      return {
+        errors: {
+          ...state,
+          global: 'The provided data is invalid. Please, try again.',
+        },
+      };
+    }
+  }
+
+  return {
+    errors: {
+      ...state,
+      global: 'Internal server error.',
+    },
+  };
 };

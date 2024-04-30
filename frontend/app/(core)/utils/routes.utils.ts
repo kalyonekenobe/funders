@@ -7,6 +7,7 @@ export enum ApplicationRoutes {
   Home = '/home',
   Dashboard = '/dashboard',
   Profile = '/profile',
+  ProfileEdit = '/profile/edit',
   Users = '/users',
   UserDetails = '/users/:id',
   UserCreate = '/users/create',

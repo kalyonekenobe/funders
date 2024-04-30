@@ -6,6 +6,7 @@ import Search from '../Search/Search';
 import UserProfileLink from './UserProfileLink';
 
 export interface NavbarProps extends HTMLAttributes<HTMLDivElement> {}
+export const revalidate = 0;
 
 const Navbar: FC<NavbarProps> = ({ ...props }) => {
   return (

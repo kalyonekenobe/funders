@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { ApplicationRoutes } from '../../../utils/routes.utils';
 import Link from 'next/link';
 import SSOAuthenticationButtons from '../SSOAuthenticationButtons';
@@ -26,6 +26,11 @@ const SignInForm: FC<SignInFormProps> = () => {
   const { createNotification } = useNotification();
   const [state, setState] = useState(initialState);
   const router = useRouter();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await submit(new FormData(event.target as HTMLFormElement));
+  };
 
   const submit = async (formData: FormData) => {
     const response = await signIn(state, formData);
@@ -83,7 +88,7 @@ const SignInForm: FC<SignInFormProps> = () => {
   }, [state.isLoaded]);
 
   return (
-    <form className='flex flex-col max-w-md w-full p-3' action={submit}>
+    <form className='flex flex-col max-w-md w-full p-3' onSubmit={handleSubmit}>
       <h3 className='text-center font-semibold text-gray-500 text-2xl'>Sign in</h3>
       <div className='flex flex-col mt-5'>
         <div className='flex flex-col gap-y-3'>

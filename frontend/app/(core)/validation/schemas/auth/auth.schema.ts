@@ -62,8 +62,14 @@ export const RegisterSchema = object(
     ]),
     birthDate: union([
       date('The user must be at least 14 years old.', [
-        minValue(new Date(new Date().setFullYear(new Date().getFullYear() - 100))), // Max user age can be 100 years
-        maxValue(new Date(new Date().setFullYear(new Date().getFullYear() - 14))), // Min user age can be 14 years
+        minValue(
+          new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
+          'The user must be at least 14 years old.',
+        ), // Max user age can be 100 years
+        maxValue(
+          new Date(new Date().setFullYear(new Date().getFullYear() - 14)),
+          'The user must be at least 14 years old.',
+        ), // Min user age can be 14 years
       ]),
     ]),
   },

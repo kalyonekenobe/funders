@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FC, HTMLAttributes } from 'react';
 import { ApplicationRoutes } from '../../utils/routes.utils';
+import { resolveImage } from '../../utils/app.utils';
 
 export interface UserListItemProps extends HTMLAttributes<HTMLDivElement> {
   id: string;
@@ -22,11 +23,7 @@ const UserListItem: FC<UserListItemProps> = ({
     <Link href={ApplicationRoutes.UserDetails.replace(':id', id)} className={`flex ${className}`}>
       <div className='relative flex flex-1 overflow-hidden rounded max-w-[32px] aspect-square'>
         <Image
-          src={
-            avatar ||
-            process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-            '/default-profile-image.webp'
-          }
+          src={resolveImage(avatar, 'default-profile-image')}
           alt={`${firstName} ${lastName}'s profile image`}
           sizes='64px, 64px'
           fill={true}

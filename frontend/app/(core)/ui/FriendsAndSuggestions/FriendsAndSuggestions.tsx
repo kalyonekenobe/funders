@@ -5,6 +5,7 @@ import { User } from '../../store/types/user.types';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ApplicationRoutes } from '../../utils/routes.utils';
+import { resolveImage } from '../../utils/app.utils';
 
 export interface FriendsAndSuggestionsProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -34,11 +35,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
-                  src={
-                    friend.avatar ||
-                    process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-                    '/default-profile-image.webp'
-                  }
+                  src={resolveImage(friend.avatar, 'default-profile-image')}
                   alt={`${friend.firstName} ${friend.lastName}'s profile image`}
                   sizes='64px, 64px'
                   fill={true}
@@ -68,11 +65,7 @@ const FriendsAndSuggestions: FC<FriendsAndSuggestionsProps> = async ({ ...props 
             >
               <div className='flex flex-1 max-w-[35px] me-2 w-full h-full aspect-square overflow-hidden rounded relative'>
                 <Image
-                  src={
-                    suggestion.avatar ||
-                    process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-                    '/default-profile-image.webp'
-                  }
+                  src={resolveImage(suggestion.avatar, 'default-profile-image')}
                   alt={`${suggestion.firstName} ${suggestion.lastName}'s profile image`}
                   sizes='64px, 64px'
                   fill={true}

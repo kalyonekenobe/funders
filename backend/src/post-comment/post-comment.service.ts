@@ -78,8 +78,8 @@ export class PostCommentService {
           },
         },
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         return response;
       });
   }
@@ -153,8 +153,8 @@ export class PostCommentService {
           },
         },
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
       });

@@ -6,6 +6,14 @@ const nextConfig = {
   publicRuntimeConfig: {
     backendUrl: process.env.BACKEND_URL,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

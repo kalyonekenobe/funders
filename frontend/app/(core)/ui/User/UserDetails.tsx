@@ -3,13 +3,13 @@ import { User } from '../../store/types/user.types';
 import PostComponent from '../Post/Post';
 import Image from 'next/image';
 import { UserRoleEnum } from '../../store/types/user-role.types';
-import Link from 'next/link';
-import { FollowIcon, MessageIcon, UnfollowIcon } from '../Icons/Icons';
 import BackButton from '../Controls/BackButton';
-import ToggleFollowButton from '../Controls/ToggleFollowButton';
-import { Following } from '../../store/types/following.types';
 import { getAuthInfo } from '../../actions/auth.actions';
 import UserDetailsProfileFooter from './UserDetailsProfileFooter';
+import { resolveImage } from '../../utils/app.utils';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export interface UserDetailsProps extends HTMLAttributes<HTMLDivElement> {
   user: User;
@@ -30,10 +30,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
       <div className='bg-white'>
         <div className='flex flex-1 h-80 w-full overflow-hidden relative'>
           <Image
-            src={
-              process.env.NEXT_PUBLIC_PROFILE_BACKGROUND_PLACEHOLDER_SRC ||
-              '/profile-background-placeholder.webp'
-            }
+            src={resolveImage(undefined, 'profile-background-placeholder')}
             alt={`${user.firstName} ${user.lastName}'s profile image`}
             sizes='1920px, 1080px'
             fill={true}
@@ -41,23 +38,18 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
             className='object-cover'
           />
         </div>
-        <header className='flex flex-wrap sm:flex-nowrap items-start mx-auto p-10'>
-          <div className='flex flex-wrap sm:flex-nowrap items-start w-full'>
-            <div className='relative flex aspect-square rounded overflow-hidden w-full max-w-[128px]'>
+        <header className='grid grid-cols-1 lg:grid-cols-[1fr_100px] items-start mx-auto p-5 sm:p-10'>
+          <div className='lg:order-first flex flex-col lg:flex-row items-center lg:items-start w-full'>
+            <div className='relative flex aspect-square rounded overflow-hidden w-full max-w-[128px] my-5 lg:m-0 self-start'>
               <Image
-                src={
-                  user.avatar ||
-                  process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-                  '/default-profile-image.webp'
-                }
+                src={resolveImage(user.avatar, 'default-profile-image')}
                 alt={`${user.firstName} ${user.lastName}'s profile image`}
                 sizes='256px, 256px'
                 fill={true}
-                priority={true}
                 className='object-cover'
               />
             </div>
-            <div className='flex flex-col mx-10 items-start'>
+            <div className='flex flex-col mx-5 lg:mx-10 items-start w-full'>
               <h3 className='font-bold text-2xl'>
                 {user.firstName} {user.lastName}
               </h3>
@@ -85,7 +77,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
               />
             </div>
           </div>
-          <div className='flex justify-end flex-1'>
+          <div className='order-first lg:order-last flex justify-end flex-1'>
             <BackButton className='font-medium text-sm text-white bg-neutral-800 rounded px-5 py-1 hover:bg-neutral-700 transition-[0.3s_ease]'>
               Back
             </BackButton>
@@ -100,7 +92,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
             </h3>
           </div>
         ) : (
-          <div className='grid grid-cols-1 gap-3 flex-1 px-5 pb-5 overflow-y-scroll mx-auto w-full max-w-3xl'>
+          <div className='grid grid-cols-1 gap-3 flex-1 md:px-5 md:pb-5 overflow-y-scroll mx-auto w-full max-w-3xl'>
             {user.posts?.map(post => (
               <PostComponent
                 key={post.id}

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { UserRoleEnum } from '../../store/types/user-role.types';
 import { getAuthInfo } from '../../actions/auth.actions';
 import UserFooter from './UserFooter';
+import { resolveImage } from '../../utils/app.utils';
 
 export interface UserProps extends HTMLAttributes<HTMLDivElement> {
   user: UserType;
@@ -24,11 +25,7 @@ const User: FC<UserProps> = async ({ user, ...props }) => {
         <header className='flex flex-col items-center w-full'>
           <div className='flex flex-1 w-full max-w-[128px] relative overflow-hidden rounded aspect-square'>
             <Image
-              src={
-                user.avatar ||
-                process.env.NEXT_PUBLIC_DEFAULT_PROFILE_IMAGE_SRC ||
-                '/default-profile-image.webp'
-              }
+              src={resolveImage(user.avatar, 'default-profile-image')}
               alt={`${user.firstName} ${user.lastName}'s profile image`}
               sizes='256px, 256px'
               className='object-cover'
