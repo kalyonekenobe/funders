@@ -16,9 +16,9 @@ import {
   Validate,
   ValidateIf,
 } from 'class-validator';
+import { CategoriesOnPostsEntity } from 'src/categories-on-posts/entities/categories-on-posts.entity';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { PostAttachmentEntity } from 'src/post-attachment/entities/post-attachment.entity';
-import { PostCategoryEntity } from 'src/post-category/entities/post-category.entity';
 import { PostCommentEntity } from 'src/post-comment/entities/post-comment.entity';
 import { PostDonationEntity } from 'src/post-donation/entities/post-donation.entity';
 import { PostReactionEntity } from 'src/post-reaction/entities/post-reaction.entity';
@@ -142,7 +142,7 @@ export class PostEntity implements Post {
   author?: UserPublicEntity;
 
   @ApiProperty({ description: 'The nested array of categories of this post' })
-  categories?: PostCategoryEntity[];
+  categories?: CategoriesOnPostsEntity[];
 
   @ApiProperty({ description: 'The nested array of attachments of this post' })
   attachments?: PostAttachmentEntity[];

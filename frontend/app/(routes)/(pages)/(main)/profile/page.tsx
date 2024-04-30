@@ -19,7 +19,14 @@ const fetchData = async () => {
   if (authenticatedUser) {
     const user = await getUser(authenticatedUser.userId, {
       select: {
-        posts: true,
+        posts: {
+          include: {
+            donations: true,
+            reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+            comments: true,
+            categories: true,
+          },
+        },
         followers: { include: { follower: true } },
         followings: { include: { user: true } },
       },
@@ -39,8 +46,8 @@ const ProfilePage: FC = async () => {
   }
 
   return (
-    <div className='flex flex-col'>
-      <UserDetails user={user} />
+    <div className='flex flex-col h-full'>
+      <UserDetails user={user} className='flex flex-col h-full' />
     </div>
   );
 };

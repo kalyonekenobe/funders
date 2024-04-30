@@ -8,13 +8,21 @@ import PostOptionsButton from './PostOptionsButton';
 import { GearIcon } from '../Icons/Icons';
 import { resolveImage } from '../../utils/app.utils';
 import PostFooter from './PostFooter';
+import { getAuthInfo } from '../../actions/auth.actions';
 
 export interface PostProps extends HTMLAttributes<HTMLDivElement> {
   post: PostType;
 }
 
-const Post: FC<PostProps> = ({ post, ...props }) => {
+const fetchData = async () => {
+  const authenticatedUser = await getAuthInfo();
+
+  return { authenticatedUser };
+};
+
+const Post: FC<PostProps> = async ({ post, ...props }) => {
   const intl = Intl.DateTimeFormat('en-US', { dateStyle: 'long' });
+  const { authenticatedUser } = await fetchData();
 
   return (
     <article {...props}>
@@ -47,6 +55,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
             </Link>
             <PostOptionsButton
               post={post}
+              authenticatedUser={authenticatedUser!}
               className='rounded-full hover:bg-slate-100 aspect-square p-1.5 transition-[0.3s_ease]'
             >
               <GearIcon className='size-5 stroke-[1.5px] text-gray-700' />
@@ -62,7 +71,24 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
               priority={true}
             />
           </div>
-          <h3 className='font-bold text-2xl mt-3'>{post.title}</h3>
+          <h3 className='font-bold text-2xl mt-3'>
+            {post.title}{' '}
+            {post.isDraft && (
+              <span className='ms-1 bg-neutral-200 px-2 py-0.5 rounded text-base align-middle font-medium text-slate-600'>
+                Draft
+              </span>
+            )}
+          </h3>
+          <div className='flex gap-2 mt-1 flex-wrap'>
+            {post.categories?.map(category => (
+              <span
+                key={category.category}
+                className='bg-indigo-400 text-white font-medium text-xs px-2 py-0.5 rounded'
+              >
+                {category.category}
+              </span>
+            ))}
+          </div>
         </header>
         <div className='flex flex-col w-full mt-5'>
           <Progress
@@ -78,7 +104,7 @@ const Post: FC<PostProps> = ({ post, ...props }) => {
           />
         </div>
       </div>
-      <PostFooter post={post} className='grid grid-cols-3 border-t' />
+      <PostFooter post={post} authenticatedUser={authenticatedUser!} />
     </article>
   );
 };

@@ -7,10 +7,8 @@ import { HttpStatusCode } from 'axios';
 import { Following } from '../store/types/following.types';
 import { getAuthInfo, setCookies } from './auth.actions';
 import { ValiError, flatten, parse } from 'valibot';
-import { LoginSchema } from '../validation/schemas/auth/auth.schema';
 import { UserUpdateSchema } from '../validation/schemas/auth/user.schema';
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
 
 export const getUserFriendsAndSuggestions = async (userId: string, limit: number = 10) => {
   let result = {

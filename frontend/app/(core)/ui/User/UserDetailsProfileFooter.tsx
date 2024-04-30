@@ -13,7 +13,6 @@ import { createPortal } from 'react-dom';
 import { ApplicationRoutes } from '../../utils/routes.utils';
 import { UserRoleEnum } from '../../store/types/user-role.types';
 import { udpateUser } from '../../actions/user.actions';
-import { useRouter } from 'next/navigation';
 import useNotification from '../../hooks/notifications.hooks';
 import { NotificationType } from '../../utils/notifications.utils';
 
@@ -55,7 +54,6 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
     followers: user.followers ?? [],
     followings: user.followings ?? [],
   });
-  const router = useRouter();
   const { createNotification } = useNotification();
 
   return (
@@ -241,7 +239,6 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                     ...state,
                     followers: follower
                       ? [
-                          ...state.followers,
                           {
                             followerId: authenticatedUser.userId,
                             userId: user.id,
@@ -250,6 +247,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                               id: authenticatedUser.userId,
                             } as any,
                           },
+                          ...state.followers,
                         ]
                       : state.followers.filter(
                           follower => follower.followerId !== authenticatedUser.userId,

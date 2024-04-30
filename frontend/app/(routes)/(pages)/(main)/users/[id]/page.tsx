@@ -14,7 +14,15 @@ export interface UserDetailsPageProps {
 const fetchData = async (id: string) => {
   const user = await getUser(id, {
     select: {
-      posts: true,
+      posts: {
+        where: { isDraft: false },
+        include: {
+          donations: true,
+          reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+          comments: true,
+          categories: true,
+        },
+      },
       followers: { include: { follower: true } },
       followings: { include: { user: true } },
     },
@@ -41,8 +49,8 @@ const UserDetailsPage: FC<UserDetailsPageProps> = async ({ params }) => {
   }
 
   return (
-    <div className='flex flex-col'>
-      <UserDetails user={user} />
+    <div className='flex flex-col h-full'>
+      <UserDetails user={user} className='flex flex-col h-full' />
     </div>
   );
 };

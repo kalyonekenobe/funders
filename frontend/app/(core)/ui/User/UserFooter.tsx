@@ -160,7 +160,6 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
               ...state,
               followers: follower
                 ? [
-                    ...state.followers,
                     {
                       followerId: authenticatedUser.userId,
                       userId: user.id,
@@ -169,6 +168,7 @@ const UserFooter: FC<UserCardFooterProps> = ({ user, authenticatedUser, ...props
                         id: authenticatedUser.userId,
                       } as any,
                     },
+                    ...state.followers,
                   ]
                 : state.followers.filter(
                     follower => follower.followerId !== authenticatedUser.userId,

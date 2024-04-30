@@ -11,7 +11,16 @@ export const metadata: Metadata = {
 
 const fetchData = async () => {
   const posts = await getAllPosts({
-    include: { author: true, donations: true, reactions: { user: true } },
+    where: {
+      isDraft: false,
+    },
+    include: {
+      author: true,
+      donations: true,
+      reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+      comments: true,
+      categories: true,
+    },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -22,7 +31,7 @@ const HomePage: FC = async () => {
   const { posts } = await fetchData();
 
   return (
-    <div className='grid lg:grid-cols-[6fr_3fr] xl:grid-cols-[7fr_2.5fr] 2xl:grid-cols-[8fr_2fr]'>
+    <div className='grid lg:grid-cols-[6fr_3fr] xl:grid-cols-[7fr_2.5fr] 2xl:grid-cols-[8fr_2fr] h-full'>
       <div className='flex flex-col flex-1 relative mt-5'>
         <div className='flex flex-1 justify-center'>
           <div className='grid gap-3 flex-1 px-5 pb-5 overflow-y-scroll max-w-3xl'>
