@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { StripeModule } from '../stripe/stripe.module';
 import { PaymentService } from './payment.service';
+import { PaymentController } from './payment.controller';
 
 @Module({
   imports: [
@@ -8,11 +9,12 @@ import { PaymentService } from './payment.service';
       useFactory: () => ({
         apiKey: process.env.STRIPE_API_KEY,
         options: {
-          apiVersion: '2023-10-16',
+          apiVersion: '2024-04-10',
         },
       }),
     }),
   ],
+  controllers: [PaymentController],
   providers: [PaymentService],
   exports: [PaymentService],
 })

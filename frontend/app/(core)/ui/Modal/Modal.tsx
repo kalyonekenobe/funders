@@ -3,18 +3,19 @@
 import { FC, HTMLAttributes, ReactNode, useEffect } from 'react';
 import { useOutsideClick } from '@/app/(core)/hooks/dom.hooks';
 
-export interface IModalProps extends HTMLAttributes<HTMLElement> {
+export interface ModalProps extends HTMLAttributes<HTMLElement> {
   title: string;
   buttons?: {
     type: 'accept' | 'close';
     name: string;
     action: (...args: any[]) => any;
     variant?: 'secondary' | 'primary' | 'danger';
+    disabled?: boolean;
   }[];
   children?: ReactNode | ReactNode[];
 }
 
-const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
+const Modal: FC<ModalProps> = ({ children, title, buttons, className }) => {
   const acceptButton = buttons?.find(button => button.type === 'accept');
   const closeButton = buttons?.find(button => button.type === 'close');
   const modalRef = useOutsideClick(() => closeButton?.action?.());
@@ -72,8 +73,9 @@ const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
             {acceptButton && (
               <button
                 onClick={acceptButton.action}
+                disabled={acceptButton.disabled}
                 type='button'
-                className={`me-3 focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] ${
+                className={`me-3 focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] disabled:opacity-30 ${
                   acceptButton.variant === 'secondary'
                     ? 'border text-gray-900 bg-white border-gray-200 hover:bg-gray-100 hover:text-black-500 focus:ring-gray-100'
                     : acceptButton.variant === 'danger'
@@ -87,8 +89,9 @@ const Modal: FC<IModalProps> = ({ children, title, buttons, className }) => {
             {closeButton && (
               <button
                 onClick={closeButton.action}
+                disabled={closeButton.disabled}
                 type='button'
-                className={`focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] ${
+                className={`focus:ring-4 focus:z-10 focus:outline-none font-medium rounded px-5 py-1.5 text-center transition-[0.3s_ease] disabled:opacity-30 ${
                   closeButton.variant === 'primary'
                     ? 'text-white focus:ring-indigo-300 bg-black hover:bg-zinc-600'
                     : closeButton.variant === 'danger'

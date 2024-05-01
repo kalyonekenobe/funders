@@ -7,6 +7,7 @@ import qs from 'qs';
 import { UserReactionTypeEnum } from '../store/types/user-reaction-type.types';
 import { PostReaction } from '../store/types/post-reaction.types';
 import { getAuthInfo } from './auth.actions';
+import { PostDonation } from '../store/types/post-donation.types';
 
 export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
@@ -84,4 +85,59 @@ export const removePost = async (
   }
 
   return { error: 'Cannot remove post. Please, try again later', data: null };
+};
+
+export const getPost = async (id: string, options?: unknown): Promise<Post | null> => {
+  try {
+    const query = qs.stringify(options);
+    const response = await axios.get(`/posts/${id}/${query ? `?${query}` : ''}`);
+
+    if (response.status === HttpStatusCode.Ok) {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return null;
+};
+
+export const donate = async (
+  id: string,
+  donation: number,
+  paymentInfo: string,
+): Promise<{ error?: string; data: PostDonation | null }> => {
+  try {
+    const response = await axios.post(`/posts/${id}/donations`, { donation, paymentInfo });
+
+    if (response.status === HttpStatusCode.Created) {
+      return { data: response.data };
+    }
+  } catch (error: any) {
+    console.log(error);
+    return { error: error.response.data.message, data: null };
+  }
+
+  return { error: 'Cannot make a donation to the post', data: null };
+};
+
+export const createPaymentCharge = async (
+  amount: number,
+): Promise<{ error?: string; data: { clientSecret: string; id: string } | null }> => {
+  try {
+    const authenticatedUser = await getAuthInfo();
+
+    if (authenticatedUser) {
+      const response = await axios.post('/payments/charge', { amount });
+
+      if (response.status === HttpStatusCode.Created) {
+        return { data: response.data };
+      }
+    }
+  } catch (error: any) {
+    console.log(error);
+    return { error: error.response.data.message, data: null };
+  }
+
+  return { error: 'Cannot proceed the action. Please, try again later', data: null };
 };

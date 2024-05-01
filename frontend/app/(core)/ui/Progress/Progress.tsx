@@ -38,9 +38,15 @@ const Progress: FC<ProgressProps> = ({
         {showLabels && (
           <div className='flex justify-between text-xs mt-1 font-medium text-gray-500'>
             <span>
-              {measurePosition === 'left' ? `${measure} ${current}` : `${current} ${measure}`}
+              {measurePosition === 'left'
+                ? `${measure} ${current.toFixed(2)}`
+                : `${current.toFixed(2)} ${measure}`}
             </span>
-            <span>{measurePosition === 'left' ? `${measure} ${goal}` : `${goal} ${measure}`}</span>
+            <span>
+              {measurePosition === 'left'
+                ? `${measure} ${goal.toFixed(2)}`
+                : `${goal.toFixed(2)} ${measure}`}
+            </span>
           </div>
         )}
       </div>

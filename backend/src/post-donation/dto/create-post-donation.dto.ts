@@ -1,15 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Transform } from 'class-transformer';
-import {
-  IsDecimal,
-  IsDefined,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  Validate,
-} from 'class-validator';
+import { IsDecimal, IsDefined, IsNotEmpty, IsString, Validate } from 'class-validator';
 import { DecimalMin } from 'src/core/validation/decorators/decimal-min.decorator';
 import { PostDonationEntity } from '../entities/post-donation.entity';
 
@@ -17,16 +9,14 @@ export class CreatePostDonationDto
   implements Omit<PostDonationEntity, 'id' | 'postId' | 'datetime'>
 {
   @ApiProperty({
-    description: 'The card number of donater of the post donation',
-    examples: ['1234567890987654', '5594148605144157', '9684037525861053'],
-    default: '5594148605144157',
+    description: 'The payment info of the post donation',
+    examples: ['{ "last4": "4242" }', '{ "last4": "5167" }', '{ "last4": "9914" }'],
+    default: '{ "last4": "4242" }',
   })
-  @Matches(/^\d{16}$/gu)
-  @MaxLength(16)
   @IsString()
   @IsNotEmpty()
   @IsDefined()
-  cardNumber: string;
+  paymentInfo: string;
 
   @ApiProperty({
     description: 'The amount of money of the donation',

@@ -15,6 +15,7 @@ import { PostComment } from '../../store/types/post-comment.types';
 import { createPortal } from 'react-dom';
 import Modal from '../Modal/Modal';
 import UserListItem from '../User/UserListItem';
+import DonatePostButton from './DonatePostButton';
 
 export interface PostFooterProps extends HTMLAttributes<HTMLDivElement> {
   post: Post;
@@ -155,13 +156,13 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
             <BookIcon className='size-4 me-2 stroke-2' />
             Read more
           </Link>
-          <Link
-            href={`${ApplicationRoutes.PostDetails.replace(':id', post.id)}#donate`}
+          <DonatePostButton
+            post={post}
             className='inline-flex justify-center items-center text-center text-gray-500 font-medium p-2 hover:bg-slate-100 transition-[0.3s_ease]'
           >
             <BanknotesIcon className='size-4 me-2 stroke-2' />
             Donate
-          </Link>
+          </DonatePostButton>
         </div>
       </footer>
     </>

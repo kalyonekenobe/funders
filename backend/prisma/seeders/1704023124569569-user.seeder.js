@@ -3,7 +3,7 @@ const { PasswordService } = require('../utils/password.service');
 const { Stripe } = require('stripe');
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-04-10',
 });
 
 const passwordService = new PasswordService(
