@@ -198,8 +198,13 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return this.postService.findById(id);
+  async findById(@Param('id') id: string, @Query() query?: string) {
+    return this.postService.findById(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({

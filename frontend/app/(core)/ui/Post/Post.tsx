@@ -21,7 +21,7 @@ const fetchData = async () => {
 };
 
 const Post: FC<PostProps> = async ({ post, ...props }) => {
-  const intl = Intl.DateTimeFormat('en-US', { dateStyle: 'long' });
+  const intl = Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' });
   const { authenticatedUser } = await fetchData();
 
   return (

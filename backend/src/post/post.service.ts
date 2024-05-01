@@ -11,6 +11,7 @@ import {
   IPrepareMultipleResourcesForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
 import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class PostService {
@@ -23,8 +24,11 @@ export class PostService {
     return this.prismaService.post.findMany(options);
   }
 
-  async findById(id: string): Promise<PostEntity> {
-    return this.prismaService.post.findUniqueOrThrow({ where: { id } });
+  async findById(
+    id: string,
+    options?: Omit<Prisma.PostFindUniqueOrThrowArgs, 'where'>,
+  ): Promise<PostEntity> {
+    return this.prismaService.post.findUniqueOrThrow(_.merge(options, { where: { id } }));
   }
 
   async findAllUserPosts(userId: string): Promise<PostEntity[]> {
