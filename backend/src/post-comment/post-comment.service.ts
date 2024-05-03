@@ -93,6 +93,7 @@ export class PostCommentService {
     id: string,
     data: UpdatePostCommentDto,
     files?: PostCommentRequestBodyFiles,
+    options?: Omit<Prisma.PostCommentUpdateArgs, 'data' | 'where'>,
   ): Promise<PostCommentEntity> {
     const postComment = await this.prismaService.postComment.findUniqueOrThrow({
       where: { id },
@@ -145,19 +146,21 @@ export class PostCommentService {
     }
 
     return this.prismaService.postComment
-      .update({
-        where: { id },
-        data: {
-          ...data,
-          attachments: {
-            ...deleteAttachmentsOptions,
-            createMany: {
-              data: attachments,
-              skipDuplicates: false,
+      .update(
+        _.merge(options, {
+          where: { id },
+          data: {
+            ...data,
+            attachments: {
+              ...deleteAttachmentsOptions,
+              createMany: {
+                data: attachments,
+                skipDuplicates: false,
+              },
             },
           },
-        },
-      })
+        }),
+      )
       .then(async response => {
         if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();

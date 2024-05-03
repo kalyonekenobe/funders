@@ -10,11 +10,13 @@ import { NotificationType } from '../../utils/notifications.utils';
 import useNotification from '../../hooks/notifications.hooks';
 import { PostComment } from '../../store/types/post-comment.types';
 import { removePostComment } from '../../actions/post.actions';
+import EditPostCommentButton from './EditPostCommentButton';
 
 export interface PostCommentOptionsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   postComment: PostComment;
   authenticatedUser: AuthInfo;
   onRemove?: (comment: PostComment) => void;
+  onEdit?: (comment: PostComment) => void;
 }
 
 export interface PostCommentOptionsButtonState {
@@ -32,6 +34,7 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
   authenticatedUser,
   children,
   onRemove,
+  onEdit,
   ...props
 }) => {
   const [state, setState] = useState(initialState);
@@ -98,7 +101,7 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
         {state.isPostCommentOptionsDropdownVisible && (
           <div
             ref={ref}
-            className='absolute flex flex-col bg-white z-40 p-1 right-0 shadow-lg border rounded mt-2 text-gray-600'
+            className='absolute flex flex-col bg-white z-50 p-1 right-0 shadow-lg border rounded mt-2 text-gray-600'
           >
             <button
               type='button'
@@ -109,13 +112,18 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
             </button>
             {authenticatedUser.userId === postComment.author?.id && (
               <>
-                <button
+                <EditPostCommentButton
+                  onEditComment={onEdit}
+                  onModalClose={() =>
+                    setState({ ...state, isPostCommentOptionsDropdownVisible: false })
+                  }
+                  comment={postComment}
                   type='button'
                   className='w-full ps-2 pe-7 py-1 rounded hover:bg-slate-100 font-medium text-sm text-start inline-flex items-center'
                 >
                   <EditIcon className='size-3 stroke-2 me-2' />
                   Edit
-                </button>
+                </EditPostCommentButton>
                 <button
                   type='button'
                   className='w-full ps-2 pe-7 py-1 rounded hover:bg-slate-100 font-medium text-sm text-start inline-flex items-center'

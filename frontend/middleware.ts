@@ -14,7 +14,10 @@ export const middleware = async (request: NextRequest) => {
 
   const { authenticatedUser } = await updateSession(request, response);
 
-  if (ProtectedRoutes.includes(request.nextUrl.pathname as ApplicationRoutes)) {
+  if (
+    ProtectedRoutes.includes(request.nextUrl.pathname as ApplicationRoutes) ||
+    ProtectedRoutes.find(route => request.nextUrl.pathname.startsWith(route))
+  ) {
     if (!authenticatedUser) {
       const notAuthenticatedResponse = NextResponse.redirect(
         new URL(ApplicationRoutes.SignIn, request.nextUrl.origin),

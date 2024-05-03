@@ -14,6 +14,7 @@ export interface PostCommentProps {
   post: Post;
   comment: PostCommentType;
   authenticatedUser: AuthInfo;
+  onEdit?: (comment: PostCommentType) => void;
   onRemove?: (comment: PostCommentType) => void;
   onReply?: (comment: PostCommentType) => void;
 }
@@ -22,6 +23,7 @@ const PostComment: FC<PostCommentProps> = ({
   post,
   comment,
   authenticatedUser,
+  onEdit,
   onRemove,
   onReply,
   ...props
@@ -70,12 +72,19 @@ const PostComment: FC<PostCommentProps> = ({
             </div>
             <p className='font-medium text-gray-500 text-xs mt-0.5'>
               <span className='text-xs'>{intl.format(new Date(comment.createdAt))}</span>
+              {comment.updatedAt &&
+                new Date(comment.createdAt).getTime() !== new Date(comment.updatedAt).getTime() && (
+                  <span className='text-xs ms-1'>
+                    (edited {intl.format(new Date(comment.updatedAt))})
+                  </span>
+                )}
             </p>
           </div>
         </div>
         <PostCommentOptionsButton
           postComment={comment}
           authenticatedUser={authenticatedUser!}
+          onEdit={onEdit}
           onRemove={onRemove}
           className='rounded-full hover:bg-slate-100 aspect-square p-1.5 transition-[0.3s_ease]'
         >
@@ -96,6 +105,7 @@ const PostComment: FC<PostCommentProps> = ({
             post={post}
             key={reply.id}
             comment={reply}
+            onEdit={onEdit}
             onReply={onReply}
             onRemove={onRemove}
           />

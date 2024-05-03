@@ -29,6 +29,7 @@ const fetchData = async (id: string) => {
       reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
       comments: {
         include: {
+          parentComment: { include: { author: true } },
           author: true,
           reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
           attachments: true,

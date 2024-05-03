@@ -65,6 +65,14 @@ const PostCommentsSection: FC<PostCommentsSectionProps> = ({
           post={post}
           key={comment.id}
           comment={comment}
+          onEdit={comment =>
+            setState({
+              ...state,
+              comments: prepareComments(
+                flattenComments(state.comments).map(c => (c.id === comment.id ? comment : c)),
+              ),
+            })
+          }
           onRemove={comment =>
             setState({
               ...state,

@@ -8,7 +8,12 @@ export const useOutsideClick = (callback: () => void): React.RefObject<HTMLDivEl
       if (
         ref.current &&
         !ref.current.contains(event.target as Node) &&
-        !ref.current.classList.contains('modal')
+        !ref.current.classList.contains('modal') &&
+        !(
+          (event.target as HTMLElement).closest('.modal') &&
+          ref.current !== event.target &&
+          !(event.target as HTMLElement).closest('.modal-close')
+        )
       ) {
         callback();
       }

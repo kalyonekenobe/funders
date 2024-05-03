@@ -11,7 +11,10 @@ import { PostDonation } from '../store/types/post-donation.types';
 import { PostCommentReaction } from '../store/types/post-comment-reaction.types';
 import { PostComment } from '../store/types/post-comment.types';
 import { ValiError, flatten, parse } from 'valibot';
-import { CreatePostCommentSchema } from '../validation/schemas/post/post-comment.schema';
+import {
+  CreatePostCommentSchema,
+  UpdatePostCommentSchema,
+} from '../validation/schemas/post/post-comment.schema';
 
 export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
@@ -248,7 +251,13 @@ export const addPostComment = async (state: any, postId: string, formData: FormD
       formData.set('authorId', authenticatedUser.userId);
 
       const query = qs.stringify(
-        { include: { author: true, attachments: true } },
+        {
+          include: {
+            author: true,
+            attachments: true,
+            parentComment: { include: { author: true } },
+          },
+        },
         { allowDots: true },
       );
       const response = await axios.post(
@@ -263,6 +272,88 @@ export const addPostComment = async (state: any, postId: string, formData: FormD
 
       if (response.status === HttpStatusCode.Created) {
         return { ...state, errors: {}, createdComment: response.data };
+      }
+    }
+  } catch (error: any) {
+    console.log(error);
+    if (error instanceof ValiError) {
+      return {
+        ...state,
+        errors: flatten(error),
+      };
+    }
+
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      return {
+        ...state,
+        errors: {
+          global: error.response?.data?.message ?? 'Internal server error.',
+        },
+      };
+    }
+  }
+
+  return {
+    ...state,
+    errors: {
+      global: 'Internal server error.',
+    },
+  };
+};
+
+export const editPostComment = async (state: any, commentId: string, formData: FormData) => {
+  const { attachments, ...data } = Object.fromEntries(formData) as any;
+
+  try {
+    const authenticatedUser = await getAuthInfo();
+
+    if (authenticatedUser) {
+      const comment = await parse(UpdatePostCommentSchema, data);
+
+      const attachmentsErrors = {} as any;
+      formData.getAll('attachments').forEach((_, i) => {
+        const filename = (formData.get(`attachments[${i}][filename]`) || '') as string;
+        if (!filename?.trim()) {
+          attachmentsErrors[i] = ['Filename cannot be empty'];
+        }
+      });
+
+      if (Object.entries(attachmentsErrors).length > 0) {
+        return {
+          ...state,
+          errors: {
+            nested: {
+              attachments: attachmentsErrors,
+            },
+          },
+        };
+      }
+
+      formData.delete('comment');
+      formData.set('content', comment.comment);
+
+      const query = qs.stringify(
+        {
+          include: {
+            author: true,
+            attachments: true,
+            parentComment: { include: { author: true } },
+          },
+        },
+        { allowDots: true },
+      );
+      const response = await axios.put(
+        `/comments/${commentId}${query ? `?${query}` : ''}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      if (response.status === HttpStatusCode.Ok) {
+        return { ...state, errors: {}, editedComment: response.data };
       }
     }
   } catch (error: any) {

@@ -27,9 +27,7 @@ export const resolveImage = (
     | 'profile-image-placeholder' = 'default-image-placeholder',
 ) => {
   if (source) {
-    return `${process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_PREFIX}${source}.${getFileExtension(
-      source,
-    )}`;
+    return `${process.env.NEXT_PUBLIC_CLOUDINARY_PREFIX}${source}.${getFileExtension(source)}`;
   }
 
   switch (placeholder) {
@@ -57,7 +55,7 @@ export const getFileExtension = (source: string): unknown =>
   /[.]/.exec(source) ? /[^.]+$/.exec(source) : '';
 
 export const resolveFilePath = (source: string, resourseType: 'image' | 'video' | 'raw') => {
-  return `${process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_PREFIX}/${resourseType}/upload/${source}${
+  return `${process.env.NEXT_PUBLIC_CLOUDINARY_PREFIX}/${resourseType}/upload/${source}${
     resourseType !== 'raw' ? `.${getFileExtension(source)}` : ''
   }`;
 };
