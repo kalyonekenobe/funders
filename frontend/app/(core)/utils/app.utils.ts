@@ -55,3 +55,13 @@ export const resolveImage = (
 
 export const getFileExtension = (source: string): unknown =>
   /[.]/.exec(source) ? /[^.]+$/.exec(source) : '';
+
+export const resolveFilePath = (source: string, resourseType: 'image' | 'video' | 'raw') => {
+  return `${process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_PREFIX}/${resourseType}/upload/${source}${
+    resourseType !== 'raw' ? `.${getFileExtension(source)}` : ''
+  }`;
+};
+
+export const fileWithExtension = (filename: string): string => {
+  return `${filename}.${getFileExtension(filename) || ''}`;
+};

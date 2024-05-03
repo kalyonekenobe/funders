@@ -39,7 +39,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
     ...initialState,
     usersThatLikedPost: (post.reactions ?? []).map(reaction => reaction.user!),
     isLiked: Boolean(
-      (post.reactions ?? []).find(reaction => reaction.userId === authenticatedUser.userId),
+      (post.reactions ?? []).find(reaction => reaction.userId === authenticatedUser?.userId),
     ),
   });
   const { createNotification } = useNotification();
@@ -110,7 +110,7 @@ const PostDetailsLikeButton: FC<PostDetailsLikeButtonProps> = ({
                 />
               ))}
               {!state.usersThatLikedPost.length && (
-                <div className='min-h-[50px] flex items-center justify-center rounded-xl border-[3px] border-dashed'>
+                <div className='min-h-[50px] flex items-center justify-center rounded border-[3px] border-dashed'>
                   <h3 className='text-gray-400 font-semibold text-center'>
                     Nobody has liked this post yet
                   </h3>

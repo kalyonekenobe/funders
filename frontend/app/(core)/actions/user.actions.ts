@@ -7,7 +7,7 @@ import { HttpStatusCode } from 'axios';
 import { Following } from '../store/types/following.types';
 import { getAuthInfo, setCookies } from './auth.actions';
 import { ValiError, flatten, parse } from 'valibot';
-import { UserUpdateSchema } from '../validation/schemas/auth/user.schema';
+import { UserUpdateSchema } from '../validation/schemas/user/user.schema';
 import { cookies } from 'next/headers';
 
 export const getUserFriendsAndSuggestions = async (userId: string, limit: number = 10) => {

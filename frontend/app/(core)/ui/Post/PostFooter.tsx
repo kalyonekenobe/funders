@@ -113,7 +113,7 @@ const PostFooter: FC<PostFooterProps> = ({ post, authenticatedUser, ...props }) 
                 />
               ))}
               {!state.usersThatLikedPost.length && (
-                <div className='min-h-[50px] flex items-center justify-center rounded-xl border-[3px] border-dashed'>
+                <div className='min-h-[50px] flex items-center justify-center rounded border-[3px] border-dashed'>
                   <h3 className='text-gray-400 font-semibold text-center'>
                     Nobody has liked this post yet
                   </h3>

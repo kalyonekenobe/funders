@@ -4,24 +4,29 @@ import Image from 'next/image';
 import { ApplicationRoutes } from '../../utils/routes.utils';
 import Link from 'next/link';
 import { resolveImage } from '../../utils/app.utils';
-import { getAuthInfo } from '../../actions/auth.actions';
 import PostCommentFooter from './PostCommentFooter';
 import PostCommentOptionsButton from './PostCommentOptionsButton';
 import { GearIcon } from '../Icons/Icons';
+import { Post } from '../../store/types/post.types';
+import { AuthInfo } from '../../store/types/app.types';
 
 export interface PostCommentProps {
+  post: Post;
   comment: PostCommentType;
+  authenticatedUser: AuthInfo;
+  onRemove?: (comment: PostCommentType) => void;
+  onReply?: (comment: PostCommentType) => void;
 }
 
-const fetchData = async () => {
-  const authenticatedUser = await getAuthInfo();
-
-  return { authenticatedUser };
-};
-
-const PostComment: FC<PostCommentProps> = async ({ comment, ...props }) => {
+const PostComment: FC<PostCommentProps> = ({
+  post,
+  comment,
+  authenticatedUser,
+  onRemove,
+  onReply,
+  ...props
+}) => {
   const intl = Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'short' });
-  const { authenticatedUser } = await fetchData();
 
   return (
     <div {...props}>
@@ -71,15 +76,30 @@ const PostComment: FC<PostCommentProps> = async ({ comment, ...props }) => {
         <PostCommentOptionsButton
           postComment={comment}
           authenticatedUser={authenticatedUser!}
+          onRemove={onRemove}
           className='rounded-full hover:bg-slate-100 aspect-square p-1.5 transition-[0.3s_ease]'
         >
           <GearIcon className='size-5 stroke-[1.5px] text-gray-700' />
         </PostCommentOptionsButton>
       </header>
-      <div className='mt-2'>{comment.content}</div>
-      <PostCommentFooter postComment={comment} authenticatedUser={authenticatedUser!} />
+      <div className='mt-2 whitespace-pre-wrap'>{comment.content}</div>
+      <PostCommentFooter
+        post={post}
+        postComment={comment}
+        authenticatedUser={authenticatedUser!}
+        onReply={onReply}
+      />
       <div className='flex flex-col mt-3 ps-10'>
-        {comment.replies?.map(reply => <PostComment key={reply.id} comment={reply} />)}
+        {comment.replies?.map(reply => (
+          <PostComment
+            authenticatedUser={authenticatedUser}
+            post={post}
+            key={reply.id}
+            comment={reply}
+            onReply={onReply}
+            onRemove={onRemove}
+          />
+        ))}
       </div>
     </div>
   );

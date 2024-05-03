@@ -44,6 +44,7 @@ import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Permissions } from 'src/user/types/user.types';
 import * as qs from 'qs';
 import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
+import { query } from 'express';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -136,8 +137,16 @@ export class PostController {
     files: PostCommentRequestBodyFiles,
     @Param('id') id: string,
     @Body() createPostCommentDto: CreatePostCommentDto,
+    @Query() query?: string,
   ) {
-    return this.postCommentService.create(id, createPostCommentDto, files);
+    return this.postCommentService.create(
+      id,
+      createPostCommentDto,
+      files,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiCreatedResponse({

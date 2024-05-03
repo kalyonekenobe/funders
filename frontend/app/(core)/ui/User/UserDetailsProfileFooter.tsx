@@ -130,7 +130,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                 />
               ))}
               {!state.followers.length && (
-                <div className='min-h-[50px] flex items-center justify-center rounded-xl border-[3px] border-dashed'>
+                <div className='min-h-[50px] flex items-center justify-center rounded border-[3px] border-dashed'>
                   <h3 className='text-gray-400 font-semibold text-center'>
                     {user.firstName} {user.lastName} does not have any followers yet
                   </h3>
@@ -165,7 +165,7 @@ const UserDetailsProfileFooter: FC<UserDetailsProfileFooterProps> = ({
                 />
               ))}
               {!state.followings.length && (
-                <div className='min-h-[50px] flex items-center justify-center rounded-xl border-[3px] border-dashed'>
+                <div className='min-h-[50px] flex items-center justify-center rounded border-[3px] border-dashed'>
                   <h3 className='text-gray-400 font-semibold text-center'>
                     {user.firstName} {user.lastName} does not follow any users
                   </h3>

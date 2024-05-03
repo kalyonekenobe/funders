@@ -51,5 +51,6 @@ export class UpdateChatMessageDto implements UpdateChatMessage {
   removedAt?: Date | null;
 
   @ApiProperty({ description: 'The nested array of attachments of this chat message' })
+  @ValidateIf((_, value) => value)
   attachments?: Omit<CreateChatMessageAttachmentDto, 'messageId'>[];
 }

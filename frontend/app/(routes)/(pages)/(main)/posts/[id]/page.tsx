@@ -11,40 +11,13 @@ import PostOptionsButton from '@/app/(core)/ui/Post/PostOptionsButton';
 import { BanknotesIcon, GearIcon } from '@/app/(core)/ui/Icons/Icons';
 import { getAuthInfo } from '@/app/(core)/actions/auth.actions';
 import Progress from '@/app/(core)/ui/Progress/Progress';
-import { PostComment as PostCommentType } from '@/app/(core)/store/types/post-comment.types';
-import PostComment from '@/app/(core)/ui/Post/PostComment';
 import BackButton from '@/app/(core)/ui/Controls/BackButton';
 import PostDetailsLikeButton from '@/app/(core)/ui/Post/PostDetailsLikeButton';
+import PostCommentsSection from '@/app/(core)/ui/Post/PostCommentsSection';
 
 export interface PostDetailsPageProps {
   params: { id: string };
 }
-
-const getRootParentId = (
-  comment: PostCommentType | undefined,
-  comments: PostCommentType[],
-): PostCommentType['id'] | undefined => {
-  if (!comment) return comment;
-  if (comment.parentCommentId === null) return comment.id;
-  return getRootParentId(
-    comments.find(c => c.id === comment.parentCommentId),
-    comments,
-  );
-};
-
-const prepareComments = (comments: PostCommentType[]): PostCommentType[] => {
-  const rootComments = comments.filter(comment => comment.parentCommentId === null);
-  rootComments.forEach(comment => {
-    comment.replies = [];
-    comments.forEach(c => {
-      if (c.id !== comment.id && getRootParentId(c, comments) === comment.id) {
-        c.parentComment = comments.find(cc => cc.id === c.parentCommentId);
-        comment.replies!.push(c);
-      }
-    });
-  });
-  return rootComments;
-};
 
 const fetchData = async (id: string) => {
   const authenticatedUser = await getAuthInfo();
@@ -58,6 +31,7 @@ const fetchData = async (id: string) => {
         include: {
           author: true,
           reactions: { include: { user: true }, orderBy: { datetime: 'desc' } },
+          attachments: true,
         },
         orderBy: { createdAt: 'asc' },
       },
@@ -114,7 +88,7 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
             </div>
           </Link>
           <div className='inline-flex gap-3 items-center'>
-            <BackButton className='inline-flex items-center bg-neutral-800 text-xs sm:text-base text-white font-medium px-2 sm:px-5 py-1 rounded hover:bg-neutral-700 transition-[0.3s_ease]'>
+            <BackButton className='inline-flex items-center bg-neutral-800 text-xs sm:text-sm text-white font-medium px-2 sm:px-5 py-1 rounded hover:bg-neutral-700 transition-[0.3s_ease]'>
               Back
             </BackButton>
             <PostOptionsButton
@@ -179,12 +153,13 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
           />
         </div>
         <p className='whitespace-pre-wrap text-xl mt-10'>{post.content}</p>
-        <h4 className='text-gray-500 font-bold mt-10 mb-5 text-xl'>Comments</h4>
-        <div id='comments' className='flex flex-col gap-3'>
-          {prepareComments(post.comments ?? []).map(comment => (
-            <PostComment key={comment.id} comment={comment} />
-          ))}
-        </div>
+        <PostCommentsSection
+          comments={post.comments ?? []}
+          post={post}
+          authenticatedUser={authenticatedUser!}
+          id='comments'
+          className='flex flex-col mt-10'
+        />
       </div>
     </div>
   );

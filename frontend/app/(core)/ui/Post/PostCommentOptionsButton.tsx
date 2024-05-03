@@ -8,13 +8,13 @@ import { createPortal } from 'react-dom';
 import Modal from '../Modal/Modal';
 import { NotificationType } from '../../utils/notifications.utils';
 import useNotification from '../../hooks/notifications.hooks';
-import { useRouter } from 'next/navigation';
 import { PostComment } from '../../store/types/post-comment.types';
 import { removePostComment } from '../../actions/post.actions';
 
 export interface PostCommentOptionsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   postComment: PostComment;
   authenticatedUser: AuthInfo;
+  onRemove?: (comment: PostComment) => void;
 }
 
 export interface PostCommentOptionsButtonState {
@@ -31,6 +31,7 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
   postComment,
   authenticatedUser,
   children,
+  onRemove,
   ...props
 }) => {
   const [state, setState] = useState(initialState);
@@ -38,7 +39,6 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
     setState({ ...state, isPostCommentOptionsDropdownVisible: false }),
   );
   const { createNotification } = useNotification();
-  const router = useRouter();
 
   return (
     <>
@@ -70,7 +70,7 @@ const PostCommentOptionsButton: FC<PostCommentOptionsButtonProps> = ({
                   }
 
                   setState({ ...state, isRemovePostCommentModalVisible: false });
-                  router.refresh();
+                  onRemove?.(postComment);
                 },
               },
               {

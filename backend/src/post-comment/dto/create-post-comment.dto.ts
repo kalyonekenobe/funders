@@ -47,5 +47,6 @@ export class CreatePostCommentDto implements CreatePostComment {
   content: string;
 
   @ApiProperty({ description: 'The nested array of attachments of post comment' })
+  @ValidateIf((_, value) => value)
   attachments?: Omit<CreatePostCommentAttachmentDto, 'commentId'>[];
 }
