@@ -16,7 +16,7 @@ import {
   UpdatePostCommentSchema,
 } from '../validation/schemas/post/post-comment.schema';
 import { PostCategory } from '../store/types/post-category.types';
-import { CreatePostSchema } from '../validation/schemas/post/post.schema';
+import { CreatePostSchema, UpdatePostSchema } from '../validation/schemas/post/post.schema';
 import { revalidatePath } from 'next/cache';
 import { ApplicationRoutes } from '../utils/routes.utils';
 
@@ -447,6 +447,74 @@ export const createPost = async (state: any, formData: FormData) => {
         revalidatePath(ApplicationRoutes.Home);
         return { ...state, errors: {} };
       }
+    }
+  } catch (error: any) {
+    console.log(error);
+    if (error instanceof ValiError) {
+      return {
+        ...state,
+        errors: flatten(error),
+      };
+    }
+
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      return {
+        ...state,
+        errors: {
+          global: error.response?.data?.message ?? 'Internal server error.',
+        },
+      };
+    }
+  }
+
+  return {
+    ...state,
+    errors: {
+      global: 'Internal server error.',
+    },
+  };
+};
+
+export const updatePost = async (state: any, postId: string, formData: FormData) => {
+  const { attachments, categories, ...data } = Object.fromEntries(formData) as any;
+
+  try {
+    data.fundsToBeRaised = Number(data.fundsToBeRaised);
+    data.isDraft = data.isDraft === 'true';
+    const post = await parse(UpdatePostSchema, data);
+
+    const attachmentsErrors = {} as any;
+    formData.getAll('attachments').forEach((_, i) => {
+      const filename = (formData.get(`attachments[${i}][filename]`) || '') as string;
+      if (!filename?.trim()) {
+        attachmentsErrors[i] = ['Filename cannot be empty'];
+      }
+    });
+
+    if (Object.entries(attachmentsErrors).length > 0) {
+      return {
+        ...state,
+        errors: {
+          nested: {
+            attachments: attachmentsErrors,
+          },
+        },
+      };
+    }
+
+    if (formData.get('isDraft') === 'false') {
+      formData.delete('isDraft');
+    }
+
+    const response = await axios.put(`/posts/${postId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.status === HttpStatusCode.Ok) {
+      revalidatePath(ApplicationRoutes.Home);
+      return { ...state, errors: {} };
     }
   } catch (error: any) {
     console.log(error);

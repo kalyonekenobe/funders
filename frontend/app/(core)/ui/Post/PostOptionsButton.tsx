@@ -11,6 +11,8 @@ import { NotificationType } from '../../utils/notifications.utils';
 import useNotification from '../../hooks/notifications.hooks';
 import { removePost } from '../../actions/post.actions';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ApplicationRoutes } from '../../utils/routes.utils';
 
 export interface PostOptionsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   post: Post;
@@ -107,13 +109,13 @@ const PostOptionsButton: FC<PostOptionsButtonProps> = ({
             </button>
             {authenticatedUser.userId === post.author?.id && (
               <>
-                <button
-                  type='button'
+                <Link
+                  href={ApplicationRoutes.PostEdit.replace(':id', post.id)}
                   className='w-full ps-2 pe-7 py-1 rounded hover:bg-slate-100 font-medium text-sm text-start inline-flex items-center'
                 >
                   <EditIcon className='size-3 stroke-2 me-2' />
                   Edit
-                </button>
+                </Link>
                 <button
                   type='button'
                   className='w-full ps-2 pe-7 py-1 rounded hover:bg-slate-100 font-medium text-sm text-start inline-flex items-center'

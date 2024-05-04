@@ -100,6 +100,7 @@ export class PostService {
     const deleteResources: ICloudinaryLikeResource[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
     let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
+    let postImage = post.image;
     let deleteAttachmentsOptions = {};
 
     if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
@@ -110,6 +111,12 @@ export class PostService {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
         mapping: { image: 'posts', attachments: 'post_attachments' },
       });
+
+      if (uploader?.resources.find(resource => resource.fieldname === 'image')) {
+        postImage =
+          uploader?.resources.find(resource => resource.fieldname === 'image')?.publicId ??
+          postImage;
+      }
     }
 
     const image = uploader?.resources.find(resource => resource.fieldname === 'image');
@@ -141,6 +148,11 @@ export class PostService {
     if (deleteResources.length > 0) {
       destroyer = this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
       deleteAttachmentsOptions = { deleteMany: {} };
+
+      if (uploader?.resources.find(resource => resource.fieldname === 'image')) {
+        postImage =
+          uploader?.resources.find(resource => resource.fieldname === 'image')?.publicId ?? null;
+      }
     }
 
     return this.prismaService.post
@@ -148,7 +160,7 @@ export class PostService {
         where: { id },
         data: {
           ...data,
-          image: image?.publicId ?? null,
+          image: postImage,
           attachments: {
             ...deleteAttachmentsOptions,
             createMany: {
