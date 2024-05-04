@@ -40,7 +40,10 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<UserPublicEntity> {
     try {
-      const user = await this.prismaService.user.findUniqueOrThrow({ where: { email } });
+      const user = await this.prismaService.user.findUniqueOrThrow({
+        where: { email },
+        include: { userRole: true },
+      });
       const passwordIsCorrect = await this.passwordService.compare(password, user.password);
 
       if (!passwordIsCorrect) {

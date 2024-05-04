@@ -175,7 +175,7 @@ const EditPostCommentButton: FC<EditPostCommentButtonProps> = ({
               )}
               <div className='flex flex-col'>
                 <label
-                  htmlFor='add-comment-text'
+                  htmlFor='edit-comment-text'
                   className='text-gray-600 text-sm mb-0.5 font-medium'
                 >
                   Comment
@@ -203,14 +203,14 @@ const EditPostCommentButton: FC<EditPostCommentButtonProps> = ({
                   </span>
                 ))}
                 <label
-                  htmlFor='add-comment-attachments'
+                  htmlFor='edit-comment-attachments'
                   className='inline-flex bg-rose-600 text-xs mt-3 px-2 py-1 rounded text-white font-bold justify-center items-center text-center self-start cursor-pointer hover:bg-rose-500 transition-[0.3s_ease]'
                 >
                   <PlusIcon className='size-3 stroke-[3px] me-1' />
                   Attach files
                 </label>
                 <input
-                  id='add-comment-attachments'
+                  id='edit-comment-attachments'
                   className='hidden'
                   type='file'
                   multiple

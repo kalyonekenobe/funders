@@ -15,6 +15,10 @@ import {
   CreatePostCommentSchema,
   UpdatePostCommentSchema,
 } from '../validation/schemas/post/post-comment.schema';
+import { PostCategory } from '../store/types/post-category.types';
+import { CreatePostSchema } from '../validation/schemas/post/post.schema';
+import { revalidatePath } from 'next/cache';
+import { ApplicationRoutes } from '../utils/routes.utils';
 
 export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
@@ -354,6 +358,94 @@ export const editPostComment = async (state: any, commentId: string, formData: F
 
       if (response.status === HttpStatusCode.Ok) {
         return { ...state, errors: {}, editedComment: response.data };
+      }
+    }
+  } catch (error: any) {
+    console.log(error);
+    if (error instanceof ValiError) {
+      return {
+        ...state,
+        errors: flatten(error),
+      };
+    }
+
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      return {
+        ...state,
+        errors: {
+          global: error.response?.data?.message ?? 'Internal server error.',
+        },
+      };
+    }
+  }
+
+  return {
+    ...state,
+    errors: {
+      global: 'Internal server error.',
+    },
+  };
+};
+
+export const getAllPostCategories = async (): Promise<PostCategory[]> => {
+  try {
+    const response = await axios.get('/post-categories');
+
+    if (response.status === HttpStatusCode.Ok) {
+      return response.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return [];
+};
+
+export const createPost = async (state: any, formData: FormData) => {
+  const { attachments, categories, ...data } = Object.fromEntries(formData) as any;
+
+  try {
+    const authenticatedUser = await getAuthInfo();
+
+    if (authenticatedUser) {
+      data.fundsToBeRaised = Number(data.fundsToBeRaised);
+      data.isDraft = data.isDraft === 'true';
+      const post = await parse(CreatePostSchema, data);
+
+      const attachmentsErrors = {} as any;
+      formData.getAll('attachments').forEach((_, i) => {
+        const filename = (formData.get(`attachments[${i}][filename]`) || '') as string;
+        if (!filename?.trim()) {
+          attachmentsErrors[i] = ['Filename cannot be empty'];
+        }
+      });
+
+      if (Object.entries(attachmentsErrors).length > 0) {
+        return {
+          ...state,
+          errors: {
+            nested: {
+              attachments: attachmentsErrors,
+            },
+          },
+        };
+      }
+
+      formData.set('authorId', authenticatedUser.userId);
+
+      if (formData.get('isDraft') === 'false') {
+        formData.delete('isDraft');
+      }
+
+      const response = await axios.post('/posts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === HttpStatusCode.Created) {
+        revalidatePath(ApplicationRoutes.Home);
+        return { ...state, errors: {} };
       }
     }
   } catch (error: any) {

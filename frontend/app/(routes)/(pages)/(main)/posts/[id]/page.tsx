@@ -4,16 +4,17 @@ import DonatePostButton from '@/app/(core)/ui/Post/DonatePostButton';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FC } from 'react';
-import { resolveImage } from '@/app/(core)/utils/app.utils';
+import { getFileExtension, resolveFilePath, resolveImage } from '@/app/(core)/utils/app.utils';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import Link from 'next/link';
 import PostOptionsButton from '@/app/(core)/ui/Post/PostOptionsButton';
-import { BanknotesIcon, GearIcon } from '@/app/(core)/ui/Icons/Icons';
+import { BanknotesIcon, FileIcon, GearIcon } from '@/app/(core)/ui/Icons/Icons';
 import { getAuthInfo } from '@/app/(core)/actions/auth.actions';
 import Progress from '@/app/(core)/ui/Progress/Progress';
 import BackButton from '@/app/(core)/ui/Controls/BackButton';
 import PostDetailsLikeButton from '@/app/(core)/ui/Post/PostDetailsLikeButton';
 import PostCommentsSection from '@/app/(core)/ui/Post/PostCommentsSection';
+import PostAttachmentsSection from '@/app/(core)/ui/Post/PostAttachmentsSection';
 
 export interface PostDetailsPageProps {
   params: { id: string };
@@ -36,6 +37,7 @@ const fetchData = async (id: string) => {
         },
         orderBy: { createdAt: 'asc' },
       },
+      attachments: true,
       categories: true,
     },
   });
@@ -62,7 +64,7 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
 
   return (
     <div className='flex flex-col p-5 sm:p-10 bg-white items-center'>
-      <div className='flex flex-col max-w-5xl'>
+      <div className='flex flex-col w-full max-w-5xl'>
         <div className='flex justify-between items-center border-b pb-5'>
           <Link
             href={ApplicationRoutes.UserDetails.replace(':id', post.authorId)}
@@ -154,6 +156,10 @@ const PostDetailsPage: FC<PostDetailsPageProps> = async ({ params }) => {
           />
         </div>
         <p className='whitespace-pre-wrap text-xl mt-10'>{post.content}</p>
+        <PostAttachmentsSection
+          attachments={post.attachments ?? []}
+          className='flex flex-col mt-10'
+        />
         <PostCommentsSection
           comments={post.comments ?? []}
           post={post}

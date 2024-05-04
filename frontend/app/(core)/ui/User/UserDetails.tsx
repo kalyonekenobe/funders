@@ -98,7 +98,7 @@ const UserDetails: FC<UserDetailsProps> = async ({ user, ...props }) => {
             </h3>
           </div>
         ) : (
-          <div className='grid grid-cols-1 gap-3 flex-1 md:px-5 md:pb-5 overflow-y-scroll mx-auto w-full max-w-3xl'>
+          <div className='grid grid-cols-1 gap-3 flex-1 md:px-5 md:pb-5 overflow-y-scroll mx-auto w-full max-w-3xl items-start'>
             {user.posts?.map(post => (
               <PostComponent
                 key={post.id}

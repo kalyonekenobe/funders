@@ -129,7 +129,7 @@ const PostCommentFooter: FC<PostCommentFooterProps> = ({
         )}
       <footer {...props}>
         {(postComment.attachments?.length ?? 0) > 0 && (
-          <div className='flex gap-1 mt-2 mb-1'>
+          <div className='flex gap-1 mt-2 mb-1 flex-wrap'>
             {postComment.attachments?.map(attachment => (
               <span
                 onClick={() => {
