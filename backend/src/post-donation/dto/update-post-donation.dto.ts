@@ -18,7 +18,7 @@ export class UpdatePostDonationDto
   @IsNotEmpty()
   @IsDefined()
   @ValidateIf((_, value) => value)
-  paymentInfo: string;
+  paymentInfo?: string;
 
   @ApiProperty({
     description: 'The amount of money of the donation',
