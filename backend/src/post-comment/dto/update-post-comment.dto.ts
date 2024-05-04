@@ -44,5 +44,6 @@ export class UpdatePostCommentDto implements UpdatePostComment {
   removedAt?: Date | null;
 
   @ApiProperty({ description: 'The nested array of attachments of post comment' })
+  @ValidateIf((_, value) => value)
   attachments?: Omit<CreatePostCommentAttachmentDto, 'postId'>[];
 }

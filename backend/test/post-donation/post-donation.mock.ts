@@ -10,28 +10,28 @@ export class MockDataStorage {
     {
       id: '73c67a90-149e-43d0-966c-91a9a7b3aba3',
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
-      cardNumber: '4651959430571585',
+      paymentInfo: JSON.stringify({ last4: '1585' }),
       donation: new Decimal(1200),
       datetime: new Date(),
     },
     {
       id: '940860d0-ea49-40cc-bfb1-82633e0b1b10',
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
-      cardNumber: '5684068403860256',
+      paymentInfo: JSON.stringify({ last4: '0256' }),
       donation: new Decimal(4495),
       datetime: new Date(),
     },
     {
       id: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
       postId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
-      cardNumber: '1058674969476571',
+      paymentInfo: JSON.stringify({ last4: '6571' }),
       donation: new Decimal(300),
       datetime: new Date(),
     },
     {
       id: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
-      cardNumber: '6965394867570345',
+      paymentInfo: JSON.stringify({ last4: '0345' }),
       donation: new Decimal(45.98),
       datetime: new Date(),
     },
@@ -41,21 +41,21 @@ export class MockDataStorage {
     {
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
       data: {
-        cardNumber: '1058674969476571',
+        paymentInfo: JSON.stringify({ last4: '6571' }),
         donation: new Decimal(300),
       },
     },
     {
       postId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
       data: {
-        cardNumber: '6965394867570345',
+        paymentInfo: JSON.stringify({ last4: '0345' }),
         donation: new Decimal(400),
       },
     },
     {
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
       data: {
-        cardNumber: '6965394867570345',
+        paymentInfo: JSON.stringify({ last4: '0345' }),
         donation: new Decimal(500),
       },
     },
@@ -66,21 +66,21 @@ export class MockDataStorage {
     data: UpdatePostDonationDto;
   }[] = [
     { id: '73c67a90-149e-43d0-966c-91a9a7b3aba3', data: { donation: new Decimal(800) } },
-    { id: '940860d0-ea49-40cc-bfb1-82633e0b1b10', data: { cardNumber: '6965394867570345' } },
+    { id: '940860d0-ea49-40cc-bfb1-82633e0b1b10', data: { paymentInfo: '6965394867570345' } },
   ];
 
   static removePostDonationDtoList: PostDonationEntity[] = [
     {
       id: 'f7ce3ef8-b4fa-43af-b2b9-ae2a4caf65fc',
       postId: '0ae05c9a-0388-47cc-9b26-b8c1085bcf68',
-      cardNumber: '1058674969476571',
+      paymentInfo: JSON.stringify({ last4: '6571' }),
       donation: new Decimal(300),
       datetime: new Date(),
     },
     {
       id: 'f5ccff87-1339-49c7-b87f-0fa80580c5d4',
       postId: '86362221-935b-4b15-a8cb-00be736f1795',
-      cardNumber: '6965394867570345',
+      paymentInfo: JSON.stringify({ last4: '0345' }),
       donation: new Decimal(45.98),
       datetime: new Date(),
     },

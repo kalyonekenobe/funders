@@ -21,7 +21,15 @@ async function bootstrap() {
 
   app.useGlobalPipes(ValidationPipes.validationPipe);
   app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      `${process.env.FRONTEND_URL}:3000`,
+      `${process.env.FRONTEND_URL}:80`,
+    ],
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+    credentials: true,
+  });
   app.use(cookieParser());
   app.setGlobalPrefix('api/v1');
 

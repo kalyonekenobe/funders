@@ -10,6 +10,8 @@ import {
   IPrepareMultipleResourcesForDelete,
   IPrepareMultipleResourcesForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
+import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class PostService {
@@ -18,12 +20,17 @@ export class PostService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(): Promise<PostEntity[]> {
-    return this.prismaService.post.findMany();
+  async findAll(options?: Prisma.PostFindManyArgs): Promise<PostEntity[]> {
+    return Object.entries(options ?? {}).length > 0
+      ? this.prismaService.post.findMany(options)
+      : this.prismaService.post.findMany();
   }
 
-  async findById(id: string): Promise<PostEntity> {
-    return this.prismaService.post.findUniqueOrThrow({ where: { id } });
+  async findById(
+    id: string,
+    options?: Omit<Prisma.PostFindUniqueOrThrowArgs, 'where'>,
+  ): Promise<PostEntity> {
+    return this.prismaService.post.findUniqueOrThrow(_.merge(options, { where: { id } }));
   }
 
   async findAllUserPosts(userId: string): Promise<PostEntity[]> {
@@ -79,8 +86,8 @@ export class PostService {
           },
         },
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         return response;
       });
   }
@@ -95,6 +102,7 @@ export class PostService {
     const deleteResources: ICloudinaryLikeResource[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
     let destroyer: IPrepareMultipleResourcesForDelete | undefined = undefined;
+    let postImage = post.image;
     let deleteAttachmentsOptions = {};
 
     if (files?.image && files.image.length > 0) uploadResources.push(files.image[0]);
@@ -105,6 +113,12 @@ export class PostService {
       uploader = this.cloudinaryService.prepareMultipleResourcesForUpload(uploadResources, {
         mapping: { image: 'posts', attachments: 'post_attachments' },
       });
+
+      if (uploader?.resources.find(resource => resource.fieldname === 'image')) {
+        postImage =
+          uploader?.resources.find(resource => resource.fieldname === 'image')?.publicId ??
+          postImage;
+      }
     }
 
     const image = uploader?.resources.find(resource => resource.fieldname === 'image');
@@ -136,6 +150,11 @@ export class PostService {
     if (deleteResources.length > 0) {
       destroyer = this.cloudinaryService.prepareMultipleResourcesForDelete(deleteResources);
       deleteAttachmentsOptions = { deleteMany: {} };
+
+      if (uploader?.resources.find(resource => resource.fieldname === 'image')) {
+        postImage =
+          uploader?.resources.find(resource => resource.fieldname === 'image')?.publicId ?? null;
+      }
     }
 
     return this.prismaService.post
@@ -143,7 +162,7 @@ export class PostService {
         where: { id },
         data: {
           ...data,
-          image: image?.publicId ?? null,
+          image: postImage,
           attachments: {
             ...deleteAttachmentsOptions,
             createMany: {
@@ -160,8 +179,8 @@ export class PostService {
           },
         },
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
       });

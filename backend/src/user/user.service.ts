@@ -12,7 +12,8 @@ import {
   IPrepareSingleResourceForUpload,
 } from 'src/core/cloudinary/cloudinary.types';
 import { PaymentService } from 'src/core/payment/payment.service';
-import { FindUserDto } from './dto/find-user.dto';
+import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class UserService {
@@ -23,15 +24,21 @@ export class UserService {
     private readonly paymentService: PaymentService,
   ) {}
 
-  async findAll(): Promise<UserPublicEntity[]> {
-    return this.prismaService.user.findMany({ select: exclude('User', ['password']) });
+  async findAll(options?: Prisma.UserFindManyArgs): Promise<UserPublicEntity[]> {
+    return this.prismaService.user.findMany(
+      _.merge(options, {
+        select: exclude('User', ['password']),
+      }),
+    );
   }
 
-  async findById(id: string): Promise<UserPublicEntity> {
-    return this.prismaService.user.findUniqueOrThrow({
-      where: { id },
-      select: { ...exclude('User', ['password']), userRole: true },
-    });
+  async findById(id: string, options?: Prisma.UserFindFirstOrThrowArgs): Promise<UserPublicEntity> {
+    return this.prismaService.user.findUniqueOrThrow(
+      _.merge(options, {
+        where: { id },
+        select: { ...exclude('User', ['password']), userRole: true },
+      }),
+    );
   }
 
   async findByEmail(email: string): Promise<UserPublicEntity> {
@@ -41,11 +48,12 @@ export class UserService {
     });
   }
 
-  async findOne(where: FindUserDto): Promise<UserPublicEntity> {
-    return this.prismaService.user.findFirstOrThrow({
-      where,
-      select: { ...exclude('User', ['password']), userRole: true },
-    });
+  async findOne(options?: Prisma.UserFindFirstOrThrowArgs): Promise<UserPublicEntity> {
+    return this.prismaService.user.findFirstOrThrow(
+      _.merge(options, {
+        select: { ...exclude('User', ['password']), userRole: true },
+      }),
+    );
   }
 
   async create(data: CreateUserDto, files?: UserRequestBodyFiles): Promise<UserPublicEntity> {
@@ -72,8 +80,8 @@ export class UserService {
         },
         select: exclude('User', ['password']),
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         return response;
       })
       .catch(error => {
@@ -95,11 +103,13 @@ export class UserService {
 
     let uploader: IPrepareSingleResourceForUpload | undefined = undefined;
     let destroyer: IPrepareSingleResourceForDelete | undefined = undefined;
+    let avatar = user.avatar;
 
     if (files?.avatar && files.avatar.length > 0) {
       uploader = this.cloudinaryService.prepareSingleResourceForUpload(files.avatar[0], {
         mapping: { [`${files.avatar[0].fieldname}`]: 'users' },
       });
+      avatar = uploader?.resource.publicId ?? avatar;
     }
 
     if (((files?.avatar && files.avatar.length > 0) || data.avatar !== undefined) && user.avatar) {
@@ -107,6 +117,7 @@ export class UserService {
         publicId: user.avatar,
         resourceType: 'image',
       });
+      avatar = uploader?.resource.publicId ?? null;
     }
 
     this.paymentService.updateCustomer(user.stripeCustomerId, {
@@ -115,12 +126,12 @@ export class UserService {
 
     return this.prismaService.user
       .update({
-        data: { ...data, avatar: uploader?.resource.publicId ?? null },
+        data: { ...data, avatar },
         where: { id },
         select: exclude('User', ['password']),
       })
-      .then(response => {
-        if (uploader) uploader.upload();
+      .then(async response => {
+        if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
       })

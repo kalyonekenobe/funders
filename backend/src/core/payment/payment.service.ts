@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { StripeService } from '../stripe/stripe.service';
 import Stripe from 'stripe';
 import {
-  ChargePayload,
   PaymentChargeResponse,
   PaymentListResponse,
   UpdateCustomerPayload,
 } from './types/payment.types';
+import { ChargeDto } from './dto/charge.dto';
 
 @Injectable()
 export class PaymentService {
@@ -29,7 +29,7 @@ export class PaymentService {
     return this.stripeService.stripe.customers.del(customerId);
   }
 
-  async charge(payload: ChargePayload): Promise<PaymentChargeResponse> {
+  async charge(payload: ChargeDto): Promise<PaymentChargeResponse> {
     try {
       const paymentIntent = await this.stripeService.stripe.paymentIntents.create({
         amount: payload.amount * 100,

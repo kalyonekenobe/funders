@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,6 +31,8 @@ import { PostCommentAttachmentEntity } from 'src/post-comment-attachment/entitie
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Permissions } from 'src/user/types/user.types';
+import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
+import * as qs from 'qs';
 
 @ApiTags('Post comments')
 @Controller('comments')
@@ -119,8 +122,16 @@ export class PostCommentController {
     files: PostCommentRequestBodyFiles,
     @Param('id') id: string,
     @Body() updatePostCommentDto: UpdatePostCommentDto,
+    @Query() query?: string,
   ) {
-    return this.postCommentService.update(id, updatePostCommentDto, files);
+    return this.postCommentService.update(
+      id,
+      updatePostCommentDto,
+      files,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @Auth(JwtAuthGuard, { permissions: Permissions.MANAGE_POST_COMMENTS })

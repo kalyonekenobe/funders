@@ -20,10 +20,11 @@ import { CreateCategoriesOnPostsDto } from 'src/categories-on-posts/dto/create-c
 
 type CreatePost = Omit<
   PostEntity,
-  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments' | 'categories'
+  'id' | 'createdAt' | 'updatedAt' | 'removedAt' | 'attachments' | 'categories' | 'isDraft'
 > & {
   categories?: Omit<CreateCategoriesOnPostsDto, 'postId'>[];
   attachments?: Omit<CreatePostAttachmentDto, 'postId'>[];
+  isDraft?: boolean;
 };
 
 export class CreatePostDto implements CreatePost {
@@ -96,8 +97,8 @@ export class CreatePostDto implements CreatePost {
   })
   @IsBoolean()
   @Transform(value => Boolean(value))
-  @IsDefined()
-  isDraft: boolean;
+  @ValidateIf((_, value) => value)
+  isDraft?: boolean;
 
   @ApiProperty({ description: 'The nested array of categories of this post' })
   @ValidateIf((_, value) => value)

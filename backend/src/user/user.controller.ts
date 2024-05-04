@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UploadedFiles,
   UseInterceptors,
@@ -48,6 +49,8 @@ import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { Request } from 'express';
 import { PostEntity } from 'src/post/entities/post.entity';
+import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
+import * as qs from 'qs';
 
 @ApiTags('Users')
 @Controller('users')
@@ -154,8 +157,13 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id/bans')
-  async findAllUserBans(@Param('id') userId: string) {
-    return this.usersBanListRecordService.findAllUserBans(userId);
+  async findAllUserBans(@Param('id') userId: string, @Query() query?: string) {
+    return this.usersBanListRecordService.findAllUserBans(
+      userId,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @Auth(JwtAuthGuard)
@@ -274,8 +282,12 @@ export class UserController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() query?: string) {
+    return this.userService.findAll(
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({
@@ -294,8 +306,13 @@ export class UserController {
     schema: { example: '23fbed56-1bb9-40a0-8977-2dd0f0c6c31f' },
   })
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return this.userService.findById(id);
+  async findById(@Param('id') id: string, @Query() query?: string) {
+    return this.userService.findById(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @Auth(JwtAuthGuard)

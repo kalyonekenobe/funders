@@ -4,35 +4,47 @@ import { CreateFollowingDto } from './dto/create-following.dto';
 import { FollowingEntity } from './entities/following.entity';
 import { exclude } from 'src/core/prisma/prisma.utils';
 import { UserPublicEntity } from 'src/user/entities/user-public.entity';
+import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class FollowingService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAllUserFollowers(userId: string): Promise<UserPublicEntity[]> {
+  async findAllUserFollowers(
+    userId: string,
+    options?: Prisma.FollowingFindManyArgs,
+  ): Promise<UserPublicEntity[]> {
     return this.prismaService
       .$transaction(async tx => {
         await tx.user.findUniqueOrThrow({ where: { id: userId } });
-        return tx.following.findMany({
-          where: { userId },
-          select: {
-            follower: { select: exclude('User', ['password']) },
-          },
-        });
+        return tx.following.findMany(
+          _.merge(options, {
+            where: { userId },
+            select: {
+              follower: { select: exclude('User', ['password']) },
+            },
+          }),
+        );
       })
       .then(result => result.map(entry => entry.follower));
   }
 
-  async findAllUserFollowings(followerId: string): Promise<UserPublicEntity[]> {
+  async findAllUserFollowings(
+    followerId: string,
+    options?: Prisma.FollowingFindManyArgs,
+  ): Promise<UserPublicEntity[]> {
     return this.prismaService
       .$transaction(async tx => {
         await tx.user.findUniqueOrThrow({ where: { id: followerId } });
-        return tx.following.findMany({
-          where: { followerId },
-          select: {
-            user: { select: exclude('User', ['password']) },
-          },
-        });
+        return tx.following.findMany(
+          _.merge(options, {
+            where: { followerId },
+            select: {
+              user: { select: exclude('User', ['password']) },
+            },
+          }),
+        );
       })
       .then(result => result.map(entry => entry.user));
   }

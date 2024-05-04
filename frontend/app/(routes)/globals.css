@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+.with-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.with-scrollbar::-webkit-scrollbar-thumb {
+  border: 4px solid rgba(0, 0, 0, 0);
+  @apply bg-neutral-300 rounded-lg bg-clip-padding;
+}
+
+::-webkit-scrollbar-sm {
+  width: 0;
+}
+
+.with-scrollbar-sm::-webkit-scrollbar {
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.with-scrollbar-sm::-webkit-scrollbar-thumb {
+  border: 6px solid rgba(0, 0, 0, 0);
+  @apply bg-neutral-300 rounded-lg bg-clip-padding;
+}
+
+input:not([type='checkbox'], [type='radio'], .no-outline),
+select,
+textarea {
+  @apply focus:outline focus:outline-transparent focus:ring-[4px] focus:ring-rose-300 transition-[0.2s_ease];
+}
+
+body {
+  @apply bg-neutral-100;
+}

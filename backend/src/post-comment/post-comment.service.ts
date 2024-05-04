@@ -10,6 +10,8 @@ import {
 } from 'src/core/cloudinary/cloudinary.types';
 import { CloudinaryService } from 'src/core/cloudinary/cloudinary.service';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
+import { Prisma } from '@prisma/client';
+import * as _ from 'lodash';
 
 @Injectable()
 export class PostCommentService {
@@ -40,6 +42,7 @@ export class PostCommentService {
     postId: string,
     data: CreatePostCommentDto,
     files?: PostCommentRequestBodyFiles,
+    options?: Omit<Prisma.PostCommentCreateArgs, 'data'>,
   ): Promise<PostCommentEntity> {
     const uploadResources: Express.Multer.File[] = [];
     let uploader: IPrepareMultipleResourcesForUpload | undefined = undefined;
@@ -66,20 +69,22 @@ export class PostCommentService {
       : [];
 
     return this.prismaService.postComment
-      .create({
-        data: {
-          ...data,
-          postId,
-          attachments: {
-            createMany: {
-              data: attachments,
-              skipDuplicates: false,
+      .create(
+        _.merge(options, {
+          data: {
+            ...data,
+            postId,
+            attachments: {
+              createMany: {
+                data: attachments,
+                skipDuplicates: false,
+              },
             },
           },
-        },
-      })
-      .then(response => {
-        if (uploader) uploader.upload();
+        }),
+      )
+      .then(async response => {
+        if (uploader) await uploader.upload();
         return response;
       });
   }
@@ -88,6 +93,7 @@ export class PostCommentService {
     id: string,
     data: UpdatePostCommentDto,
     files?: PostCommentRequestBodyFiles,
+    options?: Omit<Prisma.PostCommentUpdateArgs, 'data' | 'where'>,
   ): Promise<PostCommentEntity> {
     const postComment = await this.prismaService.postComment.findUniqueOrThrow({
       where: { id },
@@ -140,21 +146,23 @@ export class PostCommentService {
     }
 
     return this.prismaService.postComment
-      .update({
-        where: { id },
-        data: {
-          ...data,
-          attachments: {
-            ...deleteAttachmentsOptions,
-            createMany: {
-              data: attachments,
-              skipDuplicates: false,
+      .update(
+        _.merge(options, {
+          where: { id },
+          data: {
+            ...data,
+            attachments: {
+              ...deleteAttachmentsOptions,
+              createMany: {
+                data: attachments,
+                skipDuplicates: false,
+              },
             },
           },
-        },
-      })
-      .then(response => {
-        if (uploader) uploader.upload();
+        }),
+      )
+      .then(async response => {
+        if (uploader) await uploader.upload();
         if (destroyer) destroyer.delete();
         return response;
       });

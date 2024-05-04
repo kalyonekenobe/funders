@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -41,6 +42,8 @@ import { CreatePostCommentDto } from 'src/post-comment/dto/create-post-comment.d
 import { Auth } from 'src/core/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { Permissions } from 'src/user/types/user.types';
+import * as qs from 'qs';
+import { parseObjectStringValuesToPrimitives } from 'src/core/utils/object.utils';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -133,8 +136,16 @@ export class PostController {
     files: PostCommentRequestBodyFiles,
     @Param('id') id: string,
     @Body() createPostCommentDto: CreatePostCommentDto,
+    @Query() query?: string,
   ) {
-    return this.postCommentService.create(id, createPostCommentDto, files);
+    return this.postCommentService.create(
+      id,
+      createPostCommentDto,
+      files,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiCreatedResponse({
@@ -171,8 +182,12 @@ export class PostController {
     description: 'Internal server error was occured.',
   })
   @Get()
-  async findAll() {
-    return this.postService.findAll();
+  async findAll(@Query() query?: string) {
+    return this.postService.findAll(
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({
@@ -191,8 +206,13 @@ export class PostController {
     schema: { example: '989d32c2-abd4-43d3-a420-ee175ae16b98' },
   })
   @Get(':id')
-  async findById(@Param('id') id: string) {
-    return this.postService.findById(id);
+  async findById(@Param('id') id: string, @Query() query?: string) {
+    return this.postService.findById(
+      id,
+      query
+        ? parseObjectStringValuesToPrimitives(qs.parse(query, { comma: true, allowDots: true }))
+        : undefined,
+    );
   }
 
   @ApiOkResponse({

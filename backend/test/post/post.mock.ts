@@ -311,6 +311,7 @@ export const mockPostRepository = {
       const created = {
         ...dto.data,
         id: '',
+        isDraft: dto.data.isDraft || false,
         createdAt: new Date(),
         updatedAt: new Date(),
         removedAt: null,
