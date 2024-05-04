@@ -21,7 +21,9 @@ export class PostService {
   ) {}
 
   async findAll(options?: Prisma.PostFindManyArgs): Promise<PostEntity[]> {
-    return this.prismaService.post.findMany(options);
+    return Object.entries(options ?? {}).length > 0
+      ? this.prismaService.post.findMany(options)
+      : this.prismaService.post.findMany();
   }
 
   async findById(
