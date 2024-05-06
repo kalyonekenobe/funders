@@ -22,7 +22,7 @@ const Navbar: FC<NavbarProps> = ({ ...props }) => {
           </Link>
         </div>
         <div className='hidden md:flex items-center w-full px-5 justify-center'>
-          <Search className='flex flex-1 bg-slate-100 border rounded-full w-full max-w-2xl' />
+          {/* <Search className='flex flex-1 bg-slate-100 border rounded-full w-full max-w-2xl' /> */}
         </div>
         <div className='flex flex-1 justify-end'>
           <UserProfileLink />

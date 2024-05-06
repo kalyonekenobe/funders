@@ -28,15 +28,15 @@ const links: SidebarLink[] = [
     ),
     url: ApplicationRoutes.Users,
   },
-  {
-    content: (
-      <>
-        <ChatsIcon className='size-5 stroke-2 md:me-3' />
-        <span className='hidden md:inline'>Chats</span>
-      </>
-    ),
-    url: ApplicationRoutes.Chats,
-  },
+  // {
+  //   content: (
+  //     <>
+  //       <ChatsIcon className='size-5 stroke-2 md:me-3' />
+  //       <span className='hidden md:inline'>Chats</span>
+  //     </>
+  //   ),
+  //   url: ApplicationRoutes.Chats,
+  // },
   {
     content: (
       <>
