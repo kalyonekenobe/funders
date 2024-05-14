@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: ./Dockerfile.prod
+    image: kalyonekenobe/funders-backend:latest
     container_name: funders-backend
     networks:
       - funders-network
@@ -27,9 +25,7 @@ services:
     #       memory: 300M
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: ./Dockerfile.prod
+    image: kalyonekenobe/funders-frontend:latest
     container_name: funders-frontend
     networks:
       - funders-network
