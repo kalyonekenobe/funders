@@ -1,6 +1,6 @@
 import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import { google } from 'googleapis';
-import { sign } from 'jsonwebtoken';
+import * as jose from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -19,11 +19,15 @@ export const GET = async (request: NextRequest) => {
 
   cookies().set(
     'auth.token',
-    sign(
-      { provider: AuthProviders.Google, email, accessToken: tokens.access_token, referer },
-      process.env.AUTH_SECRET!,
-      { expiresIn: '60s' },
-    ),
+    await new jose.SignJWT({
+      provider: AuthProviders.Google,
+      email,
+      accessToken: tokens.access_token,
+      referer,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('60s')
+      .sign(new TextEncoder().encode(process.env.AUTH_SECRET!)),
     { httpOnly: true },
   );
 

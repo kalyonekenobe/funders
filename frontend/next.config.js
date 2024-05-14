@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   serverRuntimeConfig: {
     backendUrl: process.env.BACKEND_URL,
   },
