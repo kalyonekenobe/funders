@@ -2,6 +2,9 @@ version: '3.8'
 
 services:
   backend:
+    # build:
+    #   context: ./backend
+    #   dockerfile: ./Dockerfile.prod
     image: kalyonekenobe/funders-backend:latest
     container_name: funders-backend
     networks:
@@ -25,6 +28,9 @@ services:
           memory: 192M
 
   frontend:
+    # build:
+    #   context: ./frontend
+    #   dockerfile: ./Dockerfile.prod
     image: kalyonekenobe/funders-frontend:latest
     container_name: funders-frontend
     networks:
@@ -39,7 +45,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 320M
+          memory: 448M
 
   database:
     image: postgres:latest
@@ -81,12 +87,13 @@ services:
       - frontend
       - backend
     restart: on-failure
-    # certbot:
-    # image: certbot/certbot
     deploy:
       resources:
         limits:
           memory: 64M
+
+  # certbot:
+  # image: certbot/certbot
 
 networks:
   funders-network:
