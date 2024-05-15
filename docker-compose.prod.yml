@@ -45,7 +45,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 448M
+          memory: 384M
 
   database:
     image: postgres:latest
@@ -90,7 +90,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 64M
+          memory: 32M
 
   # certbot:
   # image: certbot/certbot
