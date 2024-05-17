@@ -10,6 +10,7 @@ const nextConfig = {
     backendUrl: process.env.BACKEND_URL,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
