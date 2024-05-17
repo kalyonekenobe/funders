@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker compose)" ]; then
   exit 1
 fi
 
-domains=(funders.csfl.eu www.funders.csfl.eu)
+domains=(funders.ehcp.eu www.funders.ehcp.eu)
 rsa_key_size=4096
 data_path="./data/certbot"
 email="" # Adding a valid address is strongly recommended
