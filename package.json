@@ -28,7 +28,11 @@
     "build:docker:local": "docker compose --env-file=.env.local --file docker-compose.local.yml build",
     "start:docker:local": "docker compose --env-file=.env.local --file docker-compose.local.yml up -d",
     "start:build:docker:local": "docker compose --env-file=.env.local --file docker-compose.local.yml up --build -d",
-    "stop:docker:local": "docker compose --env-file=.env.local --file docker-compose.local.yml down"
+    "stop:docker:local": "docker compose --env-file=.env.local --file docker-compose.local.yml down",
+    "build:docker:prod": "docker compose --env-file=.env.prod --file docker-compose.prod.yml build",
+    "start:docker:prod": "docker compose --env-file=.env.prod --file docker-compose.prod.yml up -d",
+    "start:build:docker:prod": "docker compose --env-file=.env.prod --file docker-compose.prod.yml up --build -d",
+    "stop:docker:prod": "docker compose --env-file=.env.prod --file docker-compose.prod.yml down"
   },
   "author": "Oleksandr Igumnov",
   "license": "UNLICENSED",

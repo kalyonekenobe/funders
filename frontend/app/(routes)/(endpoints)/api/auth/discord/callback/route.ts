@@ -1,6 +1,6 @@
 import { AuthProviders } from '@/app/(core)/utils/auth.utils';
 import axios from 'axios';
-import { sign } from 'jsonwebtoken';
+import * as jose from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -34,11 +34,15 @@ export const GET = async (request: NextRequest) => {
 
   cookies().set(
     'auth.token',
-    sign(
-      { provider: AuthProviders.Discord, email, accessToken: access_token, referer },
-      process.env.AUTH_SECRET!,
-      { expiresIn: '60s' },
-    ),
+    await new jose.SignJWT({
+      provider: AuthProviders.Discord,
+      email,
+      accessToken: access_token,
+      referer,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('60s')
+      .sign(new TextEncoder().encode(process.env.AUTH_SECRET!)),
     { httpOnly: true },
   );
 

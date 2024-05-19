@@ -12,6 +12,10 @@ export const middleware = async (request: NextRequest) => {
     },
   });
 
+  if (request.nextUrl.pathname === ApplicationRoutes.Root) {
+    return NextResponse.redirect(new URL(ApplicationRoutes.Home, request.nextUrl.origin));
+  }
+
   const { authenticatedUser } = await updateSession(request, response);
 
   if (

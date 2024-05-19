@@ -7,7 +7,7 @@ import { HttpStatusCode } from 'axios';
 import { AuthProviders } from '../utils/auth.utils';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { JwtPayload, decode, sign, verify } from 'jsonwebtoken';
+import * as jose from 'jose';
 import { ApplicationRoutes } from '../utils/routes.utils';
 import { applySetRequestCookies, capitalize } from '../utils/app.utils';
 import { UserRoleEnum } from '../store/types/user-role.types';
@@ -167,10 +167,11 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
     };
   }
 
-  const payload = decode(authTokenCookie.value) as JwtPayload;
-  const authTokenIsValid = verify(authTokenCookie.value, process.env.AUTH_SECRET!, {
-    ignoreExpiration: false,
-  });
+  const payload = await jose.decodeJwt(authTokenCookie.value);
+  const authTokenIsValid = await jose.jwtVerify(
+    authTokenCookie.value,
+    new TextEncoder().encode(process.env.AUTH_SECRET!),
+  );
 
   cookies().delete('auth.token');
 
@@ -194,7 +195,9 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
     if (!response.data.length) {
       cookies().set(
         'auth.account-completion-token',
-        sign({ email, provider, referer }, process.env.AUTH_SECRET!),
+        await new jose.SignJWT({ email, provider, referer })
+          .setProtectedHeader({ alg: 'HS256' })
+          .sign(new TextEncoder().encode(process.env.AUTH_SECRET!)),
         {
           httpOnly: true,
         },
@@ -245,13 +248,10 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     };
   }
 
-  const payload = decode(accountCompletionToken.value) as JwtPayload;
-  const accountCompletionTokenIsValid = verify(
+  const payload = (await jose.decodeJwt(accountCompletionToken.value)) as { [key: string]: any };
+  const accountCompletionTokenIsValid = await jose.jwtVerify(
     accountCompletionToken.value,
-    process.env.AUTH_SECRET!,
-    {
-      ignoreExpiration: false,
-    },
+    new TextEncoder().encode(process.env.AUTH_SECRET!),
   );
 
   cookies().delete('auth.account-completion-token');
@@ -290,9 +290,9 @@ export const extractAccountCompletionMetadata = async (): Promise<{
 };
 
 export const getAuthInfo = async (): Promise<AuthInfo | null> => {
-  const payload = decode(
+  const payload = (await jose.decodeJwt(
     cookies().get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')?.value ?? '',
-  );
+  )) as { [key: string]: any };
 
   if (payload && !(typeof payload === 'string')) {
     const { userId, firstName, lastName, permissions, avatar } = payload;
