@@ -1,28 +1,37 @@
-import { boolean, minLength, minValue, number, object, optional, string, toTrimmed } from 'valibot';
+import {
+  boolean,
+  minLength,
+  minValue,
+  number,
+  optional,
+  pipe,
+  strictObject,
+  string,
+  trim,
+} from 'valibot';
 
-export const CreatePostSchema = object({
-  title: string('Title cannot be empty', [toTrimmed(), minLength(1, 'Title cannot be empty')]),
-  content: string('Content cannot be empty', [
-    toTrimmed(),
-    minLength(1, 'Content cannot be empty'),
-  ]),
-  fundsToBeRaised: number('Funds to be raised cannot be less than 0.01 USD', [
+export const CreatePostSchema = strictObject({
+  title: pipe(string('Title cannot be empty'), trim(), minLength(1, 'Title cannot be empty')),
+  content: pipe(string('Content cannot be empty'), trim(), minLength(1, 'Content cannot be empty')),
+  fundsToBeRaised: pipe(
+    number('Funds to be raised cannot be less than 0.01 USD'),
     minValue(0.01, 'Funds to be raised cannot be less than 0.01 USD'),
-  ]),
-  isDraft: optional(boolean()),
+  ),
+  isDraft: optional(pipe(boolean())),
 });
 
-export const UpdatePostSchema = object({
+export const UpdatePostSchema = strictObject({
   title: optional(
-    string('Title cannot be empty', [toTrimmed(), minLength(1, 'Title cannot be empty')]),
+    pipe(string('Title cannot be empty'), trim(), minLength(1, 'Title cannot be empty')),
   ),
   content: optional(
-    string('Content cannot be empty', [toTrimmed(), minLength(1, 'Content cannot be empty')]),
+    pipe(string('Content cannot be empty'), trim(), minLength(1, 'Content cannot be empty')),
   ),
   fundsToBeRaised: optional(
-    number('Funds to be raised cannot be less than 0.01 USD', [
+    pipe(
+      number('Funds to be raised cannot be less than 0.01 USD'),
       minValue(0.01, 'Funds to be raised cannot be less than 0.01 USD'),
-    ]),
+    ),
   ),
   isDraft: optional(boolean()),
 });

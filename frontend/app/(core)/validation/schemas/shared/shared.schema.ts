@@ -1,4 +1,7 @@
-import { string, transform, uuid } from 'valibot';
+import { pipe, string, transform, uuid } from 'valibot';
 
-export const IdSchema = string([uuid()]);
-export const DateSchema = transform(string(), input => new Date(input));
+export const IdSchema = pipe(string(), uuid());
+export const DateSchema = pipe(
+  string(),
+  transform(input => new Date(input)),
+);

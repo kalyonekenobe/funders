@@ -2,7 +2,7 @@ import { FC, HTMLAttributes } from 'react';
 import Link from 'next/link';
 import { ApplicationRoutes } from '../../utils/routes.utils';
 import UserProfileLink from './UserProfileLink';
-import Image from 'next/image';
+import { BanknotesIcon } from '@/app/(core)/ui/Icons/Icons';
 
 export interface NavbarProps extends HTMLAttributes<HTMLDivElement> {}
 export const revalidate = 0;
@@ -17,13 +17,8 @@ const Navbar: FC<NavbarProps> = ({ ...props }) => {
             className='flex items-center px-5 py-1.5 md:px-10 w-full text-rose-600 hover:bg-slate-50 transition-[0.3s_ease] relative justify-center'
           >
             <div className='flex relative h-[60px] min-w-[100px] justify-center items-center'>
-              <Image
-                src='/post-image-placeholder.webp'
-                alt='logo'
-                fill
-                sizes='100%, 100%'
-                className='object-cover max-w-[100px] text-center align-middle'
-              />
+              <BanknotesIcon className='size-6 stroke-2 me-3' />
+              <h2 className='font-semibold text-2xl font-["Open_Sans"]'>Funders</h2>
             </div>
           </Link>
         </div>

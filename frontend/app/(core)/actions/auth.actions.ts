@@ -30,7 +30,7 @@ export const signIn = async (state: any, formData: FormData) => {
     if (error instanceof ValiError) {
       return {
         ...state,
-        errors: flatten(error),
+        errors: flatten(error.issues),
       };
     }
 
@@ -58,8 +58,6 @@ export const signUp = async (state: any, formData: FormData) => {
     formData,
   ) as any;
 
-  console.log(data);
-
   try {
     if (!data.password) {
       data.password = '#xxxxxx0';
@@ -77,7 +75,14 @@ export const signUp = async (state: any, formData: FormData) => {
       registrationMethod === UserRegistrationMethodEnum.Default
     ) {
       throw new ValiError([
-        { reason: 'any', context: '', input: '', expected: '', received: '', message: '' },
+        {
+          kind: 'schema',
+          type: '',
+          input: undefined,
+          expected: null,
+          received: '',
+          message: '',
+        },
       ]);
     }
 
@@ -93,26 +98,29 @@ export const signUp = async (state: any, formData: FormData) => {
   } catch (error: any) {
     if (error instanceof ValiError) {
       if (confirmPassword !== data.password) {
-        error.issues = [
-          ...error.issues,
-          {
-            reason: 'any',
-            context: 'confirm_password',
-            input: confirmPassword,
-            expected: data.password,
-            received: confirmPassword,
-            message: 'Passwords are different.',
-            path: [
-              {
-                type: 'object',
-                origin: 'value',
-                input: confirmPassword,
-                key: 'confirmPassword',
-                value: confirmPassword,
-              },
-            ],
-          },
-        ].filter(issue => issue.context !== '') as any;
+        error = {
+          ...error,
+          issues: [
+            ...error.issues,
+            {
+              reason: 'any',
+              context: 'confirm_password',
+              input: confirmPassword,
+              expected: data.password,
+              received: confirmPassword,
+              message: 'Passwords are different.',
+              path: [
+                {
+                  type: 'object',
+                  origin: 'value',
+                  input: confirmPassword,
+                  key: 'confirmPassword',
+                  value: confirmPassword,
+                },
+              ],
+            },
+          ].filter(issue => issue.context !== '') as any,
+        };
       }
 
       return {
@@ -160,7 +168,8 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   data: any;
   status: HttpStatusCode;
 }> => {
-  const authTokenCookie = cookies().get('auth.token');
+  const serverCookies = await cookies();
+  const authTokenCookie = serverCookies.get('auth.token');
 
   if (!authTokenCookie) {
     return {
@@ -176,7 +185,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
     new TextEncoder().encode(process.env.AUTH_SECRET!),
   );
 
-  cookies().delete('auth.token');
+  serverCookies.delete('auth.token');
 
   if (!authTokenIsValid || !payload) {
     return {
@@ -196,7 +205,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
     }
 
     if (!response.data.length) {
-      cookies().set(
+      serverCookies.set(
         'auth.account-completion-token',
         await new jose.SignJWT({ email, provider, referer })
           .setProtectedHeader({ alg: 'HS256' })
@@ -233,7 +242,7 @@ export const authWithSSOIfAuthTokenExist = async (): Promise<{
   };
 };
 
-export const getWalletAuthMessage = () => process.env.NEXT_AUTH_MESSAGE;
+export const getWalletAuthMessage = async () => process.env.NEXT_AUTH_MESSAGE;
 
 export const authWithWallet = async (
   accessToken: string,
@@ -264,7 +273,8 @@ export const extractAccountCompletionMetadata = async (): Promise<{
   data: any;
   status: HttpStatusCode;
 }> => {
-  const accountCompletionToken = cookies().get('auth.account-completion-token');
+  const serverCookies = await cookies();
+  const accountCompletionToken = serverCookies.get('auth.account-completion-token');
 
   if (!accountCompletionToken) {
     return {
@@ -283,7 +293,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
     new TextEncoder().encode(process.env.AUTH_SECRET!),
   );
 
-  cookies().delete('auth.account-completion-token');
+  serverCookies.delete('auth.account-completion-token');
 
   if (!accountCompletionTokenIsValid || !payload) {
     return {
@@ -319,8 +329,9 @@ export const extractAccountCompletionMetadata = async (): Promise<{
 };
 
 export const getAuthInfo = async (): Promise<AuthInfo | null> => {
+  const serverCookies = await cookies();
   const payload = (await jose.decodeJwt(
-    cookies().get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Volonterro-Access-Token')?.value ?? '',
+    serverCookies.get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')?.value ?? '',
   )) as { [key: string]: any };
 
   if (payload && !(typeof payload === 'string')) {
@@ -331,22 +342,27 @@ export const getAuthInfo = async (): Promise<AuthInfo | null> => {
   return null;
 };
 
-export const signOut = () => {
-  cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Volonterro-Access-Token');
-  cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Volonterro-Refresh-Token');
+export const signOut = async () => {
+  const serverCookies = await cookies();
+  serverCookies.delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token');
+  serverCookies.delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token');
+
   return redirect(ApplicationRoutes.SignIn);
 };
 
-export const setCookies = (cookiesToUpdate: string[]) => {
+export const setCookies = async (cookiesToUpdate: string[]) => {
+  const serverCookies = await cookies();
   cookiesToUpdate.forEach(cookieString => {
     const { name, value, ...options } = parseCookieString(cookieString);
-    cookies().set(name, value, options);
+    serverCookies.set(name, value, options);
   });
 };
 
-export const removeCookies = (cookiesToRemove: string[]) => {
+export const removeCookies = async (cookiesToRemove: string[]) => {
+  const serverCookies = await cookies();
+
   cookiesToRemove.forEach(cookie => {
-    cookies().delete(cookie);
+    serverCookies.delete(cookie);
   });
 };
 

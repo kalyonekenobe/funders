@@ -153,7 +153,14 @@ export const udpateUser = async (state: any, formData: FormData) => {
 
     if (confirmPassword !== data.password) {
       throw new ValiError([
-        { reason: 'any', context: '', input: '', expected: '', received: '', message: '' },
+        {
+          kind: 'schema',
+          type: '',
+          input: undefined,
+          expected: null,
+          received: '',
+          message: '',
+        },
       ]);
     }
 
@@ -194,26 +201,29 @@ export const udpateUser = async (state: any, formData: FormData) => {
   } catch (error: any) {
     if (error instanceof ValiError) {
       if (confirmPassword !== data.password) {
-        error.issues = [
-          ...error.issues,
-          {
-            reason: 'any',
-            context: 'confirm_password',
-            input: confirmPassword,
-            expected: data.password,
-            received: confirmPassword,
-            message: 'Passwords are different.',
-            path: [
-              {
-                type: 'object',
-                origin: 'value',
-                input: confirmPassword,
-                key: 'confirmPassword',
-                value: confirmPassword,
-              },
-            ],
-          },
-        ].filter(issue => issue.context !== '') as any;
+        error = {
+          ...error,
+          issues: [
+            ...error.issues,
+            {
+              reason: 'any',
+              context: 'confirm_password',
+              input: confirmPassword,
+              expected: data.password,
+              received: confirmPassword,
+              message: 'Passwords are different.',
+              path: [
+                {
+                  type: 'object',
+                  origin: 'value',
+                  input: confirmPassword,
+                  key: 'confirmPassword',
+                  value: confirmPassword,
+                },
+              ],
+            },
+          ].filter(issue => issue.context !== '') as any,
+        };
       }
 
       return {

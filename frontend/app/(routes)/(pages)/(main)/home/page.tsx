@@ -13,8 +13,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Home | Volonterro',
-  description: 'Volonterro - Home Page',
+  title: 'Home | Funders',
+  description: 'Funders - Home Page',
 };
 
 const fetchData = async () => {

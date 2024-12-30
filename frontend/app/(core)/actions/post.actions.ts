@@ -19,6 +19,7 @@ import { PostCategory } from '../store/types/post-category.types';
 import { CreatePostSchema, UpdatePostSchema } from '../validation/schemas/post/post.schema';
 import { revalidatePath } from 'next/cache';
 import { ApplicationRoutes } from '../utils/routes.utils';
+import { cookies } from 'next/headers';
 
 export const getAllPosts = async (options?: unknown): Promise<Post[]> => {
   try {
@@ -283,7 +284,7 @@ export const addPostComment = async (state: any, postId: string, formData: FormD
     if (error instanceof ValiError) {
       return {
         ...state,
-        errors: flatten(error),
+        errors: flatten(error.issues),
       };
     }
 
@@ -365,7 +366,7 @@ export const editPostComment = async (state: any, commentId: string, formData: F
     if (error instanceof ValiError) {
       return {
         ...state,
-        errors: flatten(error),
+        errors: flatten(error.issues),
       };
     }
 
@@ -453,7 +454,7 @@ export const createPost = async (state: any, formData: FormData) => {
     if (error instanceof ValiError) {
       return {
         ...state,
-        errors: flatten(error),
+        errors: flatten(error.issues),
       };
     }
 
@@ -521,7 +522,7 @@ export const updatePost = async (state: any, postId: string, formData: FormData)
     if (error instanceof ValiError) {
       return {
         ...state,
-        errors: flatten(error),
+        errors: flatten(error.issues),
       };
     }
 

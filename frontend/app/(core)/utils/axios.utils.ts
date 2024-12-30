@@ -9,7 +9,8 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   async config => {
-    config.headers.Cookie = cookies();
+    const serverCookies = await cookies();
+    config.headers.Cookie = serverCookies.toString();
     config.headers['Cache-Control'] = 'no-cache';
     return config;
   },
@@ -22,6 +23,7 @@ instance.interceptors.response.use(
     return response;
   },
   async error => {
+    const serverCookies = await cookies();
     const originalRequest = error.config;
     if (error.response.status === HttpStatusCode.Unauthorized && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -33,24 +35,25 @@ instance.interceptors.response.use(
           {
             withCredentials: true,
             headers: {
-              Cookie: cookies().toString(),
+              Cookie: serverCookies.toString(),
             },
           },
         );
 
-        setCookies(response.headers['set-cookie'] ?? []);
+        await setCookies(response.headers['set-cookie'] ?? []);
 
         error.config.headers = {
           ...error.config.headers,
-          Cookie: cookies(),
+          Cookie: serverCookies.toString(),
         };
 
         return instance(originalRequest);
       } catch (refreshError) {
-        removeCookies([
-          process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token',
-          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        await removeCookies([
+          process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
+          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
         ]);
+
         return Promise.reject(refreshError);
       }
     }
