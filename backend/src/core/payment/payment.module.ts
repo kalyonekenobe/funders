@@ -9,7 +9,7 @@ import { PaymentController } from './payment.controller';
       useFactory: () => ({
         apiKey: process.env.STRIPE_API_KEY,
         options: {
-          apiVersion: '2024-04-10',
+          apiVersion: '2024-12-18.acacia',
         },
       }),
     }),

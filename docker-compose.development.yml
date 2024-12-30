@@ -1,13 +1,13 @@
 services:
   backend:
-    image: kalyonekenobe/volonterro:backend
+    image: kalyonekenobe/funders:backend
     platform: linux/amd64
     build:
       context: backend
       dockerfile: ./Dockerfile.development
-    container_name: volonterro-backend
+    container_name: funders-backend
     networks:
-      - volonterro-network
+      - funders-network
     env_file: ./env/.env.development
     environment:
       POSTGRES_URL: ${POSTGRES_URL}
@@ -26,14 +26,14 @@ services:
         condition: service_healthy
 
   frontend:
-    image: kalyonekenobe/volonterro:frontend
+    image: kalyonekenobe/funders:frontend
     platform: linux/amd64
     build:
       context: frontend
       dockerfile: ./Dockerfile.development
-    container_name: volonterro-frontend
+    container_name: funders-frontend
     networks:
-      - volonterro-network
+      - funders-network
     env_file: ./env/.env.development
     ports:
       - 3000:${FRONTEND_INTERNAL_PORT}
@@ -44,14 +44,14 @@ services:
         condition: service_started
 
   database:
-    image: kalyonekenobe/volonterro:database
+    image: kalyonekenobe/funders:database
     build:
       context: .
       dockerfile_inline: |
         FROM postgres:latest
-    container_name: volonterro-database
+    container_name: funders-database
     networks:
-      - volonterro-network
+      - funders-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -61,7 +61,7 @@ services:
     expose:
       - ${DATABASE_PORT}
     volumes:
-      - volonterro-database-data:/var/lib/postgresql/data
+      - funders-database-data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
       interval: 10s
@@ -70,14 +70,14 @@ services:
     restart: on-failure
 
   nginx:
-    image: kalyonekenobe/volonterro:nginx
+    image: kalyonekenobe/funders:nginx
     build:
       context: .
       dockerfile_inline: |
         FROM nginx:stable-alpine-perl
-    container_name: volonterro-nginx
+    container_name: funders-nginx
     networks:
-      - volonterro-network
+      - funders-network
     env_file: ./env/.env.development
     ports:
       - 80:${NGINX_INTERNAL_PORT}
@@ -98,8 +98,8 @@ services:
     restart: on-failure
 
 networks:
-  volonterro-network:
+  funders-network:
     driver: bridge
 
 volumes:
-  volonterro-database-data:
+  funders-database-data:
