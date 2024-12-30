@@ -81,7 +81,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/users')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -97,7 +97,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -113,7 +113,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -128,7 +128,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${BanMockDataStorage.items()[1].userId}/bans`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -150,7 +150,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${PostMockDataStorage.items()[0].authorId}/posts`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -172,7 +172,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/users/${BanMockDataStorage.createUsersBanListRecordDtoList[0].userId}/bans`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...BanMockDataStorage.createUsersBanListRecordDtoList[0], userId: undefined })
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -196,7 +196,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/users/${BanMockDataStorage.items()[0].id}/bans`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...BanMockDataStorage.items()[0], asfasf: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -212,7 +212,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/users')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createUserDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -236,7 +236,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/users')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -252,7 +252,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/users/${MockDataStorage.updateUserDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -283,7 +283,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/users/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -299,7 +299,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/users/${MockDataStorage.removeUserDtoList[1].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -322,7 +322,7 @@ describe('UserController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/users/${MockDataStorage.removeUserDtoList[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

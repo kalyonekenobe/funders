@@ -5,8 +5,8 @@ import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 import SignUpForm from '@/app/(core)/ui/Auth/SignUp/SignUpForm';
 
 export const metadata: Metadata = {
-  title: 'Sign Up | Funders',
-  description: 'Funders - Sign Up',
+  title: 'Sign Up | Volonterro',
+  description: 'Volonterro - Sign Up',
 };
 
 const SignUpPage: FC = async () => {

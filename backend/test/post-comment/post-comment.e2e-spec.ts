@@ -57,7 +57,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[4].postId}/comments`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -79,7 +79,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[4].authorId}/comments`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -101,7 +101,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/comments/${MockDataStorage.items()[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -117,7 +117,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/comments/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -132,7 +132,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostCommentDtoList[0].postId}/comments`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({
         authorId: MockDataStorage.createPostCommentDtoList[0].data.authorId,
         parentCommentId: MockDataStorage.createPostCommentDtoList[0].data.parentCommentId,
@@ -164,7 +164,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.items()[0]}/comments`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -180,7 +180,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/comments/${MockDataStorage.updatePostCommentDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostCommentDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -211,7 +211,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/comments/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostCommentDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -227,7 +227,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/comments/${MockDataStorage.removePostCommentDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -252,7 +252,7 @@ describe('PostCommentController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/comments/${MockDataStorage.removePostCommentDtoList[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

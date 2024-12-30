@@ -48,8 +48,8 @@ instance.interceptors.response.use(
         return instance(originalRequest);
       } catch (refreshError) {
         removeCookies([
-          process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
-          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
+          process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token',
+          process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
         ]);
         return Promise.reject(refreshError);
       }

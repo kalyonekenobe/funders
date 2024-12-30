@@ -49,7 +49,7 @@ describe('FollowingController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].userId}/followers`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify([MockDataStorage.items()[0]]));
@@ -65,7 +65,7 @@ describe('FollowingController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/users/${MockDataStorage.items()[0].userId}/followings`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify([MockDataStorage.items()[4]]));
@@ -83,7 +83,7 @@ describe('FollowingController (e2e)', () => {
         `/users/${MockDataStorage.createFollowingDtoList[0].userId}/followers/${MockDataStorage.createFollowingDtoList[0].followerId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.CREATED)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -108,7 +108,7 @@ describe('FollowingController (e2e)', () => {
         }`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -125,7 +125,7 @@ describe('FollowingController (e2e)', () => {
         `/users/${MockDataStorage.removeFollowingDtoList[0].userId}/followers/${MockDataStorage.removeFollowingDtoList[0].followerId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -151,7 +151,7 @@ describe('FollowingController (e2e)', () => {
         `/users/${MockDataStorage.createFollowingDtoList[0].userId}/followers/${MockDataStorage.createFollowingDtoList[0].followerId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

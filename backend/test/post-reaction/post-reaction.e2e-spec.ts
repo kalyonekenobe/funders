@@ -50,7 +50,7 @@ describe('PostDonationController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}/reactions`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -72,7 +72,7 @@ describe('PostDonationController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}_not_existing_id/reactions`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -87,7 +87,7 @@ describe('PostDonationController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostReactionDtoList[0].postId}/reactions`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createPostReactionDtoList[0].data)
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -113,7 +113,7 @@ describe('PostDonationController (e2e)', () => {
         `/posts/${MockDataStorage.createPostReactionDtoList[0].postId}_not_existing_id/reactions`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createPostReactionDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -129,7 +129,7 @@ describe('PostDonationController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createPostReactionDtoList[0].postId}/reactions`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -147,7 +147,7 @@ describe('PostDonationController (e2e)', () => {
         `/posts/${MockDataStorage.updatePostReactionDtoList[0].postId}/reactions/${MockDataStorage.updatePostReactionDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostReactionDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -186,7 +186,7 @@ describe('PostDonationController (e2e)', () => {
         `/posts/${MockDataStorage.updatePostReactionDtoList[0].postId}_not_existing_id/reactions/${MockDataStorage.updatePostReactionDtoList[0].userId}_not_existing_id`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updatePostReactionDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -204,7 +204,7 @@ describe('PostDonationController (e2e)', () => {
         `/posts/${MockDataStorage.removePostReactionDtoList[0].postId}/reactions/${MockDataStorage.removePostReactionDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -233,7 +233,7 @@ describe('PostDonationController (e2e)', () => {
         `/posts/${MockDataStorage.removePostReactionDtoList[0].postId}_not_existing_id/reactions/${MockDataStorage.removePostReactionDtoList[0].userId}_not_existing_id`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

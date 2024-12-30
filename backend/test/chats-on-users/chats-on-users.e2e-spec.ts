@@ -49,7 +49,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/chats/${MockDataStorage.items()[0].chatId}/users`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -71,7 +71,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/chats/${MockDataStorage.items()[0].chatId}_not_existing_id/users`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -86,7 +86,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/chats/${MockDataStorage.items()[0].chatId}/users/${MockDataStorage.items()[0].userId}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -106,7 +106,7 @@ describe('ChatsOnUsersController (e2e)', () => {
         }`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -121,7 +121,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/chats/${MockDataStorage.createChatsOnUsersDtoList[0].chatId}/users`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createChatsOnUsersDtoList[0].data)
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -143,7 +143,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/chats/${MockDataStorage.createChatsOnUsersDtoList[0].chatId}_not_existing_id/users`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createChatsOnUsersDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -159,7 +159,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/chats/${MockDataStorage.items()[0].chatId}/users`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send([{ role: 14 }])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -177,7 +177,7 @@ describe('ChatsOnUsersController (e2e)', () => {
         `/chats/${MockDataStorage.updateChatsOnUsersDtoList[0].chatId}/users/${MockDataStorage.updateChatsOnUsersDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateChatsOnUsersDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -215,7 +215,7 @@ describe('ChatsOnUsersController (e2e)', () => {
         `/chats/${MockDataStorage.updateChatsOnUsersDtoList[0].chatId}_not_existing_id/users/${MockDataStorage.updateChatsOnUsersDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateChatsOnUsersDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -231,7 +231,7 @@ describe('ChatsOnUsersController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/chats/${MockDataStorage.items()[0].chatId}/users/${MockDataStorage.items()[0].userId}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send([{ role: 151 }])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -249,7 +249,7 @@ describe('ChatsOnUsersController (e2e)', () => {
         `/chats/${MockDataStorage.removeCategoriesOnPostsDtoList[0].chatId}/users/${MockDataStorage.removeCategoriesOnPostsDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -277,7 +277,7 @@ describe('ChatsOnUsersController (e2e)', () => {
         `/chats/${MockDataStorage.removeCategoriesOnPostsDtoList[0].chatId}_not_existing_id/users/${MockDataStorage.removeCategoriesOnPostsDtoList[0].userId}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

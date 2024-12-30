@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) =>
           request.headers.authorization?.replace('Bearer ', '') ??
-          request.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token'],
+          request.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token'],
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,

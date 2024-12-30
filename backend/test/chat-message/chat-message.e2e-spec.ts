@@ -54,7 +54,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/chats/${MockDataStorage.items()[4].chatId}/messages`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -76,7 +76,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/chats/${MockDataStorage.items()[4].chatId}_not_existing_id/messages`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -91,7 +91,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/messages/${MockDataStorage.items()[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -107,7 +107,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/messages/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -122,7 +122,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/chats/${MockDataStorage.createChatMessageDtoList[0].chatId}/messages`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({
         authorId: MockDataStorage.createChatMessageDtoList[0].data.authorId,
         replyTo: MockDataStorage.createChatMessageDtoList[0].data.replyTo,
@@ -154,7 +154,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/chats/${MockDataStorage.items()[0]}/messages`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send({ ...MockDataStorage.items()[0], asdasd: 123 })
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -170,7 +170,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/messages/${MockDataStorage.updateChatMessageDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateChatMessageDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -201,7 +201,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/messages/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateChatMessageDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -217,7 +217,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/messages/${MockDataStorage.removeChatMessageDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -242,7 +242,7 @@ describe('ChatMessageController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/messages/${MockDataStorage.removeChatMessageDtoList[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

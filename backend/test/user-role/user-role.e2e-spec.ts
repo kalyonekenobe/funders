@@ -54,7 +54,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/user-roles')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -70,7 +70,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/user-roles')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createUserRoleDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -91,7 +91,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/user-roles')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -107,7 +107,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/user-roles/${MockDataStorage.updateUserRoleDtoList[0].name}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserRoleDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -134,7 +134,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/user-roles/${MockDataStorage.createUserRoleDtoList[0].name}_not_existing_name`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserRoleDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -150,7 +150,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/user-roles/${MockDataStorage.removeUserRoleDtoList[1].name}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -170,7 +170,7 @@ describe('UserRoleController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/user-roles/${MockDataStorage.removeUserRoleDtoList[0].name}_not_existing_name`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

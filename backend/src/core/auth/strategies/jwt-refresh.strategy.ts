@@ -12,7 +12,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) =>
-          request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token'],
+          request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token'],
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
@@ -22,7 +22,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
   async validate(request: Request, payload: JwtTokenPayload): Promise<UserPublicEntity> {
     const refreshToken =
-      request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token'];
+      request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token'];
     return await this.userService.findOne({
       where: { id: payload.userId.toString(), refreshToken },
     });

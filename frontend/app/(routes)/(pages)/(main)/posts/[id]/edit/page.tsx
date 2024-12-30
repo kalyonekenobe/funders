@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: `Edit Post | Funders`,
-  description: `Funders - Edit a post`,
+  title: `Edit Post | Volonterro`,
+  description: `Volonterro - Edit a post`,
 };
 
 export interface EditPostPageProps {

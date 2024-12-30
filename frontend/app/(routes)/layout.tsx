@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Funders',
+  title: 'Volonterro',
   description: 'Social network for volunteer fundraising',
 };
 

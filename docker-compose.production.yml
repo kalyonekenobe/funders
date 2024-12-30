@@ -1,13 +1,13 @@
 services:
   backend:
-    image: kalyonekenobe/funders:backend
+    image: kalyonekenobe/volonterro:backend
     platform: linux/amd64
     build:
       context: backend
       dockerfile: ./Dockerfile.production
-    container_name: funders-backend
+    container_name: volonterro-backend
     networks:
-      - funders-network
+      - volonterro-network
     env_file: ./env/.env.production
     environment:
       POSTGRES_URL: ${POSTGRES_URL}
@@ -30,13 +30,13 @@ services:
         condition: service_healthy
 
   frontend:
-    image: kalyonekenobe/funders:frontend
+    image: kalyonekenobe/volonterro:frontend
     build:
       context: frontend
       dockerfile: ./Dockerfile.production
-    container_name: funders-frontend
+    container_name: volonterro-frontend
     networks:
-      - funders-network
+      - volonterro-network
     env_file: ./env/.env.production
     ports:
       - 3000:${FRONTEND_INTERNAL_PORT}
@@ -51,14 +51,14 @@ services:
         condition: service_started
 
   database:
-    image: kalyonekenobe/funders:database
+    image: kalyonekenobe/volonterro:database
     build:
       context: .
       dockerfile_inline: |
         FROM postgres:latest
-    container_name: funders-database
+    container_name: volonterro-database
     networks:
-      - funders-network
+      - volonterro-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -68,7 +68,7 @@ services:
     expose:
       - ${DATABASE_PORT}
     volumes:
-      - funders-database-data:/var/lib/postgresql/data
+      - volonterro-database-data:/var/lib/postgresql/data
     deploy:
       resources:
         limits:
@@ -81,14 +81,14 @@ services:
     restart: on-failure
 
   nginx:
-    image: kalyonekenobe/funders:nginx
+    image: kalyonekenobe/volonterro:nginx
     build:
       context: .
       dockerfile_inline: |
         FROM nginx:stable-alpine-perl
-    container_name: funders-nginx
+    container_name: volonterro-nginx
     networks:
-      - funders-network
+      - volonterro-network
     env_file: ./env/.env.production
     ports:
       - 80:${NGINX_INTERNAL_PORT}
@@ -118,14 +118,14 @@ services:
     restart: on-failure
 
   certbot:
-    image: kalyonekenobe/funders:certbot
+    image: kalyonekenobe/volonterro:certbot
     build:
       context: .
       dockerfile_inline: |
         FROM certbot/certbot
-    container_name: funders-certbot
+    container_name: volonterro-certbot
     networks:
-      - funders-network
+      - volonterro-network
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
@@ -137,8 +137,8 @@ services:
           memory: 32M
 
 networks:
-  funders-network:
+  volonterro-network:
     driver: bridge
 
 volumes:
-  funders-database-data:
+  volonterro-database-data:

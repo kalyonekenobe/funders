@@ -1,7 +1,7 @@
 {
-  "name": "funders-frontend",
+  "name": "volonterro-frontend",
   "version": "1.0.0",
-  "description": "The frontend of the Funders application",
+  "description": "The frontend of the Volonterro application",
   "author": "Oleksandr Igumnov",
   "license": "UNLICENSED",
   "private": true,

@@ -59,12 +59,16 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', user.accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
-        httpOnly: true,
-      })
+      .cookie(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        user.refreshToken,
+        {
+          httpOnly: true,
+        },
+      )
       .json(user);
   }
 
@@ -91,12 +95,16 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', user.accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
-        httpOnly: true,
-      })
+      .cookie(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        user.refreshToken,
+        {
+          httpOnly: true,
+        },
+      )
       .json(user);
   }
 
@@ -121,15 +129,15 @@ export class AuthController {
   async refresh(@Req() request: Request, @Res() response: Response) {
     const { accessToken, refreshToken } = await this.authService.refresh({
       refreshToken:
-        request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token'],
+        request.cookies[process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token'],
     });
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', refreshToken, {
+      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token', refreshToken, {
         httpOnly: true,
       })
       .json({ accessToken, refreshToken });
@@ -158,10 +166,10 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .clearCookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', {
+      .clearCookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', {
         httpOnly: true,
       })
-      .clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', {
+      .clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token', {
         httpOnly: true,
       })
       .json(user);
@@ -188,12 +196,16 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', user.accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
-        httpOnly: true,
-      })
+      .cookie(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        user.refreshToken,
+        {
+          httpOnly: true,
+        },
+      )
       .json(user);
   }
 
@@ -218,12 +230,16 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', user.accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
-        httpOnly: true,
-      })
+      .cookie(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        user.refreshToken,
+        {
+          httpOnly: true,
+        },
+      )
       .json(user);
   }
 
@@ -248,12 +264,16 @@ export class AuthController {
 
     return response
       .status(HttpStatus.CREATED)
-      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token', user.accessToken, {
+      .cookie(process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token', user.accessToken, {
         httpOnly: true,
       })
-      .cookie(process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token', user.refreshToken, {
-        httpOnly: true,
-      })
+      .cookie(
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
+        user.refreshToken,
+        {
+          httpOnly: true,
+        },
+      )
       .json(user);
   }
 }

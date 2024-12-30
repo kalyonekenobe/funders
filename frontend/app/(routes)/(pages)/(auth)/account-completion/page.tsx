@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Account Completion | Funders',
-  description: 'Funders - Account Completion',
+  title: 'Account Completion | Volonterro',
+  description: 'Volonterro - Account Completion',
 };
 
 const AccountCompletionPage: FC = async () => {

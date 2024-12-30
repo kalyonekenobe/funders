@@ -49,7 +49,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -71,7 +71,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/posts/${MockDataStorage.items()[0].postId}_not_existing_id/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -86,7 +86,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.createCategoriesOnPostsDtoList[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -114,7 +114,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
         `/posts/${MockDataStorage.createCategoriesOnPostsDtoList[0].postId}_not_existing_id/categories`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -130,7 +130,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .post(`/posts/${MockDataStorage.items()[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send([{ name: MockDataStorage.items()[0].category }])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -146,7 +146,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/posts/${MockDataStorage.updateCategoriesOnPostsDtoList[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -178,7 +178,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
         `/posts/${MockDataStorage.updateCategoriesOnPostsDtoList[0].postId}_not_existing_id/categories`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -194,7 +194,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/posts/${MockDataStorage.items()[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send([{ name: MockDataStorage.items()[0].category, asdasd: 123 }])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -210,7 +210,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/posts/${MockDataStorage.removeCategoriesOnPostsDtoList[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.removeCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -241,7 +241,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
         `/posts/${MockDataStorage.removeCategoriesOnPostsDtoList[0].postId}_not_existing_id/categories`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.removeCategoriesOnPostsDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -257,7 +257,7 @@ describe('CategoriesOnPostsController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/posts/${MockDataStorage.items()[0].postId}/categories`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send([{ name: MockDataStorage.items()[0].category, asdasd: 123 }])
       .expect(HttpStatus.CONFLICT)
       .then(() => {

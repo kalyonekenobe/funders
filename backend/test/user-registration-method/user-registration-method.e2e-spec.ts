@@ -52,7 +52,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/user-registration-methods')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -68,7 +68,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/user-registration-methods')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.createUserRegistrationMethodDtoList[0])
       .expect(HttpStatus.CREATED)
       .then(response => {
@@ -90,7 +90,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/user-registration-methods')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.items()[0])
       .expect(HttpStatus.CONFLICT)
       .then(() => {
@@ -108,7 +108,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
         `/user-registration-methods/${MockDataStorage.updateUserRegistrationMethodDtoList[0].name}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserRegistrationMethodDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -135,7 +135,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
         `/user-registration-methods/${MockDataStorage.createUserRegistrationMethodDtoList[0].name}_not_existing_name`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUserRegistrationMethodDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -153,7 +153,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
         `/user-registration-methods/${MockDataStorage.removeUserRegistrationMethodDtoList[1].name}`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -177,7 +177,7 @@ describe('UserRegistrationMethodController (e2e)', () => {
         `/user-registration-methods/${MockDataStorage.removeUserRegistrationMethodDtoList[0].name}_not_existing_name`,
       )
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { ApplicationRoutes } from '@/app/(core)/utils/routes.utils';
 
 export const metadata: Metadata = {
-  title: 'Sign In | Funders',
-  description: 'Funders - Sign In',
+  title: 'Sign In | Volonterro',
+  description: 'Volonterro - Sign In',
 };
 
 const SignInPage: FC = async () => {

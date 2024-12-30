@@ -27,10 +27,10 @@ export const middleware = async (request: NextRequest) => {
         new URL(ApplicationRoutes.SignIn, request.nextUrl.origin),
       );
       notAuthenticatedResponse.cookies.delete(
-        process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Funders-Access-Token',
+        process.env.ACCESS_TOKEN_COOKIE_NAME ?? 'Volonterro-Access-Token',
       );
       notAuthenticatedResponse.cookies.delete(
-        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Funders-Refresh-Token',
+        process.env.REFRESH_TOKEN_COOKIE_NAME ?? 'Volonterro-Refresh-Token',
       );
       applySetRequestCookies(request, notAuthenticatedResponse);
       return notAuthenticatedResponse;

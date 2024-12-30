@@ -8,8 +8,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: `Create Post | Funders`,
-  description: `Funders - Create a new post`,
+  title: `Create Post | Volonterro`,
+  description: `Volonterro - Create a new post`,
 };
 
 const fetchData = async () => {

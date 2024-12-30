@@ -36,8 +36,8 @@ export const generateMetadata = async ({ params }: UserDetailsPageProps): Promis
   const { user } = await fetchData(params.id);
 
   return {
-    title: `${user?.firstName} ${user?.lastName} | Funders`,
-    description: `Funders - User: ${user?.firstName} ${user?.lastName}`,
+    title: `${user?.firstName} ${user?.lastName} | Volonterro`,
+    description: `Volonterro - User: ${user?.firstName} ${user?.lastName}`,
   };
 };
 

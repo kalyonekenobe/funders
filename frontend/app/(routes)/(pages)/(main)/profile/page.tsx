@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: `Profile | Funders`,
-  description: `Funders - User profile`,
+  title: `Profile | Volonterro`,
+  description: `Volonterro - User profile`,
 };
 
 const fetchData = async () => {

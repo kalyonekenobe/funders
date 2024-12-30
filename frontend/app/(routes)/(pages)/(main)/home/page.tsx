@@ -13,8 +13,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Home | Funders',
-  description: 'Funders - Home Page',
+  title: 'Home | Volonterro',
+  description: 'Volonterro - Home Page',
 };
 
 const fetchData = async () => {
@@ -68,7 +68,7 @@ const HomePage: FC = async () => {
           </div>
         </div>
       </div>
-      <div className='hidden lg:flex sticky top-[calc(3.5rem_+_1px)] h-full max-h-[calc(100vh_-_3.5rem_-_1px)] flex-1 flex-col self-start'>
+      <div className='hidden lg:flex sticky top-[calc(4.5rem_+_1px)] h-full max-h-[calc(100vh_-_4.5rem_-_1px)] flex-1 flex-col self-start'>
         <FriendsAndSuggestions className='sticky top-0 w-full flex flex-col flex-1 bg-white z-50 border-l border-gray-100' />
       </div>
     </div>

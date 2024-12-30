@@ -1,7 +1,7 @@
 {
-  "name": "funders",
+  "name": "volonterro",
   "version": "1.0.0",
-  "description": "The Funders application",
+  "description": "The Volonterro application",
   "scripts": {
     "database:migrate:development": "export POSTGRES_URL=$(docker compose --env-file=./env/.env.development --file docker-compose.development.yml exec backend sh -c 'echo $EXTERNAL_POSTGRES_URL') && cd backend && npx prisma migrate dev && npx prisma generate",
     "database:migrate:undo:all:development": "cd backend/prisma && rm -rf migrations/*",

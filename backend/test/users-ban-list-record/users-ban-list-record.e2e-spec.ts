@@ -54,7 +54,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/bans')
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()));
@@ -70,7 +70,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/bans/${MockDataStorage.items()[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(JSON.stringify(MockDataStorage.items()[0]));
@@ -86,7 +86,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .get(`/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);
@@ -101,7 +101,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/bans/${MockDataStorage.updateUsersBanListRecordDtoList[0].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUsersBanListRecordDtoList[0].data)
       .expect(HttpStatus.OK)
       .then(response => {
@@ -132,7 +132,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .put(`/bans/${MockDataStorage.items()[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .send(MockDataStorage.updateUsersBanListRecordDtoList[0].data)
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
@@ -148,7 +148,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/bans/${MockDataStorage.removeUsersBanListRecordDtoList[1].id}`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.OK)
       .then(response => {
         expect(JSON.stringify(response.body)).toEqual(
@@ -173,7 +173,7 @@ describe('UsersBanListRecordController (e2e)', () => {
     return request(app.getHttpServer())
       .delete(`/bans/${MockDataStorage.removeUsersBanListRecordDtoList[0].id}_not_existing_id`)
       .set('authorization', `Bearer ${accessToken}`)
-      .set('Cookie', [`Funders-Access-Token=${accessToken}; Path=/; HttpOnly;`])
+      .set('Cookie', [`Volonterro-Access-Token=${accessToken}; Path=/; HttpOnly;`])
       .expect(HttpStatus.NOT_FOUND)
       .then(() => {
         expect(MockDataStorage.items()).toEqual(initialData);

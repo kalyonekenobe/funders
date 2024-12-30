@@ -49,8 +49,8 @@ export const generateMetadata = async ({ params }: PostDetailsPageProps): Promis
   const { post } = await fetchData(params.id);
 
   return {
-    title: `"${post?.title}" | Funders`,
-    description: `Funders - Post: "${post?.title}"`,
+    title: `"${post?.title}" | Volonterro`,
+    description: `Volonterro - Post: "${post?.title}"`,
   };
 };
 

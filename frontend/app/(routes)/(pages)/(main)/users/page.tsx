@@ -5,8 +5,8 @@ import { FC } from 'react';
 import UserComponent from '@/app/(core)/ui/User/User';
 
 export const metadata: Metadata = {
-  title: 'Users | Funders',
-  description: 'Funders - Users Page',
+  title: 'Users | Volonterro',
+  description: 'Volonterro - Users Page',
 };
 
 const fetchData = async () => {

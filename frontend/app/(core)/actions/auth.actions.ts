@@ -320,7 +320,7 @@ export const extractAccountCompletionMetadata = async (): Promise<{
 
 export const getAuthInfo = async (): Promise<AuthInfo | null> => {
   const payload = (await jose.decodeJwt(
-    cookies().get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token')?.value ?? '',
+    cookies().get(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Volonterro-Access-Token')?.value ?? '',
   )) as { [key: string]: any };
 
   if (payload && !(typeof payload === 'string')) {
@@ -332,8 +332,8 @@ export const getAuthInfo = async (): Promise<AuthInfo | null> => {
 };
 
 export const signOut = () => {
-  cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Funders-Access-Token');
-  cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Funders-Refresh-Token');
+  cookies().delete(process.env.ACCESS_TOKEN_COOKIE_NAME || 'Volonterro-Access-Token');
+  cookies().delete(process.env.REFRESH_TOKEN_COOKIE_NAME || 'Volonterro-Refresh-Token');
   return redirect(ApplicationRoutes.SignIn);
 };
 
